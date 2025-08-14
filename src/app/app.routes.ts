@@ -4,9 +4,9 @@ import { JodiComponent } from './component/jodi/jodi.component';
 import { PenalComponent } from './component/penal/penal.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: '', redirectTo: '/', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
     { path: 'chart-report', component: JodiComponent },
-    { path: 'penal', component: PenalComponent },
-    { path: '**', redirectTo: '/home' }
+    { path: 'today-report', component: PenalComponent },
+    { path: '**', redirectTo: '/' }
 ];
