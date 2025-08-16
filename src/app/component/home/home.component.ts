@@ -2,15 +2,19 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { MarqureeComponent } from '../marquree/marquree.component';
 import { CommonModule, NgFor } from '@angular/common';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HeaderComponent, MarqureeComponent, NgFor, CommonModule],
+  imports: [HeaderComponent, MarqureeComponent, NgFor, CommonModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
+   constructor(private router: Router) {}
+   
    chartData = [
     {
       day: 'सोम',
@@ -83,10 +87,6 @@ export class HomeComponent {
     { time1: '09:05 AM', result1: '338-4', time2: '03:05 PM', result2: '338-4' },
   ];
 
-  ngOnInit(): void {
-   
-  }
-
    cards = [
     {
       title: 'Milan Morning',
@@ -104,4 +104,8 @@ export class HomeComponent {
     },
     // Repeat as needed
   ];
+
+  openChart() {
+    this.router.navigate(['/admin']);
+  }
 }
