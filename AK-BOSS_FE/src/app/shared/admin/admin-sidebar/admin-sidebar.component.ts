@@ -59,7 +59,7 @@ export class AdminSidebarComponent {
   {
     "img": "gamepad",
     "text": "Add Games",
-    "href":"/admin/home",
+    "href":"/admin/add-game",
     "active": false
   },
   {

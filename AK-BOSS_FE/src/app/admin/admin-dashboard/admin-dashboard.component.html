@@ -16,7 +16,7 @@
                         </div>
                         <div class="right">
                             <div class="badge" [style.background]="data.color">
-                                <img src="/assets/admin-dashboard/icons/triangle.svg" alt="">
+                                <img src="/assets/images/dashboard/icons/triangle.svg" alt="">
                                 {{data.percentage}}
                             </div>
                             <div class="compare">
@@ -27,43 +27,43 @@
                 </div>
     
             </div>
-            <div class="flex px-4 py-4 justify-between border-t-1 border-b-1 border-[#FB8500]">
+            <div class="flex px-4 py-4 justify-between border-t-2 border-b-2 border-[#FB8500]">
                 <div class="flex gap-x-4 items-center">
                     <h5 class="font-bold">Show</h5>
-                    <div class="border-1 border-[#219EBC] rounded-sm px-2 py-2">
+                    <div class="border-2 border-[#219EBC] rounded-sm px-2 py-2">
                         <select name="page" class="px-2" id="">
                             <option value="20">20</option>
                             <option value="20">20</option>
                         </select>
                     </div>
                     <div class="relative">
-                        <input class="checkbox" type="text" class="border-1 border-[#219EBC] rounded-sm px-4 py-2"
+                        <input class="checkbox" type="text" class="border-2 border-[#219EBC] rounded-sm px-4 py-2"
                             placeholder="Search Anything....">
-                        <img src="/assets/admin-dashboard/icons/search.svg"
-                            class="absolute right-2 top-[50%] -translate-[50%]" alt="">
+                        <img src="/assets/images/dashboard/icons/search-theme.svg"
+                            class="absolute right-2 top-[50%] translate-y-[-50%]" alt="">
                     </div>
                 </div>
                 <div class="flex gap-x-2">
                     <button
-                        class="rounded-sm flex justify-between items-center text-[14px] border-1 border-[#219EBC] px-4 py-1 font-[500] gap-x-2"
+                        class="rounded-sm flex justify-between items-center text-[14px] border-2 border-[#219EBC] px-4 py-1 font-[500] gap-x-2"
                         style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);">
-                        <img src="/assets/admin-dashboard/icons/download.svg" alt="">
+                        <img src="/assets/images/dashboard/icons/download.svg" alt="">
                         <div>
                             Download
                         </div>
                     </button>
                     <button
-                        class="rounded-sm flex justify-between items-center text-[14px] border-1 border-[#219EBC] px-4 py-1 font-[500] gap-x-2"
+                        class="rounded-sm flex justify-between items-center text-[14px] border-2 border-[#219EBC] px-4 py-1 font-[500] gap-x-2"
                         style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);">
-                        <img src="/assets/admin-dashboard/icons/create.svg" alt="">
+                        <img src="/assets/images/dashboard/icons/create.svg" alt="">
                         <div>
                             Create
                         </div>
                     </button>
                     <button
-                        class="rounded-sm flex justify-between items-center text-[14px] border-1 border-[#219EBC] px-4 py-1 font-[500] gap-x-2"
+                        class="rounded-sm flex justify-between items-center text-[14px] border-2 border-[#219EBC] px-4 py-1 font-[500] gap-x-2"
                         style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);">
-                        <img src="/assets/admin-dashboard/icons/delete.svg" alt="">
+                        <img src="/assets/images/dashboard/icons/delete.svg" alt="">
                         <div>
                             Delete
                         </div>
@@ -105,7 +105,7 @@
                                 <button class="view-btn flex items-center">
                                     View
                                     <span class="arrow">
-                                        <img src="/assets/icons/arrow-left-white.svg" class="rotate-[90deg] w-[15px]"
+                                        <img src="/assets/images/icons/arrow-left-white.svg" class="rotate-[90deg] w-[15px]"
                                             alt="" />
                                     </span>
                                 </button>
@@ -122,14 +122,14 @@
                     Showing 1-20 of 70 results
                 </div>
                 <div class="flex gap-x-2 items-center">
-                    <img src="/assets/icons/arrow-left-white.svg" class="w-[15px] rotate-[-180deg]" alt="">
+                    <img src="/assets/images/icons/arrow-left-white.svg" class="w-[15px] rotate-[-180deg]" alt="">
                     <span *ngFor="let i of [1,2,3,4,5,6]" class="text-white -translate-y-[2px]">{{i}}</span>
-                    <img src="/assets/icons/arrow-left-white.svg" class="w-[15px] rotate-[0deg]" alt="">
+                    <img src="/assets/images/icons/arrow-left-white.svg" class="w-[15px] rotate-[0deg]" alt="">
                 </div>
                 <div class="flex gap-x-2 items-center">
                     <span class="text-white">Items per page</span>
-                    <div class="border-1 border-white text-white rounded-sm px-2 py-2">
-                        <select name="page" class="px-2" id="">
+                    <div class="border-2 border-white text-white rounded-sm px-2 py-2">
+                        <select name="page" class="px-2 bg-transparent" id="">
                             <option value="20">20</option>
                             <option value="20">20</option>
                         </select>
