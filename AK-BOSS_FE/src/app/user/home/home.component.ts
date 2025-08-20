@@ -108,10 +108,10 @@ constructor(private router: Router) {}
   }
 
    chartReport() {
-   this.router.navigate(['/chart-report']);
+   this.router.navigate(['/user/chart-report']);
   }
 
    todayReport() {
-    this.router.navigate(['/today-report']);
+    this.router.navigate(['/user/today-report']);
   }
 }

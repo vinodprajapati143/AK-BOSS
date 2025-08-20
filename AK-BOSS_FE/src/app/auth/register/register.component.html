@@ -1,10 +1,10 @@
 <div class="max-h-[1080px] min-h-[600px] flex items-center w-full">
-    <div class="bg-gradient-to-r from-white to-red-100 w-full">
-        <div class="flex min-h-[100vh] md:flex-row bg-white shadow-lg overflow-hidden">
+    <div class="from-white to-red-100 w-full">
+        <div class="flex min-h-[100vh] md:flex-row shadow-lg overflow-hidden">
             <!-- Register Form Section -->
-            <div class="p-4 w-full flex justify-center items-center">
+            <div class="bg-color p-4 w-full flex justify-center items-center">
                 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()"
-                    class="bg-[#AEAEAE1A] z-[2] rounded-[10px] md:w-3/4 backdrop-blur-[4px] md:py-[25px] md:px-[50px] p-[30px]">
+                    class="bg-color z-[2] rounded-[10px] md:w-1/2 backdrop-blur-[4px] md:py-[25px] md:px-[50px] p-[30px]">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="md:text-[30px] text-3xl font-bold">Register</h2>
                         <img onclick="window.location.href='home'" src="/assets/images/logo.svg"
@@ -60,10 +60,13 @@
 
                     <p class="text-center text-sm border-[1px] border-[#FF8181] cursor-pointer rounded-full py-2 mt-4">
                         I have an account
-                        <a [routerLink]="['/auth/login']" class="text-red-500 font-bold">Login</a>
+                        <a [routerLink]="['/auth/login']" class="text-white font-bold">Login</a>
                     </p>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
+
