@@ -7,8 +7,7 @@
                     class="bg-color z-[2] rounded-[10px] md:w-1/2 backdrop-blur-[4px] md:py-[25px] md:px-[50px] p-[30px]">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="md:text-[30px] text-3xl font-bold">Register</h2>
-                        <img onclick="window.location.href='home'" src="/assets/images/logo.svg"
-                            class="w-[120px] md:hidden block cursor-pointer" />
+                        <img  (click)="goBack()" src="assets/images/close.png" alt="Logo" class="w-[26px] h-[26px] cursor-pointer">
                     </div>
 
                     <label class="block text-gray-700">Enter your name</label>

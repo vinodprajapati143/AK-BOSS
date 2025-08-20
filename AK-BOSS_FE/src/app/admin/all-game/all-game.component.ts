@@ -40,6 +40,16 @@ export class AllGameComponent {
     "active": false
   },
   {
+    "img": "help",
+    "text": "Help",
+    "active": false
+  },
+  {
+    "img": "help",
+    "text": "Help",
+    "active": false
+  },
+  {
     "img": "logout",
     "text": "LogOut",
     "active": false
@@ -51,6 +61,21 @@ export class AllGameComponent {
     "active": true
   },
   {
+    "img": "gamepad",
+    "text": "Add Games",
+    "active": false
+  },
+   {
+    "img": "gamepad",
+    "text": "Add Games",
+    "active": false
+  },
+   {
+    "img": "gamepad",
+    "text": "Add Games",
+    "active": false
+  },
+   {
     "img": "gamepad",
     "text": "Add Games",
     "active": false

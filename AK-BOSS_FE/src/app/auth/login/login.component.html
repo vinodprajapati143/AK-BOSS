@@ -7,9 +7,9 @@
                     class="bg-color z-[2] rounded-[10px] max-w-auto lg:min-w-[540px] mbackdrop-blur-[10px] md:p-[54px] p-[30px]">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="md:text-[40px] text-3xl font-bold">Login</h2>
-                        <img onclick="window.location.href='home'" src="/assets/images/logo.svg"
-                            class="w-[150px] md:hidden block" />
+                        <img  (click)="goBack()" src="assets/images/close.png" alt="Logo" class="w-[26px] h-[26px] cursor-pointer">
                     </div>
+
                     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full">
 
                         <label class="block text-black font-[500] mt-4">Enter your phone number</label>

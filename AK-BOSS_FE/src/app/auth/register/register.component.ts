@@ -104,24 +104,27 @@ export class RegisterComponent {
     return 'server'; // SSR ke case me
   }
 
+    goBack(){
+    this.router.navigate(['/user/home']); 
+  }
   onSubmit() {
-    // this.backendservice.register(this.registerForm.value).subscribe({
-    //   next: (res) => {
-    //     if(res){
-    //       const response = res as { message: string }; // Type assertion
-    //       if (response) {
-    //         this.toaster.success(response.message);
-    //         this.registerForm.reset();
-    //         this.router.navigate(['/login']);
-    //       }
+    this.backendservice.register(this.registerForm.value).subscribe({
+      next: (res) => {
+        if(res){
+          const response = res as { message: string }; // Type assertion
+          if (response) {
+            this.toaster.success(response.message);
+            this.registerForm.reset();
+            this.router.navigate(['/auth/login']);
+          }
 
-    //     }
-    //   },
-    //   error: (err) => {
-    //     console.log('err: ', err);
-    //     const error = err.error as { message: string }; // Type assertion
-    //     this.toaster.error(error.message);
-    //   },
-    // });
+        }
+      },
+      error: (err) => {
+        console.log('err: ', err);
+        const error = err.error as { message: string }; // Type assertion
+        this.toaster.error(error.message);
+      },
+    });
   }
 }

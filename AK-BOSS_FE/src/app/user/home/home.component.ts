@@ -104,7 +104,7 @@ constructor(private router: Router) {}
   ];
 
   openChart() {
-    this.router.navigate(['/admin']);
+    this.router.navigate(['/admin/users']);
   }
 
    chartReport() {
