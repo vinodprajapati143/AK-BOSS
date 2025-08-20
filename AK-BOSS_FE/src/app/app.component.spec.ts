@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'AK-BOSS_FE' title`, () => {
+  it(`should have the 'AK-BOSS' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('AK-BOSS_FE');
+    expect(app.title).toEqual('AK-BOSS');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, AK-BOSS_FE');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, AK-BOSS');
   });
 });

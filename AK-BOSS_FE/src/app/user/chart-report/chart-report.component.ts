@@ -1,0 +1,18 @@
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { HeaderComponent } from '../../shared/header/header.component';
+import { MarqureeComponent } from '../../shared/marquree/marquree.component';
+
+@Component({
+  selector: 'app-chart-report',
+  standalone: true,
+  imports: [ MarqureeComponent, CommonModule, HeaderComponent],
+  templateUrl: './chart-report.component.html',
+  styleUrl: './chart-report.component.scss'
+})
+export class ChartReportComponent {
+
+   goBack() {
+    window.history.back();
+  }
+}

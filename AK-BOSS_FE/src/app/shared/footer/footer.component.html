@@ -1,0 +1,52 @@
+<div class="fixed bottom-0 w-full">
+  <!-- Bottom Nav Background -->
+  <div class="relative bg-gradient-to-r from-teal-700 to-cyan-700 border border-white rounded-t-xl">
+    <div class="relative flex justify-around items-center h-16 text-white text-2xl z-10">
+      
+      <!-- Home -->
+      <button (click)="setActive('home')" class="relative">
+        <div *ngIf="active==='home'"
+             class="absolute -top-10 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full 
+             bg-gradient-to-r from-cyan-600 to-teal-600 border-2 border-white 
+             flex items-center justify-center shadow-xl">
+          <i class="fas fa-home"></i>
+        </div>
+        <i *ngIf="active!=='home'" class="fas fa-home text-white/80"></i>
+      </button>
+
+      <!-- Wallet -->
+      <button (click)="setActive('wallet')" class="relative">
+        <div *ngIf="active==='wallet'"
+             class="absolute -top-10 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full 
+             bg-gradient-to-r from-cyan-600 to-teal-600 border-2 border-white 
+             flex items-center justify-center shadow-xl">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <i *ngIf="active!=='wallet'" class="fas fa-wallet text-white/80"></i>
+      </button>
+
+      <!-- Docs -->
+      <button (click)="setActive('docs')" class="relative">
+        <div *ngIf="active==='docs'"
+             class="absolute -top-10 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full 
+             bg-gradient-to-r from-cyan-600 to-teal-600 border-2 border-white 
+             flex items-center justify-center shadow-xl">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <i *ngIf="active!=='docs'" class="fas fa-file-alt text-white/80"></i>
+      </button>
+
+      <!-- User -->
+      <button (click)="setActive('user')" class="relative">
+        <div *ngIf="active==='user'"
+             class="absolute -top-10 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full 
+             bg-gradient-to-r from-cyan-600 to-teal-600 border-2 border-white 
+             flex items-center justify-center shadow-xl">
+          <i class="fas fa-user"></i>
+        </div>
+        <i *ngIf="active!=='user'" class="fas fa-user text-white/80"></i>
+      </button>
+
+    </div>
+  </div>
+</div>
