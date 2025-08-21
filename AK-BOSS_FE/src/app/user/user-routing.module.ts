@@ -8,7 +8,7 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'admin', component: UserDashboardComponent },
+  { path: 'dashboard', component: UserDashboardComponent },
   { path: 'chart-report', component: ChartReportComponent },
   { path: 'today-report', component: PenalReportComponent },
 ];
