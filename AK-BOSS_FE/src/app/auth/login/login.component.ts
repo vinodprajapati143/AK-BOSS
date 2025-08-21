@@ -123,7 +123,13 @@ export class LoginComponent {
           this.storageService.setItem('authToken', res.token);
         }
         this.toastr.success('Login successful!');
-        this.router.navigate(['/user/admin']);
+        if(res.data.registerType === "admin"){
+          this.router.navigate(['/admin/users']);
+        }
+        else{
+          this.router.navigate(['/user/home']);
+
+        }
       },
       error: (err) => {
         this.loading = false;

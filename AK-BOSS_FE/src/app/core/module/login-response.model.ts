@@ -3,6 +3,7 @@ export interface LoginResponse {
   message: string;
   token: string;
   data: {
+    registerType: any;
     id: number;
     username: string;
     phone: string;
