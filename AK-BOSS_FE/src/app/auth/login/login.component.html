@@ -14,7 +14,7 @@
 
                         <label class="block text-black font-[500] mt-4">Enter your phone number</label>
                         <div class="flex gap-x-2 mt-[14px]">
-                            <div class="border rounded-lg px-2 min-w-[80px] flex items-center">
+                            <div class="border border-black rounded-lg px-2 min-w-[80px] flex items-center">
                                 <select formControlName="countryCode"
                                     class="bg-transparent focus:outline-none h-[45px] w-full font-bold">
                                     <option value="+91">+91</option>
@@ -22,9 +22,9 @@
                                     <option value="+92">+92</option>
                                 </select>
                             </div>
-                            <div class="border rounded-lg w-full">
+                            <div class="rounded-lg w-full">
                                 <input formControlName="phone" type="tel" maxlength="10" (keypress)="allowOnlyNumbers($event)" (paste)="blockPaste($event)" pattern="[0-9]{10}" placeholder="Enter your number..."
-                                    class="md:h-[54px] h-[45px]  px-2 focus:outline-none w-full" />
+                                    class="md:h-[54px] h-[45px] border-black rounded-lg border px-2 focus:outline-none w-full" />
                             </div>
                         </div>
 
@@ -32,7 +32,7 @@
                             <label class="block text-black font-[500]">Password</label>
                             <input [type]="password ? 'text' : 'password'" id="password-input" formControlName="pwd"
                                 placeholder="Enter your password"
-                                class="w-full border rounded-lg p-2 md:h-[54px] h-[45px] mt-[14px] pr-10 focus:outline-none" />
+                                class="w-full border border-black rounded-lg p-2 md:h-[54px] h-[45px] mt-[14px] pr-10 focus:outline-none" />
                             <!-- Eye Icon Button -->
                             <button (click)="toggleVisibility()" type="button"
                                 class="absolute top-[44%] right-[18px] translate-y-[44%] text-[var(--primary-text-color)]">

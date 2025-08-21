@@ -1,10 +1,9 @@
 <div class="max-h-[1080px] min-h-[600px] flex items-center w-full">
     <div class="from-white to-red-100 w-full">
         <div class="flex min-h-[100vh] md:flex-row shadow-lg overflow-hidden">
-            <!-- Register Form Section -->
             <div class="bg-color p-4 w-full flex justify-center items-center">
                 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()"
-                    class="bg-color z-[2] rounded-[10px] md:w-1/2 backdrop-blur-[4px] md:py-[25px] md:px-[50px] p-[30px]">
+                    class="bg-color z-[2] rounded-[10px] md:w-[40%]  max-w-auto backdrop-blur-[4px] md:py-[25px] md:px-[40px] p-[30px]">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="md:text-[30px] text-3xl font-bold">Register</h2>
                         <img  (click)="goBack()" src="assets/images/close.png" alt="Logo" class="w-[26px] h-[26px] cursor-pointer">
@@ -12,11 +11,11 @@
 
                     <label class="block text-gray-700">Enter your name</label>
                     <input type="text" formControlName="username" placeholder="Please enter your name"
-                        class="w-full h-[45px] border rounded-lg p-2 mt-2 focus:outline-none" />
+                        class="w-full h-[45px] border  rounded-lg p-2 mt-2 focus:outline-none" />
 
                     <label class="block text-gray-700 mt-4">Enter your phone number</label>
                     <div class="flex gap-x-2 mt-[14px]">
-                        <div class="border rounded-lg px-2 min-w-[80px] flex items-center">
+                        <div class="border border-black rounded-lg px-2 min-w-[80px] flex items-center">
                             <select formControlName="countryCode"
                                 class="bg-transparent focus:outline-none h-[45px] w-full font-bold">
                                 <option value="+91">+91</option>
@@ -27,7 +26,7 @@
                         <div class="border rounded-lg w-full">
                             <input type="tel" maxlength="10" (keypress)="allowOnlyNumbers($event)"
                                 (paste)="blockPaste($event)" pattern="[0-9]{10}" formControlName="phone"
-                                placeholder="Enter your number..." class="h-[45px] px-2 focus:outline-none w-full" />
+                                placeholder="Enter your number..." class="h-[45px] px-2 rounded-lg focus:outline-none w-full" />
                         </div>
                     </div>
 
@@ -36,7 +35,6 @@
                         <input [type]="password ? 'text' : 'password'" id="password-input" formControlName="pwd"
                             placeholder="Enter your password"
                             class="w-full border rounded-lg p-2 md:h-[54px] h-[45px] mt-[14px] pr-10 focus:outline-none" />
-                        <!-- Eye Icon Button -->
                         <button (click)="toggleVisibility()" type="button"
                             class="absolute top-[44%] right-[18px] translate-y-[44%] text-[var(--primary-text-color)]">
                             <i id="eye-icon" class="fa fa-eye-slash"></i>
@@ -57,7 +55,7 @@
                         Register now
                     </button>
 
-                    <p class="text-center text-sm border-[1px] border-[#FF8181] cursor-pointer rounded-full py-2 mt-4">
+                    <p class="text-center text-sm border-[1px] border-[#000] cursor-pointer rounded-full py-2 mt-4">
                         I have an account
                         <a [routerLink]="['/auth/login']" class="text-white font-bold">Login</a>
                     </p>
@@ -66,6 +64,4 @@
         </div>
     </div>
 </div>
-
-
 
