@@ -154,6 +154,7 @@ submit() {
 
   this.backendservice.resetPass(payload).subscribe({
       next: (res: any) => {
+        console.log('res: ', res);
         if (res.success) {
           this.toastr.success(res.message)
           this.router.navigate(['/login']);
@@ -161,6 +162,9 @@ submit() {
           this.showOtpSection = false; // back to login or initial screen
         } else {
           this.toastr.error(res.message)
+          if(res){
+
+          }
 
         }
       },
