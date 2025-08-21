@@ -157,7 +157,7 @@ submit() {
         console.log('res: ', res);
         if (res.success) {
           this.toastr.success(res.message)
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
 
           this.showOtpSection = false; // back to login or initial screen
         } else {

@@ -6,26 +6,33 @@ const authRoutes = require('./routes/authRoutes');
 dotenv.config();
 const app = express();
 
-// ✅ CORRECT CORS SETUP — PLACE AT TOP
-
 const allowedOrigins = [
-  'http://localhost:4200',   // ✅ Local Angular dev
-  'https://ak247pro.com'     // ✅ Production
+  'http://localhost:4200',
+  'https://ak247pro.com'
 ];
+
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow non-browser clients like Postman
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS not allowed'), false);
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
   },
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 
-// ✅ Preflight handle
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
