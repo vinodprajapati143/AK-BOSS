@@ -163,6 +163,7 @@ exports.loginUser = async (req, res) => {
     const tokenPayload = {
       id: user.id,
       username: user.username || user.phone,
+      registerType: user.registerType,
     };
 
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
@@ -177,6 +178,7 @@ exports.loginUser = async (req, res) => {
         id: user.id,
         username: user.username,
         phone: user.phone,
+        registerType: user.registerType,
         countryCode,
         phonetype,
         logintype,

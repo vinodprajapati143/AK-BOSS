@@ -3,14 +3,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../core/services/api.service';
 import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, HttpClientModule, CommonModule,RouterModule],
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule,RouterModule,ToastrModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -112,6 +112,7 @@ export class RegisterComponent {
       next: (res) => {
         if(res){
           const response = res as { message: string }; // Type assertion
+          console.log('response: ', response);
           if (response) {
             this.toaster.success(response.message);
             this.registerForm.reset();
@@ -121,9 +122,8 @@ export class RegisterComponent {
         }
       },
       error: (err) => {
-        console.log('err: ', err);
-        const error = err.error as { message: string }; // Type assertion
-        this.toaster.error(error.message);
+        const error = err.data.error; // Type assertion
+        this.toaster.error(error);
       },
     });
   }
