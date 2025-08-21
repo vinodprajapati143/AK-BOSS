@@ -231,7 +231,7 @@ exports.sendForgotOtp = async (req, res) => {
     // 3️⃣ Send OTP via WhatsApp (Sarobotic API)
     const apiKey = process.env.SAROBOTIC_API_KEY;
     const message = encodeURIComponent(
-      `Well Come To Ak247Pro.Online\n\nYour OTP is ${otp}. It will expire in ${expiryMinutes} minutes.`
+      `Well Come To ak247pro.com \n\nYour OTP is ${otp}. It will expire in ${expiryMinutes} minutes.`
     );
 
     const url = `https://www.sarobotic.in/api/whatsapp/send?contacts=${countryCode}${phone}&message=${message}`;
