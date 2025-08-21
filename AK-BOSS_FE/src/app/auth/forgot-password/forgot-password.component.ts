@@ -158,18 +158,21 @@ submit() {
         if (res.success) {
           this.toastr.success(res.message)
           this.router.navigate(['/auth/login']);
-
           this.showOtpSection = false; // back to login or initial screen
         } else {
           this.toastr.error(res.message)
-          if(res){
-
+          if(res.success == false && res.message === "OTP expired"){
+            this.showOtpSection = false;
           }
 
         }
       },
       error: (err) => {
         this.toastr.error(err.data.message)
+
+          if(err.data.success == false && err.data.message === "OTP expired"){
+            this.showOtpSection = false;
+          }
       }
     });
 }
