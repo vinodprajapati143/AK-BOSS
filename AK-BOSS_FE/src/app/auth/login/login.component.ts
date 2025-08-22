@@ -127,8 +127,7 @@ export class LoginComponent {
           this.router.navigate(['/admin/users']);
         }
         else{
-          this.router.navigate(['/user/home']);
-
+          this.router.navigate(['/user/dashboard']);
         }
       },
       error: (err) => {
