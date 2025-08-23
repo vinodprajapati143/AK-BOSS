@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const gameRoutes = require('./routes/gameRoutes');
+
 
 dotenv.config();
 const app = express();
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use("/api/games", gameRoutes);
  // 🔁 Ping Pong route
 app.get('/ping', (req, res) => {
   res.send('pong');
