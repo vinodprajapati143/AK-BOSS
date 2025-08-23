@@ -26,6 +26,18 @@ export class AdminSidebarComponent {
     "active": true
   },
   {
+    "img": "gamepad",
+    "href": "/admin/all-games",
+    "text": "Game",
+    "active": false
+  },
+  {
+    "img": "referral",
+    "href": "/admin/users",
+    "text": "Members",
+    "active": false
+  },
+  {
     "img": "report",
     "href": "#",
     "text": "Reports",
@@ -49,37 +61,20 @@ export class AdminSidebarComponent {
     "text": "LogOut",
     "active": false
   }]
-  
+
   subLinks = [{
     "img": "gamepad",
     "text": "All Game",
-    "href":"/admin/all-game",
+    "href": "/admin/all-game",
     "active": true
   },
   {
     "img": "gamepad",
     "text": "Add Games",
-    "href":"/admin/add-game",
+    "href": "/admin/add-game",
     "active": false
   },
-  {
-    "img": "referral",
-    "text": "Referral",
-    "href":"/admin/home",
-    "active": false
-  },
-  {
-    "img": "help",
-    "text": "Help",
-    "href":"/admin/home",
-    "active": false
-  },
-  {
-    "img": "logout",
-    "text": "LogOut",
-    "href":"/admin/home",
-    "active": false
-  }]
+  ]
   cardsData = [
     {
       title: 'Total users',
