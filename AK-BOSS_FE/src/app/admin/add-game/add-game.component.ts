@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../core/services/api.service';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-game',
   standalone: true,
-  imports: [AdminSidebarComponent, CommonModule, FormsModule,ReactiveFormsModule],
+  imports: [AdminSidebarComponent, CommonModule, FormsModule,ReactiveFormsModule,ToastrModule],
   templateUrl: './add-game.component.html',
   styleUrl: './add-game.component.scss'
 })
@@ -28,7 +29,7 @@ export class AddGameComponent {
   selectAll: boolean = false;
   gameForm: FormGroup;
 
-    constructor(private fb: FormBuilder, private http: HttpClient ,private apiService:ApiService) {
+    constructor(private fb: FormBuilder, private http: HttpClient ,private apiService:ApiService, private toastr:ToastrService) {
     this.gameForm = this.fb.group({
       game_name: [''],
       open_time: [''],
@@ -64,15 +65,14 @@ export class AddGameComponent {
     saveGame() {
     const payload = this.gameForm.value;
     payload.days = this.selectedDays
-    console.log("Payload to backend:", payload);
 
     this.apiService.addGame(payload).subscribe({
      next: (res:any) =>{
-      console.log("Game saved successfully", res)
+        this.toastr.success(res.message);
+        this.addGamePopupOpen =false;
      },
      error : (err:any) =>{
-      console.log("Game err", err)
-
+      this.toastr.success(err.message);
      }
     });
   }
