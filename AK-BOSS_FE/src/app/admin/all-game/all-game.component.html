@@ -15,25 +15,25 @@
                 <h4>Coming soon result</h4>
             </div>
             <div>
-                <div *ngFor="let i of [0,1,2,3,4]" class="game flex relative">
+                <div *ngFor="let game of games" class="game flex relative">
                     <div class="w-[130px]">
                         <div
                             class="text-white font-bold bg-[#20A2A0] h-[120px] px-4 flex justify-center items-center absolute -top-[20px] rounded-tl-[20px] rounded-br-[20px] rotate-[5deg] name">
-                            <span class="-rotate-[5deg]">KALYAN</span>
+                            <span class="-rotate-[5deg]">{{ game.game_name }}</span>
                         </div>
                     </div>
                     <div>
                         <div class="time">
                             <div>
-                                00
+                            {{ formatTime(game.openCountdown).split(':')[0] }}
                             </div>
                             :
                             <div>
-                                00
+                             {{ formatTime(game.openCountdown).split(':')[1] }}
                             </div>
                             :
                             <div>
-                                00
+                            {{ formatTime(game.openCountdown).split(':')[2] }}
                             </div>
                         </div>
                         <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Open</h5>
@@ -59,17 +59,9 @@
                     </div>
                     <div>
                         <div class="time">
-                            <div>
-                                00
-                            </div>
-                            :
-                            <div>
-                                00
-                            </div>
-                            :
-                            <div>
-                                00
-                            </div>
+                           <div>{{ formatTime(game.closeCountdown).split(':')[0] }}</div> :
+                            <div>{{ formatTime(game.closeCountdown).split(':')[1] }}</div> :
+                            <div>{{ formatTime(game.closeCountdown).split(':')[2] }}</div>
                         </div>
                         <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Closed</h5>
                     </div>
@@ -81,26 +73,26 @@
                 <h4>All Game result</h4>
             </div>
             <div>
-                <div *ngFor="let i of [0,1,2,3]" class="game flex relative bg-[#20A2A0] type-2">
+                <div *ngFor="let game of allGames" class="game flex relative bg-[#20A2A0] type-2">
                     <div class="name-2">
                         <div>
-                            <span>KALYAN</span>
+                            <span>{{ game.game_name }}</span>
                         </div>
                     </div>
                     <div class="right">
                         <div>
                             <div class="time">
-                                <div>
-                                    00
-                                </div>
-                                :
-                                <div>
-                                    00
-                                </div>
-                                :
-                                <div>
-                                    00
-                                </div>
+                            <div>
+                            {{ formatTime(game.openCountdown).split(':')[0] }}
+                            </div>
+                            :
+                            <div>
+                             {{ formatTime(game.openCountdown).split(':')[1] }}
+                            </div>
+                            :
+                            <div>
+                            {{ formatTime(game.openCountdown).split(':')[2] }}
+                            </div>
                             </div>
                             <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Open</h5>
                         </div>
@@ -125,17 +117,9 @@
                         </div>
                         <div>
                             <div class="time">
-                                <div>
-                                    00
-                                </div>
-                                :
-                                <div>
-                                    00
-                                </div>
-                                :
-                                <div>
-                                    00
-                                </div>
+                                     <div>{{ formatTime(game.closeCountdown).split(':')[0] }}</div> :
+                            <div>{{ formatTime(game.closeCountdown).split(':')[1] }}</div> :
+                            <div>{{ formatTime(game.closeCountdown).split(':')[2] }}</div>
                             </div>
                             <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Closed</h5>
                         </div>

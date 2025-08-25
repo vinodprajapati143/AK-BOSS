@@ -10,3 +10,12 @@ export class CustomError implements Error {
     this.data = data;
   }
 }
+
+export interface Game {
+  closeCountdown: number;
+  openCountdown: number;
+  id: number;
+  game_name: string;
+  open_time: string;
+  close_time: string;
+}

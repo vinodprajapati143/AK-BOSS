@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, switchMap, timer } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 import { LoginResponse } from '../module/login-response.model';
+import { Game } from '../module/models';
 
 @Injectable({
   providedIn: 'root'
@@ -40,5 +41,12 @@ constructor(private http: HttpClient) {}
   }
   getUsers() {
    return this.http.get(`${this.baseUrl}/api/users/user-list`,{ withCredentials: true });
+  }
+
+    getNearestGames(): Observable<Game[]> {
+    return timer(0, 30_000).pipe(
+      switchMap(() => this.http.get<{success:boolean,data: Game[]}>(`${this.baseUrl}/api/games/nearest-game-list`,{ withCredentials: true })),
+      switchMap(res => [res.data])
+    );
   }
 }
