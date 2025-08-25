@@ -6,5 +6,7 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 // Only admin can add games
 router.post("/add-game", verifyToken, gameController.addGame);
 router.get("/game-list",verifyToken, gameController.getGameList);
+router.get("/nearest-game-list",verifyToken, gameController.getGameList);
+
 
 module.exports = router;

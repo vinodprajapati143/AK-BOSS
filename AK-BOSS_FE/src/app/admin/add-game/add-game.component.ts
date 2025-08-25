@@ -80,7 +80,7 @@ export class AddGameComponent implements OnInit {
 
      },
      error : (err:any) =>{
-      this.toastr.success(err.message);
+      this.toastr.error(err.data.message);
      }
     });
   }

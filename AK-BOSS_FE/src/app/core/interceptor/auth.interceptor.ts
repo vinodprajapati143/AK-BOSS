@@ -39,11 +39,9 @@ export const AppInterceptor: HttpInterceptorFn = (request, next) => {
 
   return next(modifiedRequest).pipe(
     tap((response) => {
-      console.log('response: ', response);
       if (response instanceof HttpResponse) {
         // Extract the JSON data and return it
         const jsonData = response.body as CustomError;
-        console.log('jsonData: ', jsonData);
         if (jsonData && jsonData.code && jsonData.code == 200) {
           return jsonData.data;
         } else if (jsonData && jsonData.code && jsonData.code == 401) {
@@ -60,7 +58,6 @@ export const AppInterceptor: HttpInterceptorFn = (request, next) => {
 
     }),
     catchError((error: HttpErrorResponse) => {
-      console.log('error: ', error);
       if (error && error.headers && !error.headers.get('content-type')?.includes('application/json')) {
         return throwError(() => new CustomError(error.statusText ?? "Response format not recognized", error.status, null));
       }
