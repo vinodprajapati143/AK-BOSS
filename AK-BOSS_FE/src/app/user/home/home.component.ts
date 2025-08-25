@@ -3,10 +3,11 @@ import { NgFor, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { MarqureeComponent } from '../../shared/marquree/marquree.component';
+import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating-buttons.component";
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgFor, CommonModule, RouterModule, HeaderComponent, MarqureeComponent],
+  imports: [NgFor, CommonModule, RouterModule, HeaderComponent, MarqureeComponent, FloatingButtonsComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

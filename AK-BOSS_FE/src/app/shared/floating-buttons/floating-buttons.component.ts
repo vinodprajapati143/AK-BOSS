@@ -9,8 +9,8 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class FloatingButtonsComponent {
   constructor(private router: Router) { }
-  openChart() {
-    this.router.navigate(['/admin/users']);
+  refresh() {
+    window.location.reload();
   }
 
   chartReport() {
