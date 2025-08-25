@@ -4,6 +4,7 @@ require('dotenv').config();
 
 exports.verifyToken = (req, res, next) => {
   const token = req.headers['authorization'];
+  console.log('token: ', token);
 
   if (!token)
     return res.status(401).json({ message: 'Access denied. Token missing.' });
