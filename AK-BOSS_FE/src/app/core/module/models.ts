@@ -12,6 +12,19 @@ export class CustomError implements Error {
 }
 
 export interface Game {
+patte2: any;
+patte2_close: any;
+patte1_open: any;
+patte1: any;
+  closeTimerStarted: boolean;
+  closeTime: number;
+  closeWindowStart: number;
+  closeInputEnabled: boolean;
+  openInputEnabled: boolean;
+  openTimerStarted: boolean;
+  openTime: number;
+  openWindowStart: number;
+  submitted: any;
   closeCountdown: number;
   openCountdown: number;
   id: number;

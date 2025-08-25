@@ -38,25 +38,20 @@
                         </div>
                         <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Open</h5>
                     </div>
-                    <div class="game-detail">
-                        <div class="box">
+                  <div class="game-detail">
+                                <input type="text" id="patte1" class="box w-[100px] " [(ngModel)]="game.patte1" [readonly]="!game.openInputEnabled">
 
-                        </div>
-                        <span></span>
-                        <div class="flex gap-x-2">
-                            <div class="box">
-
-                            </div>
-                            <div class="box">
+                            <span></span>
+                            <div class="flex gap-x-2">
+                                <input type="text" id="patte1_open" class="box w-[50px]" [(ngModel)]="game.patte1_open" [readonly]="!game.openInputEnabled">
+                                <input type="text" id="patte2_close" class="box w-[50px]" [(ngModel)]="game.patte2_close" [readonly]="!game.closeInputEnabled">
 
                             </div>
-                        </div>
-                        <span></span>
-                        <div class="box">
+                            <span></span>
+                                <input type="text" id="patte2" class="box w-[100px]" [(ngModel)]="game.patte2" [readonly]="!game.closeInputEnabled">
+
 
                         </div>
-
-                    </div>
                     <div>
                         <div class="time">
                            <div>{{ formatTime(game.closeCountdown).split(':')[0] }}</div> :
@@ -65,7 +60,10 @@
                         </div>
                         <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Closed</h5>
                     </div>
-                    <div class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4">Submit</div>
+
+                    <button  class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4" (click)="submitGame(game)">
+                        Submit
+                    </button>
                 </div>
             </div>
             <div class="head center">
@@ -97,22 +95,17 @@
                             <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Open</h5>
                         </div>
                         <div class="game-detail">
-                            <div class="box">
+                                <input type="text" class="box w-[100px]">
 
-                            </div>
                             <span></span>
                             <div class="flex gap-x-2">
-                                <div class="box">
+                                <input type="text" class="box w-[50px]">
+                                <input type="text" class="box w-[50px]">
 
-                                </div>
-                                <div class="box">
-
-                                </div>
                             </div>
                             <span></span>
-                            <div class="box">
+                                <input type="text" class="box w-[100px]">
 
-                            </div>
 
                         </div>
                         <div>
