@@ -57,11 +57,11 @@
                 </thead>
                 <tbody>
                     <!-- Repeat this row as needed -->
-                    <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]" class="text-center">
-                        <td>{{i}}</td>
-                        <td>Main Bazar</td>
-                        <td>09:50:00pm</td>
-                        <td>11:55:00pm</td>
+                    <tr *ngFor="let game of games; let i = index" class="text-center">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ game.name }}</td>
+                        <td>{{ game.open_time }}</td>
+                        <td>{{ game.close_time }}</td>
                         <td align="center">
                             <button class="btn-delete">
                                 <div class="flex items-center gap-x-2">

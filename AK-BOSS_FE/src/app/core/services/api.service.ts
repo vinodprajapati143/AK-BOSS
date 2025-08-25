@@ -35,4 +35,7 @@ constructor(private http: HttpClient) {}
   addGame(gameData: any) {
    return this.http.post(`${this.baseUrl}/api/games/add-game`, gameData,{ withCredentials: true });
   }
+  getGames() {
+   return this.http.get(`${this.baseUrl}/api/games/game-list`,{ withCredentials: true });
+  }
 }

@@ -3,20 +3,20 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 exports.verifyToken = (req, res, next) => {
-  let token = req.headers['authorization'];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.split(" ")[1]; // "Bearer <token>" se sirf token nikal liya
   console.log('token: ', token);
 
-  if (!token)
-    return res.status(401).json({ message: 'Access denied. Token missing.' });
-  // Agar token "Bearer <token>" form me hai to sirf token part nikalo
-  if (token.startsWith("Bearer ")) {
-    token = token.slice(7, token.length); // "Bearer " ke baad ka part
+  if (!token) {
+    return res.status(401).json({ message: "Access denied. Token missing." });
   }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // req.user me data aa jayega
+    req.user = decoded; // payload attach kar diya
     next();
   } catch (err) {
-    res.status(401).json({ message: 'Invalid token' });
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
+

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminSidebarComponent } from "../../shared/admin/admin-sidebar/admin-sidebar.component";
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +13,7 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
   templateUrl: './add-game.component.html',
   styleUrl: './add-game.component.scss'
 })
-export class AddGameComponent {
+export class AddGameComponent implements OnInit {
   addGamePopupOpen: boolean = false;
   days: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   priceList = [
@@ -28,6 +28,8 @@ export class AddGameComponent {
   selectedDays: string[] = [];
   selectAll: boolean = false;
   gameForm: FormGroup;
+   games: any[] = [];
+  loading = true;
 
     constructor(private fb: FormBuilder, private http: HttpClient ,private apiService:ApiService, private toastr:ToastrService) {
     this.gameForm = this.fb.group({
@@ -39,6 +41,10 @@ export class AddGameComponent {
       
          // yahan array store hoga
     });
+  }
+
+   ngOnInit(): void {
+    this.loadGames();
   }
 
 
@@ -76,6 +82,21 @@ export class AddGameComponent {
      }
     });
   }
+
+    loadGames() {
+    this.apiService.getGames().subscribe({
+      next: (res:any) => {
+        this.games = res.data; // ✅ backend से जो data आया वो assign करो
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching games', err);
+        this.loading = false;
+      }
+    });
+  }
+
+
   togglePopup() {
     this.addGamePopupOpen = !this.addGamePopupOpen;
   }
