@@ -88,7 +88,7 @@ export class AddGameComponent implements OnInit {
     loadGames() {
     this.apiService.getGames().subscribe({
       next: (res:any) => {
-        this.games = res.data; // ✅ backend से जो data आया वो assign करो
+        this.games = res.data; 
         this.loading = false;
       },
       error: (err) => {
