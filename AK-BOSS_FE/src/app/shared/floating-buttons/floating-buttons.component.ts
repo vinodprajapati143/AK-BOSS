@@ -13,11 +13,4 @@ export class FloatingButtonsComponent {
     window.location.reload();
   }
 
-  chartReport() {
-    this.router.navigate(['/user/chart-report']);
-  }
-
-  todayReport() {
-    this.router.navigate(['/user/today-report']);
-  }
 }
