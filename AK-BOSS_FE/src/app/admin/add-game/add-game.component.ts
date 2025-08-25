@@ -76,6 +76,8 @@ export class AddGameComponent implements OnInit {
      next: (res:any) =>{
         this.toastr.success(res.message);
         this.addGamePopupOpen =false;
+        this.loadGames();
+
      },
      error : (err:any) =>{
       this.toastr.success(err.message);

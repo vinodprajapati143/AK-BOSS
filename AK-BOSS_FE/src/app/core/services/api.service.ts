@@ -38,4 +38,7 @@ constructor(private http: HttpClient) {}
   getGames() {
    return this.http.get(`${this.baseUrl}/api/games/game-list`,{ withCredentials: true });
   }
+  getUsers() {
+   return this.http.get(`${this.baseUrl}/api/users/user-list`,{ withCredentials: true });
+  }
 }
