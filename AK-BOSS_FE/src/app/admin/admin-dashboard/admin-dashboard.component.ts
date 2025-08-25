@@ -177,7 +177,7 @@ export class AdminDashboardComponent implements OnInit  {
 
 
     loadUsers() {
-    this.apiService.getGames().subscribe({
+    this.apiService.getUsers().subscribe({
       next: (res:any) => {
         this.users = res.data; // ✅ backend से जो data आया वो assign करो
         this.loading = false;

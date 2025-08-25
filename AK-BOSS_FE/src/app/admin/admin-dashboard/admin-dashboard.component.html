@@ -76,9 +76,11 @@
                             <th>Status</th>
                             <th>Joining Date</th>
                             <th>Mobile Number</th>
-                            <th>Main Balance</th>
-                            <th>Bonus Balance</th>
+                            <!-- <th>Main Balance</th> -->
+                            <!-- <th>Bonus Balance</th> -->
                             <th>Parent</th>
+                            <th>User Type</th>
+
                             <th>User Dashboard</th>
                             <th>View</th>
                         </tr>
@@ -86,17 +88,19 @@
                     <tbody>
                         <tr *ngFor="let user of users">
                             <td><input class="checkbox" type="checkbox" /></td>
-                            <td>{{ user.name }}</td>
+                            <td>{{ user.username }}</td>
                             <td>
                                 <span class="status" [ngClass]="{ 'disabled': !user.enabled, 'enabled': user.enabled }">
                                     {{ user.enabled?'Enabled':'Disabled' }}
                                 </span>
                             </td>
-                            <td>{{ user.date }}</td>
+                            <td>{{ user.joiningdate | date:'dd-mm-yyyy hh:mm' }}</td>
                             <td>{{ user.phone }}</td>
-                            <td>{{ user.amountPaid }}</td>
-                            <td>{{ user.totalAmount }}</td>
-                            <td>{{ user.id }}</td>
+                            <!-- <td>{{ user.amountPaid }}</td> -->
+                            <!-- <td>{{ user.totalAmount }}</td> -->
+                            <td>{{ user.invitecode || 'N/A' }}</td>
+                            <td>{{ (user.registerType | titlecase) || 'N/A' }}</td>
+
                             <td><button class="dashboard-btn">Dashboard</button></td>
                             <td>
                                 <button class="view-btn flex items-center">
