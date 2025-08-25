@@ -15,4 +15,8 @@ export class HeaderComponent {
     // Implement login functionality here
     this.router.navigate(['/auth/login']);
   }
+
+  goToHome() {
+    this.router.navigate(['/user/home']);
+  }
 }

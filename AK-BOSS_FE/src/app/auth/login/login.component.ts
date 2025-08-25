@@ -68,6 +68,10 @@ export class LoginComponent {
   }
   }
 
+    goToHome() {
+    this.router.navigate(['/user/home']);
+  }
+
   blockPaste(event: ClipboardEvent) {
     const pastedText = event.clipboardData?.getData('text') || '';
     if (!/^\d+$/.test(pastedText)) {

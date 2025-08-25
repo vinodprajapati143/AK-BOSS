@@ -102,6 +102,10 @@ password: boolean = false;
     this.router.navigate(['/auth/login']); 
   }
 
+  goToHome() {
+    this.router.navigate(['/user/home']);
+  }
+
   toggleVisibility(): void {
     this.password = !this.password;
     const input = document.getElementById('password-input') as HTMLInputElement;

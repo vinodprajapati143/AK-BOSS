@@ -115,7 +115,7 @@
         <div (click)="togglePopup()" class="backdrop fixed w-[100vw] h-[100vh] z-[1] top-0 left-0"
             style="backdrop-filter: blur(5px);"></div>
         <div
-            class="model add-game rounded-md bg-white fixed z-[2] top-[50%] left-[50%] lg:w-[1200px] w-[100%] translate-x-[-50%] translate-y-[-50%]">
+            class="model add-game rounded-md bg-white fixed z-[2] top-[50%] left-[50%] lg:w-[1200px] border border-[#000] w-[100%] translate-x-[-50%] translate-y-[-50%]">
             <div class="heading border-b-2 border-black py-4 flex justify-between px-2">
                 <h3 class="text-[20px] font-bold">Add New Game</h3>
                 <button (click)="togglePopup()"
@@ -171,8 +171,7 @@
                             <div *ngFor='let day of ["Single Digit","Jodi Digit","Single Panna","Double Panna","Triple Panna","Half Sangam","Full Sangam"]'
                                 class="flex items-center justify-between px-4 text-black bg-[#fff] py-1 border-b-2 border-black">
                                 <label for="select_all" class="font-bold flex-1">{{day}}</label>
-                                <button
-                                    class="bg-white border-2 border-[#0A7E8D] text-[#0A7E8D] px-4 py-1 rounded-md">₹24,000</button>
+                                <p class="inline-block font-bold">₹</p><input type="tel" maxlength="8" class="bg-white border-2 ml-1 border-[#0A7E8D] text-center text-[#000] px-4 py-1 rounded-md">
                             </div>
                             <div class="flex justify-center py-4">
                                 <button class=" bg-[#0A7E8D] text-[#fff] px-6 py-2">Save Changes</button>

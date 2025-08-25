@@ -21,13 +21,13 @@ export class AdminSidebarComponent {
 
   links = [{
     "img": "home",
-    "href": "/admin/",
+    "href": "/admin/users",
     "text": "Home",
     "active": true
   },
   {
     "img": "gamepad",
-    "href": "/admin/all-games",
+    "href": "/admin/all-game",
     "text": "Game",
     "active": false
   },
@@ -39,19 +39,19 @@ export class AdminSidebarComponent {
   },
   {
     "img": "report",
-    "href": "#",
+    "href": "/admin/reports",
     "text": "Reports",
     "active": false
   },
   {
     "img": "referral",
-    "href": "#",
+    "href": "/admin/referral",
     "text": "Referral",
     "active": false
   },
   {
     "img": "help",
-    "href": "#",
+    "href": "/admin/help",
     "text": "Help",
     "active": false
   },

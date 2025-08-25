@@ -64,7 +64,7 @@
 
       <!-- List -->
       <div class="flex bg-white flex-col items-center text-teal-700 font-bold text-lg py-2 space-y-1">
-        <div>MADHUR DAY - 0</div>
+        <div>4-5-1</div>
       </div>
     </div>
 
@@ -111,7 +111,7 @@
       <!-- List -->
       <div class="h-20 bg-white text-teal-700 font-bold text-sm">
         <div class="flex flex-col justify-center items-center py-2 space-y-1">
-          <div>MADHUR DAY - 0</div>
+          <div>4-5-1</div>
         </div>
       </div>
 
@@ -444,18 +444,18 @@
     <table class="min-w-full text-sm text-left">
       <thead>
         <tr class="bg-[#EDF0F5] text-black">
-          <th class="px-4 py-2 font-semibold">Time</th>
-          <th class="px-4 py-2 font-semibold">Result</th>
-          <th class="px-4 py-2 font-semibold">Time</th>
-          <th class="px-4 py-2 font-semibold">Result</th>
+          <th class="px-4 py-2 font-semibold text-center">Time</th>
+          <th class="px-4 py-2 font-semibold text-center">Result</th>
+          <th class="px-4 py-2 font-semibold text-center">Time</th>
+          <th class="px-4 py-2 font-semibold text-center">Result</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let row of tableData" class="bg-[#0A7E8D] text-white">
-          <td class="px-4 py-2 border-b">{{ row.time1 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.result1 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.time2 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.result2 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.time1 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.result1 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.time2 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.result2 }}</td>
         </tr>
       </tbody>
     </table>
@@ -470,18 +470,18 @@
     <table class="min-w-full text-sm text-left">
       <thead>
         <tr class="bg-[#EDF0F5] text-black">
-          <th class="px-4 py-2 font-semibold">Time</th>
-          <th class="px-4 py-2 font-semibold">Result</th>
-          <th class="px-4 py-2 font-semibold">Time</th>
-          <th class="px-4 py-2 font-semibold">Result</th>
+          <th class="px-4 py-2 font-semibold text-center">Time</th>
+          <th class="px-4 py-2 font-semibold text-center">Result</th>
+          <th class="px-4 py-2 font-semibold text-center">Time</th>
+          <th class="px-4 py-2 font-semibold text-center">Result</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let row of tableData" class="bg-[#0A7E8D] text-white">
-          <td class="px-4 py-2 border-b">{{ row.time1 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.result1 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.time2 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.result2 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.time1 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.result1 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.time2 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.result2 }}</td>
         </tr>
       </tbody>
     </table>
@@ -739,9 +739,10 @@
 
   <!-- Bottom Links -->
   <div class="bg-cyan-700 h-20 flex items-center mt-2 justify-center border-y border-y-solid border-y-black shadow">
-    <div class="text-center text-white py-2 text-xs">
-      © 2011 - 2025 Ak247pro.com <br />
-      <a href="#" class="underline-none mx-1">About us</a> |
+    <div class="text-center text-white py-2 text-xs sm:text-[20px]">
+      <p class="mb-1">© 2011 - 2025 Ak247pro.com</p> <br />
+      <a href="#" class="underline-none mx-1">About us</a> |      
+      <a href="#" class="underline-none mx-1">Blogs</a> |
       <a href="#" class="underline-none mx-1">Contact us</a> |
       <a href="#" class="underline-none mx-1">Privacy & policy</a> |
       <a href="#" class="underline-none mx-1">Term And Conditions</a>

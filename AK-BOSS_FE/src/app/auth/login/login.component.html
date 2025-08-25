@@ -4,10 +4,15 @@
             <!-- Register Form Section -->
             <div class="bg-color p-4 w-full flex justify-center items-center">
                 <div
-                    class="bg-color z-[2] rounded-[10px] max-w-auto lg:min-w-[540px] mbackdrop-blur-[10px] md:p-[54px] p-[30px]">
+                class="bg-color z-[2] rounded-[10px] max-w-auto lg:min-w-[540px] mbackdrop-blur-[10px] md:px-[54px] p-[30px]">
+                <div class="w-full flex justify-center">
+                    <h1 (click)="goToHome()"
+                        class="md:text-[3rem] font-bold tracking-widest text-[#0A7E8D] cursor-pointer akboss-text">AKBOSS</h1>
+                </div>
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="md:text-[40px] text-3xl font-bold">Login</h2>
-                        <img  (click)="goBack()" src="assets/images/close.png" alt="Logo" class="w-[26px] h-[26px] cursor-pointer">
+                        <img (click)="goBack()" src="assets/images/close.png" alt="Logo"
+                            class="w-[26px] h-[26px] cursor-pointer">
                     </div>
 
                     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full">
@@ -23,7 +28,9 @@
                                 </select>
                             </div>
                             <div class="rounded-lg w-full">
-                                <input formControlName="phone" type="tel" maxlength="10" (keypress)="allowOnlyNumbers($event)" (paste)="blockPaste($event)" pattern="[0-9]{10}" placeholder="Enter your number..."
+                                <input formControlName="phone" type="tel" maxlength="10"
+                                    (keypress)="allowOnlyNumbers($event)" (paste)="blockPaste($event)"
+                                    pattern="[0-9]{10}" placeholder="Enter your number..."
                                     class="md:h-[54px] h-[45px] border-black rounded-lg border px-2 focus:outline-none w-full" />
                             </div>
                         </div>
@@ -58,4 +65,4 @@
                         </p>
                     </form>
                 </div>
-</div>
+            </div>

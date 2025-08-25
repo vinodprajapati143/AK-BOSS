@@ -313,4 +313,19 @@ processGamesWithTimers(games: any[]) {
   getImageUrl(img: string, active: boolean | undefined) {
     return `/assets/images/dashboard/icons/${img}${active ? '-white' : ''}.svg`
   }
+
+  allowOnlyNumbers(event: KeyboardEvent) {
+  const charCode = event.which ? event.which : event.keyCode;
+  // Allow only 0–9 (ASCII codes 48 to 57)
+  if (charCode < 48 || charCode > 57) {
+    event.preventDefault();
+  }
+  }
+
+  blockPaste(event: ClipboardEvent) {
+    const pastedText = event.clipboardData?.getData('tel') || '';
+    if (!/^\d+$/.test(pastedText)) {
+      event.preventDefault(); // Prevent pasting non-digit text
+    }
+  }
 }

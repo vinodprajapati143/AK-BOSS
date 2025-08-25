@@ -3,14 +3,22 @@
         <div class="flex min-h-[100vh] md:flex-row shadow-lg overflow-hidden">
             <div class="bg-color p-4 w-full flex justify-center items-center">
                 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()"
-                    class="bg-color z-[2] rounded-[10px] md:w-[40%]  max-w-auto backdrop-blur-[4px] md:py-[25px] md:px-[40px] p-[30px]">
+                    class="bg-color z-[2] rounded-[10px] md:w-[40%]  max-w-auto backdrop-blur-[4px] md:py-[25px] md:px-[30px] p-[30px]">
+                    <div class="w-full flex justify-center">
+                        <h1 (click)="goToHome()"
+                            class="md:text-[3rem] font-bold tracking-widest text-[#0A7E8D] cursor-pointer akboss-text">
+                            AKBOSS</h1>
+                    </div>
+
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="md:text-[30px] text-3xl font-bold">Register</h2>
-                        <img  (click)="goBack()" src="assets/images/close.png" alt="Logo" class="w-[26px] h-[26px] cursor-pointer">
+                        <img (click)="goBack()" src="assets/images/close.png" alt="Logo"
+                            class="w-[26px] h-[26px] cursor-pointer">
                     </div>
 
                     <label class="block text-gray-700">Enter your name</label>
                     <input type="text" formControlName="username" placeholder="Please enter your name"
+                        maxlength="25"  (paste)="blockPaste($event)"
                         class="w-full h-[45px] border  rounded-lg p-2 mt-2 focus:outline-none" />
 
                     <label class="block text-gray-700 mt-4">Enter your phone number</label>
@@ -26,7 +34,8 @@
                         <div class="border rounded-lg w-full">
                             <input type="tel" maxlength="10" (keypress)="allowOnlyNumbers($event)"
                                 (paste)="blockPaste($event)" pattern="[0-9]{10}" formControlName="phone"
-                                placeholder="Enter your number..." class="h-[45px] px-2 rounded-lg focus:outline-none w-full" />
+                                placeholder="Enter your number..."
+                                class="h-[45px] px-2 rounded-lg focus:outline-none w-full" />
                         </div>
                     </div>
 
@@ -42,7 +51,7 @@
                     </div>
 
                     <label class="block text-gray-700 mt-4">Invite Code</label>
-                    <input type="text" formControlName="invitecode" placeholder="Please enter the invitation code"
+                    <input type="tel" maxlength="6" (paste)="blockPaste($event)" formControlName="invitecode" placeholder="Please enter the invitation code"
                         class="w-full h-[45px] border rounded-lg p-2 mt-2 focus:outline-none" />
 
                     <div class="flex items-center mt-4">
@@ -64,4 +73,3 @@
         </div>
     </div>
 </div>
-

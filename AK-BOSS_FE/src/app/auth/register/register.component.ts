@@ -127,4 +127,8 @@ export class RegisterComponent {
       },
     });
   }
-}
+
+  goToHome() {
+    this.router.navigate(['/user/home']);
+  }
+  }
