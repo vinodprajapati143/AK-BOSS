@@ -8,6 +8,19 @@ exports.addGame = async (req, res) => {
 
     const { game_name, open_time, close_time, days, prices } = req.body;
 
+        // ---------------- Server-side Validation ----------------
+    if (!game_name || game_name.trim() === "") {
+      return res.status(400).json({ message: "Game name is required" });
+    }
+
+    if (!open_time || open_time.trim() === "") {
+      return res.status(400).json({ message: "Open time is required" });
+    }
+
+    if (!close_time || close_time.trim() === "") {
+      return res.status(400).json({ message: "Close time is required" });
+    }
+
     const [admin] = await db.query("SELECT phone FROM users WHERE id = ?", [req.user.id]);
 
     const sql = `
