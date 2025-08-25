@@ -6,10 +6,14 @@ import { catchError, tap } from 'rxjs/operators';
 import { inject } from '@angular/core';
 import { StorageService } from '../services/storage.service';
 import { CustomError } from '../module/models';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 
 export const AppInterceptor: HttpInterceptorFn = (request, next) => {
   // Get the JWT token from wherever you store it (localStorage, cookies, etc.)
+  const toastr = inject(ToastrService)
+  const router = inject(Router)
   const sessionStorageService = inject(StorageService);
   const jwtToken = sessionStorageService.getItem('authToken'); // Example: Retrieve from localStorage
   // Clone the request and add the Authorization header with the JWT
@@ -41,11 +45,10 @@ export const AppInterceptor: HttpInterceptorFn = (request, next) => {
         if (jsonData && jsonData.code && jsonData.code == 200) {
           return jsonData.data;
         } else if (jsonData && jsonData.code && jsonData.code == 401) {
-
-          // debugger
-          sessionStorageService.removeItem('authToken')
+          sessionStorageService.removeItem('authToken');
           sessionStorageService.clear();
-          window.location.href = window.location.origin
+          toastr.error("Session expired. Please login again.", "Unauthorized");
+          router.navigate(['/auth/login']);
           return throwError(() => new CustomError(jsonData.message, jsonData.code, null));
         } else {
           return throwError(() => new CustomError(jsonData.message, jsonData.code, null));

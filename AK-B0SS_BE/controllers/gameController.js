@@ -38,8 +38,8 @@ exports.getGameList = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    // Sirf ID ka use karo (phone ki need nahi)
-    const games = await db.query(
+    // Sirf rows lo
+    const [games] = await db.query(
       "SELECT id, game_name, open_time, close_time FROM games WHERE created_by = ? ORDER BY id DESC",
       [req.user.id]
     );
@@ -50,5 +50,6 @@ exports.getGameList = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
