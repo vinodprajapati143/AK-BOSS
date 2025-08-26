@@ -202,17 +202,22 @@ setInputEnabledFlags() {
   this.comingSoonGames.forEach(game => {
     const openActive = game.openCountdown > 0;
     const closeActive = game.closeCountdown > 0;
-    const graceActive = this.getGraceCountdown(game) > 0;
+    const graceSeconds = this.getGraceCountdown(game);
+    const graceActive = graceSeconds > 0;
 
     const openFilled = !!(game.patte1 || game.patte1_open);
     const closeFilled = !!(game.patte2 || game.patte2_close);
 
     if (openFilled && closeFilled) {
-      // Both results filled, both disable
+      // Both filled, both disable
       game.openInputEnabled = false;
       game.closeInputEnabled = false;
+    } else if (graceActive && openFilled && !closeFilled && !openActive && !closeActive) {
+      // Only close blank, open filled, grace period running
+      game.openInputEnabled = false;
+      game.closeInputEnabled = true;    // Enable only close input!
     } else if (graceActive && !openFilled && !closeFilled && !openActive && !closeActive) {
-      // 1 hour extension, both blank, both enable
+      // Both blank, grace period, dono enable
       game.openInputEnabled = true;
       game.closeInputEnabled = true;
     } else if (openActive && !openFilled) {
@@ -227,6 +232,7 @@ setInputEnabledFlags() {
     }
   });
 }
+
 
  
 
