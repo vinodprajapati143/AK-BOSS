@@ -154,35 +154,42 @@ ngOnInit() {
 }
 
 
-  loadGames() {
-    this.apiService.getNearestGames().subscribe(res => {
-      // Filter based on status
-      this.comingSoonGames = res.filter(g => g.status === 'coming_soon');
-      this.allGames = res.filter(g => g.status !== 'coming_soon');
-    });
-  }
+loadGames() {
+  this.apiService.getNearestGames().subscribe((res: any) => {
+    // futureOpen me wo sab games hain jo input window me hain (coming soon)
+    this.comingSoonGames = res.futureOpen;  // direct assign futureOpen as coming soon
+    
+    // allGames me wo games hain jo ya input filled hain ya window expire ho gayi
+    this.allGames = res.allGames;           // direct assign allGames as received
+
+    console.log('Coming Soon Games:', this.comingSoonGames);
+    console.log('All Games:', this.allGames);
+  });
+}
+
   
+submitGame(game: any) {
+  const payload = {
+    id: game.id,
+    patte1: game.patte1,
+    patte1_open: game.patte1_open,
+    patte2_close: game.patte2_close,
+    patte2: game.patte2
+  };
 
-    submitGame(game: any) {
-    const payload = {
-      id: game.id,
-      patte1: game.patte1,
-      patte1_open: game.patte1_open,
-      patte2_close: game.patte2_close,
-      patte2: game.patte2
-    };
+  this.apiService.saveGameInput(payload).subscribe({
+    next: (res) => {
+      console.log('res: ', res);
+      alert('Game input saved successfully!');
+      this.loadGames(); // Reload games list after successful save
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Error saving game input');
+    }
+  });
+}
 
-    this.apiService.saveGameInput(payload).subscribe({
-      next: (res) => {
-        console.log('res: ', res);
-        alert('Game input saved successfully!');
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Error saving game input');
-      }
-    });
-  }
  
  
 

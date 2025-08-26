@@ -75,7 +75,7 @@ exports.getNearestGames = async (req, res) => {
               patte1, patte1_open, patte2_close, patte2,
               status
        FROM games 
-       WHERE created_by = ? 
+       WHERE created_by = ?
        ORDER BY id DESC`,
       [req.user.id]
     );
@@ -85,27 +85,39 @@ exports.getNearestGames = async (req, res) => {
     const futureOpen = [];
     const allGames = [];
 
-    games.forEach(game => {
-      const openTime = new Date(game.open_time);
-      const diffMinutes = (openTime - now) / (1000 * 60);
+  games.forEach(game => {
+  const openTime = new Date(game.open_time);
+  const closeTime = new Date(game.close_time);
 
-      // Condition 1: Coming soon (within 30 mins)
-      if (diffMinutes <= 30 && diffMinutes >= -60 && !game.patte1_open) {
-        futureOpen.push(game);
-      } else {
-        allGames.push(game);
-      }
-    });
+  const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30 min before open
+  const openWindowEnd = new Date(openTime.getTime() + 60 * 60000);    // 60 min after open
 
-    res.json({
-      futureOpen,
-      allGames
-    });
+  const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30 min before close
+  const closeWindowEnd = new Date(closeTime.getTime() + 60 * 60000);    // 60 min after close
+
+  const insideOpenWindow = now >= openWindowStart && now <= openWindowEnd;
+  const insideCloseWindow = now >= closeWindowStart && now <= closeWindowEnd;
+
+  const openInputsFilled = game.patte1 || game.patte1_open;
+  const closeInputsFilled = game.patte2_close || game.patte2;
+
+  // Check if either inside open window and open inputs not filled OR
+  // inside close window and close inputs not filled
+  if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
+    futureOpen.push(game);
+  } else {
+    allGames.push(game);
+  }
+});
+
+
+    res.json({ futureOpen, allGames });
 
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 exports.saveGameinput = async (req, res) => {
