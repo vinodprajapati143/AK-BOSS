@@ -12,6 +12,7 @@ export class CustomError implements Error {
 }
 
 export interface Game {
+  status: string;
 patte2: any;
 patte2_close: any;
 patte1_open: any;

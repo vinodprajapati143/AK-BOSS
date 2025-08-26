@@ -68,48 +68,45 @@ exports.getGameList = async (req, res) => {
   }
 };
 
-// In-memory cache
-let nearestGamesCache = { data: [], timestamp: 0 };
-const CACHE_TTL = 30 * 1000; // 30 seconds
 exports.getNearestGames = async (req, res) => {
   try {
+    const [games] = await db.query(
+      `SELECT id, game_name, open_time, close_time, 
+              patte1, patte1_open, patte2_close, patte2,
+              status
+       FROM games 
+       WHERE created_by = ? 
+       ORDER BY id DESC`,
+      [req.user.id]
+    );
+
     const now = new Date();
-    const nowMs = now.getTime();
 
-    // Check cache first
-    if (nearestGamesCache.data.length && (nowMs - nearestGamesCache.timestamp < CACHE_TTL)) {
-      return res.json({ success: true, games: nearestGamesCache.data });
-    }
+    const futureOpen = [];
+    const allGames = [];
 
-    // ---------------- Optimized DB Query ----------------
-    const sql = `
-      SELECT id, game_name, open_time, close_time
-      FROM games
-      WHERE 
-        (open_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 30 MIN))
-        OR (close_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 30 MIN))
-      ORDER BY 
-        LEAST(
-          ABS(TIMESTAMPDIFF(SECOND, NOW(), open_time)),
-          ABS(TIMESTAMPDIFF(SECOND, NOW(), close_time))
-        )
-      LIMIT 50
-    `;
+    games.forEach(game => {
+      const openTime = new Date(game.open_time);
+      const diffMinutes = (openTime - now) / (1000 * 60);
 
-    const [games] = await db.query(sql);
+      // Condition 1: Coming soon (within 30 mins)
+      if (diffMinutes <= 30 && diffMinutes >= -60 && !game.patte1_open) {
+        futureOpen.push(game);
+      } else {
+        allGames.push(game);
+      }
+    });
 
-    // Update cache
-    nearestGamesCache = {
-      data: games,
-      timestamp: nowMs
-    };
+    res.json({
+      futureOpen,
+      allGames
+    });
 
-    res.json({ success: true, games });
   } catch (err) {
-    console.error("Get Nearest Games Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 exports.saveGameinput = async (req, res) => {
   try {
@@ -117,12 +114,22 @@ exports.saveGameinput = async (req, res) => {
 
     if (!id) return res.status(400).json({ message: 'Game ID required' });
 
+    let status = null;
+
+    // Status decide karna
+    if (patte1 || patte1_open) {
+      status = "open";
+    }
+    if (patte2 || patte2_close) {
+      status = "close";
+    }
+
     const sql = `
       UPDATE games 
-      SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?
+      SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?, status = ?
       WHERE id = ?
     `;
-    await db.query(sql, [patte1, patte1_open, patte2_close, patte2, id]);
+    await db.query(sql, [patte1, patte1_open, patte2_close, patte2, status, id]);
 
     res.json({ success: true, message: 'Game inputs saved successfully' });
   } catch (err) {
@@ -130,6 +137,7 @@ exports.saveGameinput = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
