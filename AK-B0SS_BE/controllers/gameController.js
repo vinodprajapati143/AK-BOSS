@@ -86,14 +86,18 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
 
   games.forEach(game => {
-  const openTime = new Date(game.open_time);
-  const closeTime = new Date(game.close_time);
+  const today = new Date().toISOString().split('T')[0];  // yyyy-mm-dd string
 
-  const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30 min before open
-  const openWindowEnd = new Date(openTime.getTime() + 60 * 60000);    // 60 min after open
+  const openDateTime = new Date(`${today}T${game.open_time}`);
+  const closeDateTime = new Date(`${today}T${game.close_time}`);
 
-  const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30 min before close
-  const closeWindowEnd = new Date(closeTime.getTime() + 60 * 60000);    // 60 min after close
+  const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+  const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
+
+  const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+  const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
+
+  const now = new Date();
 
   const insideOpenWindow = now >= openWindowStart && now <= openWindowEnd;
   const insideCloseWindow = now >= closeWindowStart && now <= closeWindowEnd;
@@ -101,13 +105,14 @@ exports.getNearestGames = async (req, res) => {
   const openInputsFilled = game.patte1 || game.patte1_open;
   const closeInputsFilled = game.patte2_close || game.patte2;
 
-  // Check if either inside open window and open inputs not filled OR
-  // inside close window and close inputs not filled
-  if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
-    futureOpen.push(game);
-  } else {
-    allGames.push(game);
-  }
+if (
+  (insideOpenWindow && !openInputsFilled) ||
+  (insideCloseWindow && !closeInputsFilled)
+) {
+  futureOpen.push(game);
+} else {
+  allGames.push(game);
+}
 });
 
 

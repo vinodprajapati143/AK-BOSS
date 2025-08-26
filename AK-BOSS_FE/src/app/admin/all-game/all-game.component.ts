@@ -1,10 +1,11 @@
-import { Component, Inject, inject, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminSidebarComponent } from "../../shared/admin/admin-sidebar/admin-sidebar.component";
 import { ApiService } from '../../core/services/api.service';
 import { Game } from '../../core/module/models';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { interval, Subscription } from 'rxjs';
 export interface User {
   name: string;
   enabled: boolean;
@@ -21,7 +22,7 @@ export interface User {
   templateUrl: './all-game.component.html',
   styleUrl: './all-game.component.scss'
 })
-export class AllGameComponent implements OnInit  {
+export class AllGameComponent implements OnInit ,OnDestroy  {
  private apiService = inject(ApiService); 
  private toastr = inject(ToastrService)
 
@@ -146,24 +147,69 @@ allGames: any[] = [];
       icon: '/assets/images/dashboard/icons/triangle-down.svg'
     }
   ];
-
+  timerSubscription: Subscription | undefined;
  
-
+games = [];
 ngOnInit() {
   this.loadGames();
+      // 1 second ka interval set karo jo countdown update kare
+    this.timerSubscription = interval(1000).subscribe(() => {
+      this.updateCountdowns();
+    });
 }
+
+  // Har game ka openCountdown aur closeCountdown update karna
+updateCountdowns() {
+  const today = new Date().toISOString().split('T')[0]; // Current date
+  const now = Date.now();
+
+  const updateGame = (game: any) => {
+    const openDateTime = new Date(`${today}T${game.open_time}`);
+    const closeDateTime = new Date(`${today}T${game.close_time}`);
+
+    game.openCountdown = isNaN(openDateTime.getTime()) ? 0 : Math.max(0, Math.floor((openDateTime.getTime() - now) / 1000));
+    game.closeCountdown = isNaN(closeDateTime.getTime()) ? 0 : Math.max(0, Math.floor((closeDateTime.getTime() - now) / 1000));
+  };
+
+  this.comingSoonGames.forEach(updateGame);
+  this.allGames.forEach(updateGame);
+}
+ 
+
+  ngOnDestroy() {
+    // Component destroy hone par subscription clean karo
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+  }
 
 
 loadGames() {
   this.apiService.getNearestGames().subscribe((res: any) => {
-    // futureOpen me wo sab games hain jo input window me hain (coming soon)
-    this.comingSoonGames = res.futureOpen;  // direct assign futureOpen as coming soon
-    
-    // allGames me wo games hain jo ya input filled hain ya window expire ho gayi
-    this.allGames = res.allGames;           // direct assign allGames as received
+    this.comingSoonGames = res.futureOpen;
+    this.allGames = res.allGames;
 
-    console.log('Coming Soon Games:', this.comingSoonGames);
-    console.log('All Games:', this.allGames);
+    // Dono arrays ke har game me countdown init karo
+    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+    const initCountdown = (game: any) => {
+      const openDateTime = new Date(`${today}T${game.open_time}`);
+      const closeDateTime = new Date(`${today}T${game.close_time}`);
+      const now = Date.now();
+
+      game.openCountdown = isNaN(openDateTime.getTime()) ? 0 : Math.max(0, Math.floor((openDateTime.getTime() - now) / 1000));
+      game.closeCountdown = isNaN(closeDateTime.getTime()) ? 0 : Math.max(0, Math.floor((closeDateTime.getTime() - now) / 1000));
+    };
+
+    this.comingSoonGames.forEach(initCountdown);
+    this.allGames.forEach(initCountdown);
+
+    // Timer start karo agar already start nahi hua ho
+    if (!this.timerSubscription) {
+      this.timerSubscription = interval(1000).subscribe(() => {
+        this.updateCountdowns();
+      });
+    }
   });
 }
 
@@ -195,12 +241,14 @@ submitGame(game: any) {
 
 
 // helper for countdowns
-formatTime(ms: number): string {
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600).toString().padStart(2,'0');
-  const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2,'0');
-  const s = (totalSec % 60).toString().padStart(2,'0');
-  return `${h}:${m}:${s}`;
+formatTime(seconds: number): string {
+  if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
+    return '00:00:00';
+  }
+  const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+  const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+  const secs = (seconds % 60).toString().padStart(2, '0');
+  return `${hrs}:${mins}:${secs}`;
 }
 
 
