@@ -5,11 +5,12 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { Time12HourPipe } from '../../core/pipes/time12-hour.pipe';
 
 @Component({
   selector: 'app-add-game',
   standalone: true,
-  imports: [AdminSidebarComponent, CommonModule, FormsModule,ReactiveFormsModule,ToastrModule],
+  imports: [AdminSidebarComponent, CommonModule, FormsModule,ReactiveFormsModule,ToastrModule,Time12HourPipe],
   templateUrl: './add-game.component.html',
   styleUrl: './add-game.component.scss'
 })
