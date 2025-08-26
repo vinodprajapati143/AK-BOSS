@@ -135,9 +135,6 @@ exports.getNearestGames = async (req, res) => {
   }
 };
 
-
-
-
 exports.saveGameInput = async (req, res) => {
   try {
     const { id, patte1, patte1_open, patte2_close, patte2 } = req.body;
