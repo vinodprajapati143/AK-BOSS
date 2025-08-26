@@ -202,45 +202,58 @@ setInputEnabledFlags() {
   this.comingSoonGames.forEach(game => {
     const openActive = game.openCountdown > 0;
     const closeActive = game.closeCountdown > 0;
+    const bothActive = openActive && closeActive;
     const graceActive = this.getGraceCountdown(game) > 0;
 
     const openFilled = !!(game.patte1 || game.patte1_open);
     const closeFilled = !!(game.patte2 || game.patte2_close);
 
     if (openFilled && closeFilled) {
-      // Both filled, disable both
+      // Dono filled hain, disable dono inputs
       game.openInputEnabled = false;
       game.closeInputEnabled = false;
-    } else if (graceActive && !openActive && !closeActive) {
-      // Grace period:
+    } 
+    else if (bothActive && !openFilled && !closeFilled) {
+      // Dono windows active hain aur dono blank hain
+      game.openInputEnabled = true;
+      game.closeInputEnabled = true;
+    }
+    else if (closeActive && !openFilled) {
+      // Only close window active, but open input blank: open bhi enable ho
+      game.openInputEnabled = true;  // Force enable open input
+      game.closeInputEnabled = true;
+    }
+    else if (graceActive && !openActive && !closeActive) {
+      // Grace period me inputs ke hisab se enable/disable
       if (!openFilled && closeFilled) {
-        // open blank, close bhar diya → open enable, close disable
         game.openInputEnabled = true;
         game.closeInputEnabled = false;
       } else if (openFilled && !closeFilled) {
-        // open bhar diya, close blank → open disable, close enable
         game.openInputEnabled = false;
         game.closeInputEnabled = true;
       } else if (!openFilled && !closeFilled) {
-        // dono blank → dono enable
         game.openInputEnabled = true;
         game.closeInputEnabled = true;
       }
-    } else if (openActive && !openFilled) {
-      // Open window active, open not filled
+    }
+    else if (openActive && !openFilled) {
+      // Open window active aur input fill nahi
       game.openInputEnabled = true;
       game.closeInputEnabled = false;
-    } else if (closeActive && !closeFilled) {
-      // Close window active, close not filled
+    }
+    else if (closeActive && !closeFilled) {
+      // Close window active aur input fill nahi
       game.openInputEnabled = false;
       game.closeInputEnabled = true;
-    } else {
-      // Default disable both
+    } 
+    else {
+      // By default input disable dono
       game.openInputEnabled = false;
       game.closeInputEnabled = false;
     }
   });
 }
+
 
 
 

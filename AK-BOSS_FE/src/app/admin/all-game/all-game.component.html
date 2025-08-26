@@ -72,9 +72,9 @@
                               <input type="text"  class="box w-[100px]" 
                                 [(ngModel)]="game.patte2"
                              [disabled]="!game.closeInputEnabled"
-                               maxlength="1"
-                                min="0"
-                                max="9"
+                                 maxlength="3"
+                            min="0"
+                            max="999"
                                 (input)="game.patte2_close = restrictToOneDigit(game.patte2_close)"
                                 placeholder="---" />
 
