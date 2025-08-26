@@ -51,9 +51,13 @@ exports.getGameList = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    // Sirf rows lo
+    // Ab sabhi required columns lo
     const [games] = await db.query(
-      "SELECT id, game_name, open_time, close_time FROM games WHERE created_by = ? ORDER BY id DESC",
+      `SELECT id, game_name, open_time, close_time, 
+              patte1, patte1_open, patte2_close, patte2
+       FROM games 
+       WHERE created_by = ? 
+       ORDER BY id DESC`,
       [req.user.id]
     );
 
