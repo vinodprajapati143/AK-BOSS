@@ -85,8 +85,8 @@ exports.getNearestGames = async (req, res) => {
     const futureOpen = [];
     const allGames = [];
 
-  games.forEach(game => {
-  const today = new Date().toISOString().split('T')[0];  // yyyy-mm-dd string
+games.forEach(game => {
+  const today = new Date().toISOString().split('T')[0];
 
   const openDateTime = new Date(`${today}T${game.open_time}`);
   const closeDateTime = new Date(`${today}T${game.close_time}`);
@@ -99,21 +99,29 @@ exports.getNearestGames = async (req, res) => {
 
   const now = new Date();
 
+  // Debug print
+  console.log(`Game: ${game.game_name}`);
+  console.log(`Now: ${now}`);
+  console.log(`Open Window: ${openWindowStart} - ${openWindowEnd}, 
+               Inside: ${now >= openWindowStart && now <= openWindowEnd}`);
+  console.log(`Close Window: ${closeWindowStart} - ${closeWindowEnd}, 
+               Inside: ${now >= closeWindowStart && now <= closeWindowEnd}`);
+
   const insideOpenWindow = now >= openWindowStart && now <= openWindowEnd;
   const insideCloseWindow = now >= closeWindowStart && now <= closeWindowEnd;
 
   const openInputsFilled = game.patte1 || game.patte1_open;
   const closeInputsFilled = game.patte2_close || game.patte2;
 
-if (
-  (insideOpenWindow && !openInputsFilled) ||
-  (insideCloseWindow && !closeInputsFilled)
-) {
-  futureOpen.push(game);
-} else {
-  allGames.push(game);
-}
+  if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
+    console.log('Pushed to futureOpen');
+    futureOpen.push(game);
+  } else {
+    console.log('Pushed to allGames');
+    allGames.push(game);
+  }
 });
+
 
 
     res.json({ futureOpen, allGames });
