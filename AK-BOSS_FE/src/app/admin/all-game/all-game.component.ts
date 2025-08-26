@@ -202,36 +202,46 @@ setInputEnabledFlags() {
   this.comingSoonGames.forEach(game => {
     const openActive = game.openCountdown > 0;
     const closeActive = game.closeCountdown > 0;
-    const graceSeconds = this.getGraceCountdown(game);
-    const graceActive = graceSeconds > 0;
+    const graceActive = this.getGraceCountdown(game) > 0;
 
     const openFilled = !!(game.patte1 || game.patte1_open);
     const closeFilled = !!(game.patte2 || game.patte2_close);
 
     if (openFilled && closeFilled) {
-      // Both filled, both disable
+      // Both filled, disable both
       game.openInputEnabled = false;
       game.closeInputEnabled = false;
-    } else if (graceActive && openFilled && !closeFilled && !openActive && !closeActive) {
-      // Only close blank, open filled, grace period running
-      game.openInputEnabled = false;
-      game.closeInputEnabled = true;    // Enable only close input!
-    } else if (graceActive && !openFilled && !closeFilled && !openActive && !closeActive) {
-      // Both blank, grace period, dono enable
-      game.openInputEnabled = true;
-      game.closeInputEnabled = true;
+    } else if (graceActive && !openActive && !closeActive) {
+      // Grace period:
+      if (!openFilled && closeFilled) {
+        // open blank, close bhar diya → open enable, close disable
+        game.openInputEnabled = true;
+        game.closeInputEnabled = false;
+      } else if (openFilled && !closeFilled) {
+        // open bhar diya, close blank → open disable, close enable
+        game.openInputEnabled = false;
+        game.closeInputEnabled = true;
+      } else if (!openFilled && !closeFilled) {
+        // dono blank → dono enable
+        game.openInputEnabled = true;
+        game.closeInputEnabled = true;
+      }
     } else if (openActive && !openFilled) {
+      // Open window active, open not filled
       game.openInputEnabled = true;
       game.closeInputEnabled = false;
     } else if (closeActive && !closeFilled) {
+      // Close window active, close not filled
       game.openInputEnabled = false;
       game.closeInputEnabled = true;
     } else {
+      // Default disable both
       game.openInputEnabled = false;
       game.closeInputEnabled = false;
     }
   });
 }
+
 
 
  
@@ -272,6 +282,18 @@ loadGames() {
       });
     }
   });
+}
+
+restrictToThreeDigits(value: any): string {
+  // Only allow up to 3 digits, and only numbers
+  value = value ? value.toString().replace(/\D/g, '') : '';
+  return value.slice(0, 3);
+}
+
+restrictToOneDigit(value: any): string {
+  // Only allow 1 digit, and only numbers
+  value = value ? value.toString().replace(/\D/g, '') : '';
+  return value.slice(0, 1);
 }
 
   

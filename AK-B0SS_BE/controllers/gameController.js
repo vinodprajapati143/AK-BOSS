@@ -70,57 +70,66 @@ exports.getGameList = async (req, res) => {
 
 exports.getNearestGames = async (req, res) => {
   try {
+    const now = new Date();
+    const offset = 5.5 * 60 * 60 * 1000; // IST offset
+    const nowIST = new Date(now.getTime() + offset);
+    const year = nowIST.getFullYear();
+    const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+    const day = nowIST.getDate().toString().padStart(2, '0');
+    const todayIST = `${year}-${month}-${day}`;
+
+    // Get all games for admin
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, 
-              patte1, patte1_open, patte2_close, patte2,
-              status
-       FROM games 
-       WHERE created_by = ?
-       ORDER BY id DESC`,
-      [req.user.id]
+      `SELECT id, game_name, open_time, close_time, days 
+       FROM games WHERE created_by = ? ORDER BY id DESC`, [req.user.id]
     );
 
+    // Fetch inputs for today for all games
+    const gameIds = games.map(g => g.id);
+    let inputsMap = {};
+    if (gameIds.length > 0) {
+      const [inputs] = await db.query(
+        `SELECT * FROM game_inputs WHERE game_id IN (?) AND input_date = ?`,
+        [gameIds, todayIST]
+      );
+      inputs.forEach(input => {
+        inputsMap[input.game_id] = input;
+      });
+    }
 
     const futureOpen = [];
     const allGames = [];
 
-const now = new Date();
-const offset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
-const nowIST = new Date(now.getTime() + offset);
+    games.forEach(game => {
+      // Add inputs if exists
+      const input = inputsMap[game.id] || {};
+      game.patte1 = input.patte1 || "";
+      game.patte1_open = input.patte1_open || "";
+      game.patte2_close = input.patte2_close || "";
+      game.patte2 = input.patte2 || "";
 
-const year = nowIST.getFullYear();
-const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
-const day = nowIST.getDate().toString().padStart(2, '0');
-const todayIST = `${year}-${month}-${day}`;
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-games.forEach(game => {
-  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+      const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
 
-  const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-  const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
 
-  const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-  const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
+      const openInputsFilled = game.patte1 || game.patte1_open;
+      const closeInputsFilled = game.patte2_close || game.patte2;
 
-  const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
-  const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
-
-  const openInputsFilled = game.patte1 || game.patte1_open;
-  const closeInputsFilled = game.patte2_close || game.patte2;
-
-  if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
-    futureOpen.push(game);
-  } else {
-    allGames.push(game);
-  }
-});
-
-
-
+      if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
+        futureOpen.push(game);
+      } else {
+        allGames.push(game);
+      }
+    });
 
     res.json({ futureOpen, allGames });
-
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -128,28 +137,35 @@ games.forEach(game => {
 
 
 
-exports.saveGameinput = async (req, res) => {
+
+exports.saveGameInput = async (req, res) => {
   try {
     const { id, patte1, patte1_open, patte2_close, patte2 } = req.body;
-
     if (!id) return res.status(400).json({ message: 'Game ID required' });
 
-    let status = null;
+    const now = new Date();
+    const inputDate = now.toISOString().split('T')[0]; // yyyy-mm-dd
 
-    // Status decide karna
-    if (patte1 || patte1_open) {
-      status = "open";
-    }
-    if (patte2 || patte2_close) {
-      status = "close";
-    }
+    // Check if input exists for game & date
+    const [existing] = await db.query(
+      "SELECT id FROM game_inputs WHERE game_id = ? AND input_date = ?",
+      [id, inputDate]
+    );
 
-    const sql = `
-      UPDATE games 
-      SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?, status = ?
-      WHERE id = ?
-    `;
-    await db.query(sql, [patte1, patte1_open, patte2_close, patte2, status, id]);
+    if (existing.length > 0) {
+      // Update
+      await db.query(
+        `UPDATE game_inputs SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?, updated_at = NOW() WHERE id = ?`,
+        [patte1, patte1_open, patte2_close, patte2, existing[0].id]
+      );
+    } else {
+      // Insert
+      await db.query(
+        `INSERT INTO game_inputs (game_id, input_date, patte1, patte1_open, patte2_close, patte2, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        [id, inputDate, patte1, patte1_open, patte2_close, patte2]
+      );
+    }
 
     res.json({ success: true, message: 'Game inputs saved successfully' });
   } catch (err) {
@@ -157,6 +173,7 @@ exports.saveGameinput = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 

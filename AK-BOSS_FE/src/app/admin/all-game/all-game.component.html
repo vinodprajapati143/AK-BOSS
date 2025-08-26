@@ -42,6 +42,10 @@
                                <input type="text" class="box w-[100px] "
                                 [(ngModel)]="game.patte1"
                            [disabled]="!game.openInputEnabled" 
+                             maxlength="3"
+                            min="0"
+                            max="999"
+                            (input)="game.patte1 = restrictToThreeDigits(game.patte1)"
                                 placeholder="---" />
 
                             <span></span>
@@ -49,10 +53,18 @@
                                <input type="text" class="box w-[50px]"
                                 [(ngModel)]="game.patte1_open"
                                [disabled]="!game.openInputEnabled"
+                                 maxlength="1"
+                                    min="0"
+                                    max="9"
+                                    (input)="game.patte1_open = restrictToOneDigit(game.patte1_open)"
                                 placeholder="---" />
                                                         <input type="text" class="box w-[50px]"
                                 [(ngModel)]="game.patte2_close"
                                [disabled]="!game.closeInputEnabled"
+                                 maxlength="1"
+                                    min="0"
+                                    max="9"
+                                    (input)="game.patte1_open = restrictToOneDigit(game.patte1_open)"
                                 placeholder="---" />
 
                             </div>
@@ -60,6 +72,10 @@
                               <input type="text"  class="box w-[100px]" 
                                 [(ngModel)]="game.patte2"
                              [disabled]="!game.closeInputEnabled"
+                               maxlength="1"
+                                min="0"
+                                max="9"
+                                (input)="game.patte2_close = restrictToOneDigit(game.patte2_close)"
                                 placeholder="---" />
 
 
