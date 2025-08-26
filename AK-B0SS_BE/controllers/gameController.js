@@ -67,7 +67,6 @@ exports.getGameList = async (req, res) => {
 // In-memory cache
 let nearestGamesCache = { data: [], timestamp: 0 };
 const CACHE_TTL = 30 * 1000; // 30 seconds
-
 exports.getNearestGames = async (req, res) => {
   try {
     const now = new Date();
@@ -105,6 +104,26 @@ exports.getNearestGames = async (req, res) => {
   } catch (err) {
     console.error("Get Nearest Games Error:", err);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+exports.saveGameinput = async (req, res) => {
+  try {
+    const { id, patte1, patte1_open, patte2_close, patte2 } = req.body;
+
+    if (!id) return res.status(400).json({ message: 'Game ID required' });
+
+    const sql = `
+      UPDATE games 
+      SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?
+      WHERE id = ?
+    `;
+    await db.query(sql, [patte1, patte1_open, patte2_close, patte2, id]);
+
+    res.json({ success: true, message: 'Game inputs saved successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 

@@ -43,10 +43,14 @@ constructor(private http: HttpClient) {}
    return this.http.get(`${this.baseUrl}/api/users/user-list`,{ withCredentials: true });
   }
 
-    getNearestGames(): Observable<Game[]> {
+  getNearestGames(): Observable<Game[]> {
     return timer(0, 30_000).pipe(
       switchMap(() => this.http.get<{success:boolean,data: Game[]}>(`${this.baseUrl}/api/games/nearest-game-list`,{ withCredentials: true })),
       switchMap(res => [res.data])
     );
+  }
+  
+  saveGameInput(gameData: any) {
+   return this.http.post(`${this.baseUrl}/api/games/save-game-input`, gameData,{ withCredentials: true });
   }
 }

@@ -245,17 +245,17 @@ loadGames() {
   console.log('Payload to save:', payload);
 
   // // Call API to save
-  // this.apiService.saveGameInput(payload).subscribe({
-  //   next: (res) => {
-  //     console.log('Saved successfully:', res);
-  //     game.submitted = true;
-  //     this.games = this.games.filter(g => !g.submitted);
-  //   },
-  //   error: (err) => {
-  //     console.error('Error saving:', err);
-  //     alert('Failed to save, try again.');
-  //   }
-  // });
+  this.apiService.saveGameInput(payload).subscribe({
+    next: (res) => {
+      console.log('Saved successfully:', res);
+      game.submitted = true;
+      this.games = this.games.filter(g => !g.submitted);
+    },
+    error: (err) => {
+      console.error('Error saving:', err);
+      alert('Failed to save, try again.');
+    }
+  });
   }
 
 
