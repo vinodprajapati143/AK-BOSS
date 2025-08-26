@@ -80,16 +80,22 @@ exports.getNearestGames = async (req, res) => {
       [req.user.id]
     );
 
-    const now = new Date();
 
     const futureOpen = [];
     const allGames = [];
 
-games.forEach(game => {
-  const today = new Date().toISOString().split('T')[0];
+const now = new Date();
+const offset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
+const nowIST = new Date(now.getTime() + offset);
 
-  const openDateTime = new Date(`${today}T${game.open_time}`);
-  const closeDateTime = new Date(`${today}T${game.close_time}`);
+const year = nowIST.getFullYear();
+const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+const day = nowIST.getDate().toString().padStart(2, '0');
+const todayIST = `${year}-${month}-${day}`;
+
+games.forEach(game => {
+  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
   const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
   const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
@@ -97,30 +103,19 @@ games.forEach(game => {
   const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
   const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
 
-  const now = new Date();
-
-  // Debug print
-  console.log(`Game: ${game.game_name}`);
-  console.log(`Now: ${now}`);
-  console.log(`Open Window: ${openWindowStart} - ${openWindowEnd}, 
-               Inside: ${now >= openWindowStart && now <= openWindowEnd}`);
-  console.log(`Close Window: ${closeWindowStart} - ${closeWindowEnd}, 
-               Inside: ${now >= closeWindowStart && now <= closeWindowEnd}`);
-
-  const insideOpenWindow = now >= openWindowStart && now <= openWindowEnd;
-  const insideCloseWindow = now >= closeWindowStart && now <= closeWindowEnd;
+  const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
+  const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
 
   const openInputsFilled = game.patte1 || game.patte1_open;
   const closeInputsFilled = game.patte2_close || game.patte2;
 
   if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
-    console.log('Pushed to futureOpen');
     futureOpen.push(game);
   } else {
-    console.log('Pushed to allGames');
     allGames.push(game);
   }
 });
+
 
 
 
