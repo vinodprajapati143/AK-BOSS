@@ -174,6 +174,60 @@ updateCountdowns() {
   this.comingSoonGames.forEach(updateGame);
   this.allGames.forEach(updateGame);
 }
+
+isOpenInputEnabled(game: any): boolean {
+  // Open countdown > 0 and input not filled
+  return game.openCountdown > 0 && (!game.patte1 || !game.patte1_open);
+}
+isCloseInputEnabled(game: any): boolean {
+  return game.closeCountdown > 0 && (!game.patte2 || !game.patte2_close);
+}
+
+getGraceCountdown(game: any): number {
+  // Calculate seconds till grace period ends
+  const today = new Date().toISOString().split('T')[0];
+
+  // Take max(close, open) time
+  const openDT = new Date(`${today}T${game.open_time}`);
+  const closeDT = new Date(`${today}T${game.close_time}`);
+  const graceWindowEnd = new Date(Math.max(openDT.getTime(), closeDT.getTime()) + (60 * 60 * 1000)); // 1 hour after window ends
+  const now = new Date();
+
+  // Seconds remaining in grace period
+  return Math.max(0, Math.floor((graceWindowEnd.getTime() - now.getTime()) / 1000));
+}
+
+
+setInputEnabledFlags() {
+  this.comingSoonGames.forEach(game => {
+    const openActive = game.openCountdown > 0;
+    const closeActive = game.closeCountdown > 0;
+    const graceActive = this.getGraceCountdown(game) > 0;
+
+    const openFilled = !!(game.patte1 || game.patte1_open);
+    const closeFilled = !!(game.patte2 || game.patte2_close);
+
+    if (openFilled && closeFilled) {
+      // Both results filled, both disable
+      game.openInputEnabled = false;
+      game.closeInputEnabled = false;
+    } else if (graceActive && !openFilled && !closeFilled && !openActive && !closeActive) {
+      // 1 hour extension, both blank, both enable
+      game.openInputEnabled = true;
+      game.closeInputEnabled = true;
+    } else if (openActive && !openFilled) {
+      game.openInputEnabled = true;
+      game.closeInputEnabled = false;
+    } else if (closeActive && !closeFilled) {
+      game.openInputEnabled = false;
+      game.closeInputEnabled = true;
+    } else {
+      game.openInputEnabled = false;
+      game.closeInputEnabled = false;
+    }
+  });
+}
+
  
 
   ngOnDestroy() {
@@ -204,6 +258,7 @@ loadGames() {
     this.comingSoonGames.forEach(initCountdown);
     this.allGames.forEach(initCountdown);
 
+    this.setInputEnabledFlags();
     // Timer start karo agar already start nahi hua ho
     if (!this.timerSubscription) {
       this.timerSubscription = interval(1000).subscribe(() => {
