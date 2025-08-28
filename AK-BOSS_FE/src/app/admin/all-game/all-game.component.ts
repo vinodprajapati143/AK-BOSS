@@ -199,59 +199,48 @@ getGraceCountdown(game: any): number {
 
 
 setInputEnabledFlags() {
-  this.comingSoonGames.forEach(game => {
-    const openActive = game.openCountdown > 0;
-    const closeActive = game.closeCountdown > 0;
-    const bothActive = openActive && closeActive;
-    const graceActive = this.getGraceCountdown(game) > 0;
+this.comingSoonGames.forEach(game => {
+  const openWindowStarted = game.openCountdown <= (2.5 * 60 * 60) && game.openCountdown > 0;
+  const closeWindowStarted = game.closeCountdown <= (2.5 * 60 * 60) && game.closeCountdown > 0;
 
-    const openFilled = !!(game.patte1 || game.patte1_open);
-    const closeFilled = !!(game.patte2 || game.patte2_close);
+  const openFilled = !!(game.patte1 || game.patte1_open);
+  const closeFilled = !!(game.patte2 || game.patte2_close);
 
-    if (openFilled && closeFilled) {
-      // Dono filled hain, disable dono inputs
-      game.openInputEnabled = false;
-      game.closeInputEnabled = false;
-    } 
-    else if (bothActive && !openFilled && !closeFilled) {
-      // Dono windows active hain aur dono blank hain
-      game.openInputEnabled = true;
-      game.closeInputEnabled = true;
-    }
-    else if (closeActive && !openFilled) {
-      // Only close window active, but open input blank: open bhi enable ho
-      game.openInputEnabled = true;  // Force enable open input
-      game.closeInputEnabled = true;
-    }
-    else if (graceActive && !openActive && !closeActive) {
-      // Grace period me inputs ke hisab se enable/disable
-      if (!openFilled && closeFilled) {
-        game.openInputEnabled = true;
-        game.closeInputEnabled = false;
-      } else if (openFilled && !closeFilled) {
-        game.openInputEnabled = false;
-        game.closeInputEnabled = true;
-      } else if (!openFilled && !closeFilled) {
-        game.openInputEnabled = true;
-        game.closeInputEnabled = true;
-      }
-    }
-    else if (openActive && !openFilled) {
-      // Open window active aur input fill nahi
-      game.openInputEnabled = true;
-      game.closeInputEnabled = false;
-    }
-    else if (closeActive && !closeFilled) {
-      // Close window active aur input fill nahi
-      game.openInputEnabled = false;
-      game.closeInputEnabled = true;
-    } 
-    else {
-      // By default input disable dono
-      game.openInputEnabled = false;
-      game.closeInputEnabled = false;
-    }
-  });
+  // Open window logic
+  if (openWindowStarted && !openFilled) {
+    game.openInputEnabled = true;
+    game.closeInputEnabled = false;
+    return; // Exclusive priority
+  }
+  // After open window ends, but input is still not filled
+  if (game.openCountdown <= 0 && !openFilled) {
+    game.openInputEnabled = true;
+    game.closeInputEnabled = false;
+    return;
+  }
+  // Close window logic
+  if (closeWindowStarted && !closeFilled) {
+    game.openInputEnabled = false;
+    game.closeInputEnabled = true;
+    return;
+  }
+  // After close window ends, but input is still not filled
+  if (game.closeCountdown <= 0 && !closeFilled) {
+    game.openInputEnabled = false;
+    game.closeInputEnabled = true;
+    return;
+  }
+  // If both inputs are filled, disable both
+  if (openFilled && closeFilled) {
+    game.openInputEnabled = false;
+    game.closeInputEnabled = false;
+    return;
+  }
+  // Default fallback (shouldn't be reached in normal operation)
+  game.openInputEnabled = false;
+  game.closeInputEnabled = false;
+});
+
 }
 
 
