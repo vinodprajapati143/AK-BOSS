@@ -294,10 +294,19 @@ exports.getPublicGames = async (req, res) => {
         }
       }
 
+      let starsWithDashes = [
+      ...stars.slice(0, 3),  // first 3 stars
+      '-',                   // dash after 3rd star
+      stars[3],              // 4th star
+      stars[4],              // 5th star
+      '-',                   // dash after 5th star
+      ...stars.slice(5, 8),  // 6th to 8th stars
+    ];
+
       return {
         id: game.id,
         game_name: game.game_name,
-        stars,
+        starsWithDashes,
         open_time: game.open_time,
         close_time: game.close_time,
         phase,
