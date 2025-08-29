@@ -68,11 +68,79 @@ exports.getGameList = async (req, res) => {
   }
 };
 
+// exports.getNearestGames = async (req, res) => {
+//   try {
+//     const now = new Date();
+//     const offset = 5.5 * 60 * 60 * 1000; // IST offset
+//     const nowIST = new Date(now.getTime() + offset);
+//     const year = nowIST.getFullYear();
+//     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+//     const day = nowIST.getDate().toString().padStart(2, '0');
+//     const todayIST = `${year}-${month}-${day}`;
+
+//     // Get all games for admin
+//     const [games] = await db.query(
+//       `SELECT id, game_name, open_time, close_time, days 
+//        FROM games WHERE created_by = ? ORDER BY id DESC`, [req.user.id]
+//     );
+
+//     // Fetch inputs for today for all games
+//     const gameIds = games.map(g => g.id);
+//     let inputsMap = {};
+//     if (gameIds.length > 0) {
+//       const [inputs] = await db.query(
+//         `SELECT * FROM game_inputs WHERE game_id IN (?) AND input_date = ?`,
+//         [gameIds, todayIST]
+//       );
+//       inputs.forEach(input => {
+//         inputsMap[input.game_id] = input;
+//       });
+//     }
+
+//     const futureOpen = [];
+//     const allGames = [];
+
+//     games.forEach(game => {
+//       // Add inputs if exists
+//       const input = inputsMap[game.id] || {};
+//       game.patte1 = input.patte1 || "";
+//       game.patte1_open = input.patte1_open || "";
+//       game.patte2_close = input.patte2_close || "";
+//       game.patte2 = input.patte2 || "";
+
+//       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+//       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+//       const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+//       const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
+//       const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+//       const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
+
+//       const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
+//       const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
+
+//       const openInputsFilled = game.patte1 || game.patte1_open;
+//       const closeInputsFilled = game.patte2_close || game.patte2;
+
+//       if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
+//         futureOpen.push(game);
+//       } else {
+//         allGames.push(game);
+//       }
+//     });
+
+//     res.json({ futureOpen, allGames });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
 exports.getNearestGames = async (req, res) => {
   try {
     const now = new Date();
     const offset = 5.5 * 60 * 60 * 1000; // IST offset
     const nowIST = new Date(now.getTime() + offset);
+
     const year = nowIST.getFullYear();
     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
     const day = nowIST.getDate().toString().padStart(2, '0');
@@ -81,7 +149,8 @@ exports.getNearestGames = async (req, res) => {
     // Get all games for admin
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days 
-       FROM games WHERE created_by = ? ORDER BY id DESC`, [req.user.id]
+       FROM games WHERE created_by = ? ORDER BY id DESC`,
+      [req.user.id]
     );
 
     // Fetch inputs for today for all games
@@ -101,13 +170,21 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
 
     games.forEach(game => {
-      // Add inputs if exists
       const input = inputsMap[game.id] || {};
-      game.patte1 = input.patte1 || "";
-      game.patte1_open = input.patte1_open || "";
-      game.patte2_close = input.patte2_close || "";
-      game.patte2 = input.patte2 || "";
 
+      // Calculate timeline based on game open time today
+      const gameStartTime = new Date(`${todayIST}T${game.open_time}`);
+
+      // Time difference in milliseconds between game start and now
+      const diffMs = gameStartTime.getTime() - nowIST.getTime();
+
+      // Thresholds in milliseconds
+      const showValuesUntil = 22 * 60 * 60 * 1000; // 22 hours (4pm previous day to 2pm current day)
+      const showPlaceholderFrom = 22 * 60 * 60 * 1000; // Same as above, starts placeholder after this time
+      const showPlaceholderUntil = 20.5 * 60 * 60 * 1000; // 20.5 hours (2pm to 3:30pm)
+      const futureOpenThreshold = 30 * 60 * 1000; // 30 minutes before game start (3:30pm)
+
+      // Old ±30 min open and close window
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
@@ -119,13 +196,47 @@ exports.getNearestGames = async (req, res) => {
       const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
       const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
 
-      const openInputsFilled = game.patte1 || game.patte1_open;
-      const closeInputsFilled = game.patte2_close || game.patte2;
+      const openInputsFilled = input.patte1 || input.patte1_open;
+      const closeInputsFilled = input.patte2_close || input.patte2;
 
-      if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
+      // Decide what to show for inputs & where to put the game
+      if (diffMs > showValuesUntil) {
+        // More than 22 hours before game start: show existing inputs as is
+        game.patte1 = input.patte1 || '';
+        game.patte1_open = input.patte1_open || '';
+        game.patte2_close = input.patte2_close || '';
+        game.patte2 = input.patte2 || '';
+        allGames.push(game);
+      } else if (diffMs <= showValuesUntil && diffMs > showPlaceholderUntil) {
+        // Between 2pm and 3:30pm: show placeholder ***
+        game.patte1 = '***';
+        game.patte1_open = '***';
+        game.patte2_close = '***';
+        game.patte2 = '***';
+        allGames.push(game);
+      } else if (diffMs <= showPlaceholderUntil && diffMs > futureOpenThreshold) {
+        // Last 30 minutes before game start: empty input for new record (future open)
+        game.patte1 = '';
+        game.patte1_open = '';
+        game.patte2_close = '';
+        game.patte2 = '';
         futureOpen.push(game);
       } else {
-        allGames.push(game);
+        // Game started or past: show existing or empty
+        game.patte1 = input.patte1 || '';
+        game.patte1_open = input.patte1_open || '';
+        game.patte2_close = input.patte2_close || '';
+        game.patte2 = input.patte2 || '';
+
+        // Apply old logic for windows: if inside open/close window and inputs missing, mark futureOpen
+        if (
+          (insideOpenWindow && !openInputsFilled) ||
+          (insideCloseWindow && !closeInputsFilled)
+        ) {
+          futureOpen.push(game);
+        } else {
+          allGames.push(game);
+        }
       }
     });
 
@@ -134,7 +245,6 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 
 
 
