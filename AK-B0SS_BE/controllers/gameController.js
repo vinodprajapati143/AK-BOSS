@@ -204,6 +204,101 @@ exports.saveGameInput = async (req, res) => {
   }
 };
 
+exports.getPublicGames = async (req, res) => {
+  try {
+    const now = new Date();
+    const offset = 5.5 * 60 * 60 * 1000; // IST offset
+    const nowIST = new Date(now.getTime() + offset);
+
+    const year = nowIST.getFullYear();
+    const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+    const day = nowIST.getDate().toString().padStart(2, '0');
+    const todayIST = `${year}-${month}-${day}`;
+
+    // Yesterday date calculation
+    const yesterdayIST = new Date(nowIST);
+    yesterdayIST.setDate(yesterdayIST.getDate() - 1);
+    const yYear = yesterdayIST.getFullYear();
+    const yMonth = (yesterdayIST.getMonth() + 1).toString().padStart(2, '0');
+    const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
+    const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
+
+    // Get all active games
+    const [games] = await db.query(
+      `SELECT id, game_name, open_time, close_time, days
+       FROM games ORDER BY id ASC`
+    );
+
+    const gameIds = games.map(g => g.id);
+    let inputsMap = {};
+    if (gameIds.length > 0) {
+      const [inputs] = await db.query(
+        `SELECT gi.* FROM game_inputs gi
+         INNER JOIN (
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+           GROUP BY game_id
+         ) t ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+        [gameIds, todayIST, yesterdayDate]
+      );
+
+      inputs.forEach(input => {
+        inputsMap[input.game_id] = input;
+      });
+    }
+
+    const resultGames = games.map(game => {
+      const input = inputsMap[game.id] || {};
+      const patte1 = input.patte1 || "";
+      const patte1_open = input.patte1_open || "";
+      const patte2_close = input.patte2_close || "";
+      const patte2 = input.patte2 || "";
+
+      // Calculate phases based on open and close time and current time
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+      let phase = 'waiting';
+      if (nowIST >= openDateTime && nowIST < closeDateTime) {
+        phase = 'open';
+      } else if (nowIST >= closeDateTime) {
+        phase = 'close';
+      }
+
+      // Create stars array
+      let stars = Array(8).fill("*");
+
+      // Replace stars based on phase and admin inputs
+      for (let i = 0; i < Math.min(3, patte1.length); i++) {
+        stars[i] = patte1[i];
+      }
+      if (phase === 'open' && patte1_open.length > 0) {
+        stars[3] = patte1_open[0];
+      }
+      if (phase === 'close' && patte2_close.length > 0) {
+        stars[7] = patte2_close[0];
+      }
+
+      return {
+        id: game.id,
+        game_name: game.game_name,
+        stars,
+        open_time: game.open_time,
+        close_time: game.close_time,
+        phase,
+        days: JSON.parse(game.days)
+      };
+    });
+
+    res.json({ games: resultGames });
+  } catch (err) {
+    console.error("getPublicGames error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
 
 
 

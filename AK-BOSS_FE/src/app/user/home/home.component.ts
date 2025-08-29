@@ -1,18 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgFor, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { MarqureeComponent } from '../../shared/marquree/marquree.component';
 import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating-buttons.component";
+import { GameDisplayComponent } from "../../shared/game-display/game-display.component";
+import { ApiService } from '../../core/services/api.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgFor, CommonModule, RouterModule, HeaderComponent, MarqureeComponent, FloatingButtonsComponent],
+  imports: [NgFor, CommonModule, RouterModule, HeaderComponent, MarqureeComponent, FloatingButtonsComponent, GameDisplayComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
-constructor(private router: Router) {}
+export class HomeComponent implements OnInit {
+  games: any;
+constructor(private router: Router, private gameService: ApiService ) {}
    
    chartData = [
     {
@@ -104,6 +107,10 @@ constructor(private router: Router) {}
     // Repeat as needed
   ];
 
+  ngOnInit(): void {
+    this.loadpubligames()
+  }
+
   openChart() {
     this.router.navigate(['/admin/users']);
   }
@@ -115,4 +122,18 @@ constructor(private router: Router) {}
    todayReport() {
     this.router.navigate(['/user/today-report']);
   }
+
+  loadpubligames(){
+    this.gameService.getpublicGames().subscribe({
+    next: (res) => {
+      this.games = res.games;
+      console.log('this.games: ', this.games);
+    },
+    error: (err) => {
+      console.error('Failed to fetch games', err);
+    }
+  });
+
+  }
+
 }

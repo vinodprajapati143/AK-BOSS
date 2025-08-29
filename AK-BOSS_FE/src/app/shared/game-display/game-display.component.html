@@ -1,0 +1,34 @@
+  <!-- Top Section -->
+  <div
+    class="bg-white text-center py-4 mt-2 border-y flex items-center justify-center flex-col border-y-solid border-y-black shadow">
+    <h2 class="text-teal-700 text-2xl font-bold">{{ gameName }}</h2>
+
+    <!-- Stars display -->
+    <div class="text-teal-700 font-bold mb-1">
+      <ng-container *ngFor="let star of stars; let i = index">
+        <span>{{ star }}</span>
+        <ng-container *ngIf="i < stars.length - 1"> </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Timer boxes -->
+    <div class="flex items-center justify-center space-x-1 py-1 px-4 rounded-md border border-orange-400"
+      style="background: linear-gradient(90deg, #6EC1E4, #FBB040);">
+      
+      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">
+        {{ timer.hours }}
+      </div>
+
+      <span class="text-white text-sm font-bold">:</span>
+
+      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">
+        {{ timer.minutes }}
+      </div>
+
+      <span class="text-white text-sm font-bold">:</span>
+
+      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">
+        {{ timer.seconds }}
+      </div>
+    </div>
+  </div>

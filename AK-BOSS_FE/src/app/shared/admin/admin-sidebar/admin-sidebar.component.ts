@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../../core/services/api.service';
+import { ToastrService } from 'ngx-toastr';
+import { StorageService } from '../../../core/services/storage.service';
+import { Router } from '@angular/router';
 
 export interface User {
   name: string;
@@ -18,6 +22,10 @@ export interface User {
   styleUrl: './admin-sidebar.component.scss'
 })
 export class AdminSidebarComponent {
+
+ constructor(private router: Router, private strorageservice: StorageService, private toaster: ToastrService, private backendservice: ApiService) {
+
+  }
 
   links = [{
     "img": "home",
@@ -54,13 +62,7 @@ export class AdminSidebarComponent {
     "href": "/admin/help",
     "text": "Help",
     "active": false
-  },
-  {
-    "img": "logout",
-    "href": "#",
-    "text": "LogOut",
-    "active": false
-  }]
+  } ]
 
   subLinks = [{
     "img": "gamepad",
@@ -120,5 +122,24 @@ export class AdminSidebarComponent {
 
   getImageUrl(img: string, active: boolean | undefined) {
     return `/assets/images/dashboard/icons/${img}${active ? '-white' : ''}.svg`
+  }
+
+   logout() {
+    this.backendservice.logout({}).subscribe({
+      next: (res: any) => {
+        this.toaster.success(res.message);
+        this.strorageservice.removeItem('authToken');
+        this.strorageservice.clear();
+        this.strorageservice.clearCookies();
+
+
+        this.router.navigate(['/user/home']);
+      },
+      error: err => {
+        console.error('Logout failed:', err);
+        this.strorageservice.removeItem('authToken');
+        // this.router.navigate(['/home']);
+      }
+    });
   }
 }

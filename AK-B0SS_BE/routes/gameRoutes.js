@@ -8,6 +8,9 @@ router.post("/add-game", verifyToken, gameController.addGame);
 router.get("/game-list",verifyToken, gameController.getGameList);
 router.get("/nearest-game-list",verifyToken, gameController.getNearestGames);
 router.post("/save-game-input",verifyToken, gameController.saveGameInput);
+router.get("/public-game-list", gameController.getPublicGames);
+
+
 
 
 

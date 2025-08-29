@@ -10,6 +10,11 @@
                         <img [src]="getImageUrl(link.img, link.active)" alt="">{{link.text}}
                     </a>
                 </li>
+                  <li  >
+                    <a (click)="logout()"   >
+                        <img [src]="getImageUrl('logout', false)" alt="">Logout
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="right flex-1">
@@ -19,6 +24,7 @@
                         <img [src]="getImageUrl(link.img, !link.active)" alt="">{{link.text}}
                     </a>
                 </li>
+                
             </ul>
         </div>
 
