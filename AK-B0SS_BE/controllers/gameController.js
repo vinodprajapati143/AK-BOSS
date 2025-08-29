@@ -144,18 +144,20 @@ exports.getNearestGames = async (req, res) => {
     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
     const day = nowIST.getDate().toString().padStart(2, '0');
     const todayIST = `${year}-${month}-${day}`;
-    const tomorrowIST = new Date(nowIST.getTime() + 24 * 60 * 60 * 1000);
-    const tYear = tomorrowIST.getFullYear();
-    const tMonth = (tomorrowIST.getMonth() + 1).toString().padStart(2, '0');
-    const tDay = tomorrowIST.getDate().toString().padStart(2, '0');
+    const tomorrowDateObj = new Date(nowIST.getTime() + 24 * 60 * 60 * 1000);
+    const tYear = tomorrowDateObj.getFullYear();
+    const tMonth = (tomorrowDateObj.getMonth() + 1).toString().padStart(2, '0');
+    const tDay = tomorrowDateObj.getDate().toString().padStart(2, '0');
     const tomorrowDateStr = `${tYear}-${tMonth}-${tDay}`;
 
+    // Get all games for admin
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days 
        FROM games WHERE created_by = ? ORDER BY id DESC`,
       [req.user.id]
     );
 
+    // Fetch inputs for today and tomorrow for window bridging
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
     if (gameIds.length > 0) {
@@ -164,6 +166,7 @@ exports.getNearestGames = async (req, res) => {
         [gameIds, todayIST, tomorrowDateStr]
       );
       inputs.forEach(input => {
+        // Pick latest input by date for each game
         if (!inputsMap[input.game_id] || inputsMap[input.game_id].input_date < input.input_date) {
           inputsMap[input.game_id] = input;
         }
@@ -176,6 +179,7 @@ exports.getNearestGames = async (req, res) => {
     games.forEach(game => {
       const input = inputsMap[game.id] || {};
 
+      // Old ±30min window for open and close times
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
@@ -190,12 +194,14 @@ exports.getNearestGames = async (req, res) => {
       const openInputsFilled = input.patte1 || input.patte1_open;
       const closeInputsFilled = input.patte2_close || input.patte2;
 
+      // New custom window: 4pm today to 2pm tomorrow (22 hours window)
       const customOpenTime = new Date(`${todayIST}T16:00:00`);
       const customExpireTime = new Date(customOpenTime.getTime() + 22 * 60 * 60 * 1000);
 
       const isInputActive = nowIST >= customOpenTime && nowIST < customExpireTime;
       const isInputExpired = nowIST >= customExpireTime;
 
+      // Set input fields or placeholder based on expiry
       if (isInputExpired) {
         game.patte1 = '***';
         game.patte1_open = '***';
@@ -208,6 +214,7 @@ exports.getNearestGames = async (req, res) => {
         game.patte2 = input.patte2 || '';
       }
 
+      // Decide futureOpen inclusion based on old windows or new custom active window + missing inputs
       if (
         ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) ||
         (isInputActive && (!input.patte1 || !input.patte1_open || !input.patte2 || !input.patte2_close))
@@ -223,6 +230,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 
 
