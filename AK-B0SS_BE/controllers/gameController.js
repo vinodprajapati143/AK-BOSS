@@ -135,67 +135,83 @@ exports.getGameList = async (req, res) => {
 //   }
 // };
 
+ 
 exports.getNearestGames = async (req, res) => {
   try {
     const now = new Date();
     const offset = 5.5 * 60 * 60 * 1000; // IST offset
     const nowIST = new Date(now.getTime() + offset);
-
-    // आज और कल दोनों की तारीख़
     const year = nowIST.getFullYear();
     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
     const day = nowIST.getDate().toString().padStart(2, '0');
     const todayIST = `${year}-${month}-${day}`;
 
-    const yesterdayISTobj = new Date(nowIST.getTime() - 24 * 60 * 60 * 1000);
-    const yYear = yesterdayISTobj.getFullYear();
-    const yMonth = (yesterdayISTobj.getMonth() + 1).toString().padStart(2, '0');
-    const yDay = yesterdayISTobj.getDate().toString().padStart(2, '0');
-    const yesterdayIST = `${yYear}-${yMonth}-${yDay}`;
-
-    // Admin के सारे games निकालें
+    // Get all games for admin
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, days FROM games WHERE created_by = ? ORDER BY id DESC`,
-      [req.user.id]
+      `SELECT id, game_name, open_time, close_time, days, created_at 
+       FROM games WHERE created_by = ? ORDER BY id DESC`, 
+       [req.user.id]
     );
 
+    // Fetch inputs for today for all games
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
-
     if (gameIds.length > 0) {
-      // आज और कल दोनों दिनों के inputs fetch करें
-      const placeholders = gameIds.map(() => '?').join(',');
-      const query = `
-        SELECT * FROM game_inputs
-        WHERE game_id IN (${placeholders})
-          AND (input_date = ? OR input_date = ?)
-        ORDER BY input_date DESC, created_at DESC
-      `;
-      const [inputs] = await db.query(query, [...gameIds, todayIST, yesterdayIST]);
-
-      // हर गेम के लिए latest input map करें
+      const [inputs] = await db.query(
+        `SELECT * FROM game_inputs WHERE game_id IN (?) AND input_date = ?`,
+        [gameIds, todayIST]
+      );
       inputs.forEach(input => {
-        if (!inputsMap[input.game_id]) {
-          inputsMap[input.game_id] = input;
-        }
+        inputsMap[input.game_id] = input;
       });
     }
 
     const futureOpen = [];
     const allGames = [];
 
-    games.forEach(game => {
+    for (const game of games) {
+      // Add inputs if exists
       const input = inputsMap[game.id] || {};
+      game.patte1 = input.patte1 || "";
+      game.patte1_open = input.patte1_open || "";
+      game.patte2_close = input.patte2_close || "";
+      game.patte2 = input.patte2 || "";
 
-      const gameStartTime = new Date(`${todayIST}T${game.open_time}`);
-      const diffMs = gameStartTime - nowIST; // गेम शुरू होने तक बचा समय (ms में)
+      // -------------------------------
+      // ✅ NEW FLOW: created_at → cutoff → masking
+      // -------------------------------
+      const createdAt = new Date(game.created_at);
+      const cutoffTime = new Date(`${todayIST}T14:00:00`); // 2PM cutoff
+      const maskEndTime = new Date(`${todayIST}T15:30:00`); // 3:30PM masking end
 
-      // टाइम thresholds
-      const showInputDuration = 22 * 60 * 60 * 1000; // पुराने input को दिखाने का समय (22 घंटे)
-      const placeholderDuration = 1.5 * 60 * 60 * 1000; // placeholder दिखाने का समय (1.5 घंटे)
-      const futureOpenDuration = 30 * 60 * 1000; // future input के लिए 30 मिनट
+      if (nowIST <= cutoffTime && nowIST >= createdAt) {
+        // 👉 Show inputs normally (no masking)
+        // nothing extra to do (game already has inputs attached)
+      } else if (nowIST > cutoffTime && nowIST <= maskEndTime) {
+        // 👉 Mask inputs with ***
+        game.patte1 = "***";
+        game.patte1_open = "***";
+        game.patte2_close = "***";
+        game.patte2 = "***";
+      } else if (nowIST > maskEndTime) {
+        // 👉 Move to futureOpen and auto-create a new input record if not exists
+        const [existing] = await db.query(
+          `SELECT id FROM game_inputs WHERE game_id = ? AND input_date = ?`,
+          [game.id, todayIST]
+        );
+        if (existing.length === 0) {
+          await db.query(
+            `INSERT INTO game_inputs (game_id, input_date, created_at) VALUES (?, ?, NOW())`,
+            [game.id, todayIST]
+          );
+        }
+        futureOpen.push(game);
+        continue; // skip normal future logic (already handled)
+      }
 
-      // पुराना ±30 मिनट वाला open/close window
+      // -------------------------------
+      // ✅ ORIGINAL FUTURE WINDOW LOGIC (keep as it is)
+      // -------------------------------
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
@@ -207,49 +223,19 @@ exports.getNearestGames = async (req, res) => {
       const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
       const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
 
-      const openInputsFilled = input.patte1 || input.patte1_open;
-      const closeInputsFilled = input.patte2_close || input.patte2;
+      const openInputsFilled = game.patte1 || game.patte1_open;
+      const closeInputsFilled = game.patte2_close || game.patte2;
 
-      // लॉजिक: input दिखाने की स्थिति
-      if (diffMs > showInputDuration) {
-        // पुराने इनपुट 22 घंटे तक वैसे ही दिखाएं
-        game.patte1 = input.patte1 || '';
-        game.patte1_open = input.patte1_open || '';
-        game.patte2_close = input.patte2_close || '';
-        game.patte2 = input.patte2 || '';
-        allGames.push(game);
-      } else if (diffMs <= showInputDuration && diffMs > (showInputDuration - placeholderDuration)) {
-        // 2pm से 3:30pm तक placeholder *** दिखाएं
-        game.patte1 = '***';
-        game.patte1_open = '***';
-        game.patte2_close = '***';
-        game.patte2 = '***';
-        allGames.push(game);
-      } else if (diffMs <= (showInputDuration - placeholderDuration) && diffMs > futureOpenDuration) {
-        // अंतिम 30 मिनटों में future open के लिए खाली इनपुट कलियर करें
-        game.patte1 = '';
-        game.patte1_open = '';
-        game.patte2_close = '';
-        game.patte2 = '';
+      if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
         futureOpen.push(game);
       } else {
-        // बाकी समय (गेम शुरू होने के बाद) old ±30 min logic लागू करें
-        game.patte1 = input.patte1 || '';
-        game.patte1_open = input.patte1_open || '';
-        game.patte2_close = input.patte2_close || '';
-        game.patte2 = input.patte2 || '';
-
-        if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
-          futureOpen.push(game);
-        } else {
-          allGames.push(game);
-        }
+        allGames.push(game);
       }
-    });
+    }
 
     res.json({ futureOpen, allGames });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
