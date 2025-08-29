@@ -115,51 +115,68 @@ subscriptions: { [gameId: number]: Subscription } = {};
     this.loadpubligames()
   }
 
-  startCountdown(game: any) {
-  // Clear previous subscription if any
+startCountdown(game: any) {
+  // Unsubscribe previous timer if it exists
   if (this.subscriptions[game.id]) {
     this.subscriptions[game.id].unsubscribe();
   }
 
-  const offset = 5.5 * 60 * 60 * 1000; // IST offset in ms
-
   this.subscriptions[game.id] = timer(0, 1000).pipe(
     map(() => {
       const nowUTC = new Date();
-      const now = new Date(nowUTC.getTime() + offset); // current IST time
 
-      // Parse today's date string for calculations
-      const dateStr = now.toISOString().split('T')[0];
+      // Parse open_time and close_time strings into numbers
+      const [openH, openM, openS] = (game.open_time || "00:00:00").split(':').map(Number);
+      const [closeH, closeM, closeS] = (game.close_time || "00:00:00").split(':').map(Number);
 
-      // Get open and close date-times
-      let openTime = new Date(`${dateStr}T${game.open_time}`);
-      let closeTime = new Date(`${dateStr}T${game.close_time}`);
+      // Get today's date in UTC parts
+      const yearUTC = nowUTC.getUTCFullYear();
+      const monthUTC = nowUTC.getUTCMonth();
+      const dateUTC = nowUTC.getUTCDate();
 
-      // If close time is earlier than open, assume close is next day
-      if (closeTime <= openTime) {
-        closeTime.setDate(closeTime.getDate() + 1);
+      // Construct open and close times in UTC corresponding to IST by subtracting 5.5 hours from IST target
+      // IST = UTC + 5:30, so subtract 5h30m to get UTC
+      const openDateTimeUTC = new Date(Date.UTC(yearUTC, monthUTC, dateUTC, openH - 5, openM - 30, openS));
+      const closeDateTimeUTC = new Date(Date.UTC(yearUTC, monthUTC, dateUTC, closeH - 5, closeM - 30, closeS));
+
+      // Adjust if minutes became negative after subtracting 30
+      if (openDateTimeUTC.getUTCMinutes() < 0) {
+        openDateTimeUTC.setUTCHours(openDateTimeUTC.getUTCHours() - 1);
+        openDateTimeUTC.setUTCMinutes(openDateTimeUTC.getUTCMinutes() + 60);
+      }
+      if (closeDateTimeUTC.getUTCMinutes() < 0) {
+        closeDateTimeUTC.setUTCHours(closeDateTimeUTC.getUTCHours() - 1);
+        closeDateTimeUTC.setUTCMinutes(closeDateTimeUTC.getUTCMinutes() + 60);
       }
 
-      // Decide target time to countdown to based on phase & current time 
-      let targetTime: Date;
+      // If close time is earlier or equal to open time, close time is next day
+      if (closeDateTimeUTC <= openDateTimeUTC) {
+        closeDateTimeUTC.setUTCDate(closeDateTimeUTC.getUTCDate() + 1);
+      }
 
-      if (game.phase === 'waiting' || now < openTime) {
-        targetTime = openTime;
-      } else if (game.phase === 'open' && now >= openTime && now < closeTime) {
-        targetTime = closeTime;
+      // Determine target countdown time according to current time and phase
+      let targetTimeUTC: Date;
+
+      if (nowUTC < openDateTimeUTC) {
+        // Before open time
+        targetTimeUTC = openDateTimeUTC;
+      } else if (nowUTC >= openDateTimeUTC && nowUTC < closeDateTimeUTC) {
+        // During open-close interval
+        targetTimeUTC = closeDateTimeUTC;
       } else {
-        // Countdown to next open time (next day)
-        openTime.setDate(openTime.getDate() + 1);
-        targetTime = openTime;
+        // After close time, countdown to next day's open
+        openDateTimeUTC.setUTCDate(openDateTimeUTC.getUTCDate() + 1);
+        targetTimeUTC = openDateTimeUTC;
       }
 
-      let diff = targetTime.getTime() - now.getTime();
+      // Calculate difference in milliseconds
+      let diffMs = targetTimeUTC.getTime() - nowUTC.getTime();
+      if (diffMs < 0) diffMs = 0;
 
-      if (diff < 0) diff = 0;
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      // Calculate hours, minutes, seconds
+      const hours = Math.floor(diffMs / (1000 * 60 * 60));
+      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
       return {
         hours: String(hours).padStart(2, '0'),
@@ -171,6 +188,8 @@ subscriptions: { [gameId: number]: Subscription } = {};
     this.countdowns[game.id] = time;
   });
 }
+
+
 
 
   openChart() {
