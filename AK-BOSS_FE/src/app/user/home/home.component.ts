@@ -6,6 +6,7 @@ import { MarqureeComponent } from '../../shared/marquree/marquree.component';
 import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating-buttons.component";
 import { GameDisplayComponent } from "../../shared/game-display/game-display.component";
 import { ApiService } from '../../core/services/api.service';
+import { map, Subscription, timer } from 'rxjs';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -107,9 +108,70 @@ constructor(private router: Router, private gameService: ApiService ) {}
     // Repeat as needed
   ];
 
+  countdowns: { [gameId: number]: { hours: string; minutes: string; seconds: string } } = {};
+subscriptions: { [gameId: number]: Subscription } = {};
+
   ngOnInit(): void {
     this.loadpubligames()
   }
+
+  startCountdown(game: any) {
+  // Clear previous subscription if any
+  if (this.subscriptions[game.id]) {
+    this.subscriptions[game.id].unsubscribe();
+  }
+
+  const offset = 5.5 * 60 * 60 * 1000; // IST offset in ms
+
+  this.subscriptions[game.id] = timer(0, 1000).pipe(
+    map(() => {
+      const nowUTC = new Date();
+      const now = new Date(nowUTC.getTime() + offset); // current IST time
+
+      // Parse today's date string for calculations
+      const dateStr = now.toISOString().split('T')[0];
+
+      // Get open and close date-times
+      let openTime = new Date(`${dateStr}T${game.open_time}`);
+      let closeTime = new Date(`${dateStr}T${game.close_time}`);
+
+      // If close time is earlier than open, assume close is next day
+      if (closeTime <= openTime) {
+        closeTime.setDate(closeTime.getDate() + 1);
+      }
+
+      // Decide target time to countdown to based on phase & current time 
+      let targetTime: Date;
+
+      if (game.phase === 'waiting' || now < openTime) {
+        targetTime = openTime;
+      } else if (game.phase === 'open' && now >= openTime && now < closeTime) {
+        targetTime = closeTime;
+      } else {
+        // Countdown to next open time (next day)
+        openTime.setDate(openTime.getDate() + 1);
+        targetTime = openTime;
+      }
+
+      let diff = targetTime.getTime() - now.getTime();
+
+      if (diff < 0) diff = 0;
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      return {
+        hours: String(hours).padStart(2, '0'),
+        minutes: String(minutes).padStart(2, '0'),
+        seconds: String(seconds).padStart(2, '0'),
+      };
+    })
+  ).subscribe(time => {
+    this.countdowns[game.id] = time;
+  });
+}
+
 
   openChart() {
     this.router.navigate(['/admin/users']);
@@ -127,6 +189,7 @@ constructor(private router: Router, private gameService: ApiService ) {}
     this.gameService.getpublicGames().subscribe({
     next: (res) => {
       this.games = res.games;
+      this.games.forEach((game: any) => this.startCountdown(game));
       console.log('this.games: ', this.games);
     },
     error: (err) => {

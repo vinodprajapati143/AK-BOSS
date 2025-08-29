@@ -267,17 +267,31 @@ exports.getPublicGames = async (req, res) => {
       }
 
       // Create stars array
-      let stars = Array(8).fill("*");
+      let stars = Array(8).fill("★");
 
       // Replace stars based on phase and admin inputs
-      for (let i = 0; i < Math.min(3, patte1.length); i++) {
-        stars[i] = patte1[i];
+   // 1st to 3rd stars from patte1
+      for (let i = 0; i < 3; i++) {
+        if (patte1 && patte1.length > i) {
+          stars[i] = patte1.charAt(i);
+        }
       }
-      if (phase === 'open' && patte1_open.length > 0) {
-        stars[3] = patte1_open[0];
+
+      // 4th star from patte1_open
+      if (patte1_open && patte1_open.length > 0) {
+        stars[3] = patte1_open.charAt(0);
       }
-      if (phase === 'close' && patte2_close.length > 0) {
-        stars[7] = patte2_close[0];
+
+      // 5th star from patte2_close
+      if (patte2_close && patte2_close.length > 0) {
+        stars[4] = patte2_close.charAt(0);
+      }
+
+      // 6th to 8th stars from patte2
+      for (let i = 0; i < 3; i++) {
+        if (patte2 && patte2.length > i) {
+          stars[5 + i] = patte2.charAt(i);
+        }
       }
 
       return {
@@ -287,7 +301,6 @@ exports.getPublicGames = async (req, res) => {
         open_time: game.open_time,
         close_time: game.close_time,
         phase,
-        days: JSON.parse(game.days)
       };
     });
 
