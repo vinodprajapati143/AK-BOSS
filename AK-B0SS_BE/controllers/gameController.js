@@ -137,44 +137,45 @@ exports.getGameList = async (req, res) => {
 
 exports.getNearestGames = async (req, res) => {
   try {
-    // IST Timezone Date & Time
     const now = new Date();
-    const offset = 5.5 * 60 * 60 * 1000;
+    const offset = 5.5 * 60 * 60 * 1000; // IST offset
     const nowIST = new Date(now.getTime() + offset);
 
-    // आज और कल की तारीख़ तैयार करें
+    // आज और कल दोनों की तारीख़
     const year = nowIST.getFullYear();
     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
     const day = nowIST.getDate().toString().padStart(2, '0');
     const todayIST = `${year}-${month}-${day}`;
+
     const yesterdayISTobj = new Date(nowIST.getTime() - 24 * 60 * 60 * 1000);
     const yYear = yesterdayISTobj.getFullYear();
     const yMonth = (yesterdayISTobj.getMonth() + 1).toString().padStart(2, '0');
     const yDay = yesterdayISTobj.getDate().toString().padStart(2, '0');
     const yesterdayIST = `${yYear}-${yMonth}-${yDay}`;
 
-    // Get all games for admin
+    // Admin के सारे games निकालें
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, days
-       FROM games WHERE created_by = ? ORDER BY id DESC`,
+      `SELECT id, game_name, open_time, close_time, days FROM games WHERE created_by = ? ORDER BY id DESC`,
       [req.user.id]
     );
 
-    // Fetch input records for today और कल दोनों
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
-    if (gameIds.length > 0) {
-      const [inputs] = await db.query(
-        `SELECT * FROM game_inputs WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)`,
-        [gameIds, todayIST, yesterdayIST]
-      );
 
-      // latest input चुने हर game_id के लिए
+    if (gameIds.length > 0) {
+      // आज और कल दोनों दिनों के inputs fetch करें
+      const placeholders = gameIds.map(() => '?').join(',');
+      const query = `
+        SELECT * FROM game_inputs
+        WHERE game_id IN (${placeholders})
+          AND (input_date = ? OR input_date = ?)
+        ORDER BY input_date DESC, created_at DESC
+      `;
+      const [inputs] = await db.query(query, [...gameIds, todayIST, yesterdayIST]);
+
+      // हर गेम के लिए latest input map करें
       inputs.forEach(input => {
-        if (
-          !inputsMap[input.game_id] ||
-          new Date(inputsMap[input.game_id].input_date) < new Date(input.input_date)
-        ) {
+        if (!inputsMap[input.game_id]) {
           inputsMap[input.game_id] = input;
         }
       });
@@ -186,54 +187,53 @@ exports.getNearestGames = async (req, res) => {
     games.forEach(game => {
       const input = inputsMap[game.id] || {};
 
-      // कल 4pm से आज 2pm तक पुराना input दिखेगा (22 घंटे)
-      // 2pm से 3:30pm तक placeholder (1.5 घंटे), फिर futureOpen में नया input अलाउ होगा (3:30pm से game start तक)
-      // गेम की open_time मान लो जैसे 19:15:00 (रात 7:15pm)
-
-      // कल 4pm निकाले:
-      const yesterdayOpenTime = new Date(`${yesterdayIST}T16:00:00`);
-      const today2pm = new Date(`${todayIST}T14:00:00`);
-      const today3_30pm = new Date(`${todayIST}T15:30:00`);
       const gameStartTime = new Date(`${todayIST}T${game.open_time}`);
+      const diffMs = gameStartTime - nowIST; // गेम शुरू होने तक बचा समय (ms में)
 
-      // टाइम कैल्कुलेट करें
-      if (nowIST >= yesterdayOpenTime && nowIST < today2pm) {
-        // 4pm (कल) से आज 2pm तक पुराना इनपुट दिखाएँ
+      // टाइम thresholds
+      const showInputDuration = 22 * 60 * 60 * 1000; // पुराने input को दिखाने का समय (22 घंटे)
+      const placeholderDuration = 1.5 * 60 * 60 * 1000; // placeholder दिखाने का समय (1.5 घंटे)
+      const futureOpenDuration = 30 * 60 * 1000; // future input के लिए 30 मिनट
+
+      // पुराना ±30 मिनट वाला open/close window
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+      const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
+
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
+
+      const openInputsFilled = input.patte1 || input.patte1_open;
+      const closeInputsFilled = input.patte2_close || input.patte2;
+
+      // लॉजिक: input दिखाने की स्थिति
+      if (diffMs > showInputDuration) {
+        // पुराने इनपुट 22 घंटे तक वैसे ही दिखाएं
         game.patte1 = input.patte1 || '';
         game.patte1_open = input.patte1_open || '';
         game.patte2_close = input.patte2_close || '';
         game.patte2 = input.patte2 || '';
         allGames.push(game);
-      } else if (nowIST >= today2pm && nowIST < today3_30pm) {
-        // 2pm से 3:30pm तक "***" placeholder दिखाएँ
+      } else if (diffMs <= showInputDuration && diffMs > (showInputDuration - placeholderDuration)) {
+        // 2pm से 3:30pm तक placeholder *** दिखाएं
         game.patte1 = '***';
         game.patte1_open = '***';
         game.patte2_close = '***';
         game.patte2 = '***';
         allGames.push(game);
-      } else if (nowIST >= today3_30pm && nowIST < gameStartTime) {
-        // 3:30pm से गेम start होने तक नया इनपुट अलाउ करें फ्यूचर window में
+      } else if (diffMs <= (showInputDuration - placeholderDuration) && diffMs > futureOpenDuration) {
+        // अंतिम 30 मिनटों में future open के लिए खाली इनपुट कलियर करें
         game.patte1 = '';
         game.patte1_open = '';
         game.patte2_close = '';
         game.patte2 = '';
         futureOpen.push(game);
       } else {
-        // बाक़ी समय में पुराना logic: ±30min window open/close
-        const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-        const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
-
-        const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-        const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
-        const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-        const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
-
-        const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
-        const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
-
-        const openInputsFilled = input.patte1 || input.patte1_open;
-        const closeInputsFilled = input.patte2_close || input.patte2;
-
+        // बाकी समय (गेम शुरू होने के बाद) old ±30 min logic लागू करें
         game.patte1 = input.patte1 || '';
         game.patte1_open = input.patte1_open || '';
         game.patte2_close = input.patte2_close || '';
@@ -252,6 +252,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 
 
