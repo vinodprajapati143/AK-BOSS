@@ -96,26 +96,27 @@ exports.getNearestGames = async (req, res) => {
 
     // Fetch inputs for today + yesterday for all games
     const gameIds = games.map(g => g.id);
-// Fetch latest input per game (today or yesterday, whichever is latest)
-let inputsMap = {};
-if (gameIds.length > 0) {
-  const [inputs] = await db.query(
-    `SELECT gi.* 
-     FROM game_inputs gi
-     INNER JOIN (
-       SELECT game_id, MAX(input_date) AS latest_date
-       FROM game_inputs
-       WHERE game_id IN (?)
-       GROUP BY game_id
-     ) t
-     ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-    [gameIds]
-  );
+    // Fetch latest input per game for today or yesterday whichever is latest
+    let inputsMap = {};
+    if (gameIds.length > 0) {
+      const [inputs] = await db.query(
+        `SELECT gi.* 
+        FROM game_inputs gi
+        INNER JOIN (
+          SELECT game_id, MAX(input_date) AS latest_date
+          FROM game_inputs
+          WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+          GROUP BY game_id
+        ) t
+        ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+        [gameIds, todayIST, yesterdayDate]
+      );
 
-  inputs.forEach(input => {
-    inputsMap[input.game_id] = input;
-  });
-}
+      inputs.forEach(input => {
+        inputsMap[input.game_id] = input;
+      });
+    }
+
 
 
 
