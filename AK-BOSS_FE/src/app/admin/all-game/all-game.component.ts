@@ -258,7 +258,7 @@ this.comingSoonGames.forEach(game => {
 
 loadGames() {
   this.apiService.getNearestGames().subscribe((res: any) => {
-    this.comingSoonGames = res.futureOpen;
+    this.comingSoonGames = res.futureGames;
     this.allGames = res.allGames;
 
     // Dono arrays ke har game me countdown init karo

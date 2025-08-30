@@ -189,46 +189,48 @@ exports.getNearestGames = async (req, res) => {
       });
     }
 
-    const allGames = [];
-    const futureGames = [];
+// After fetching games and inputsMap ...
 
-    games.forEach(game => {
-      const input = inputsMap[game.id] || {};
+const allGames = [];
+const futureGames = [];
 
-      // Prepare game object with real inputs for allGames
-      let gameWithInputs = {
-        ...game,
-        patte1: input.patte1 || "",
-        patte1_open: input.patte1_open || "",
-        patte2_close: input.patte2_close || "",
-        patte2: input.patte2 || "",
-      };
+games.forEach(game => {
+  const input = inputsMap[game.id] || {};
 
-      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+  let gameWithInputs = {
+    ...game,
+    patte1: input.patte1 || "",
+    patte1_open: input.patte1_open || "",
+    patte2_close: input.patte2_close || "",
+    patte2: input.patte2 || "",
+  };
 
-      // 30 min window before open and close time
-      const insideOpenWindow =
-        nowIST >= new Date(openDateTime.getTime() - 30 * 60000) && nowIST < openDateTime;
-      const insideCloseWindow =
-        nowIST >= new Date(closeDateTime.getTime() - 30 * 60000) && nowIST < closeDateTime;
+  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-      // Add all games with real inputs
-      allGames.push(gameWithInputs);
+  const insideOpenWindow =
+    nowIST >= new Date(openDateTime.getTime() - 30 * 60000) && nowIST < openDateTime;
+  const insideCloseWindow =
+    nowIST >= new Date(closeDateTime.getTime() - 30 * 60000) && nowIST < closeDateTime;
 
-      // If game is in the 30 min window before open or close, also add to futureGames with input fields empty
-      if (insideOpenWindow || insideCloseWindow) {
-        futureGames.push({
-          ...gameWithInputs,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: "",
-        });
-      }
+  if (insideOpenWindow || insideCloseWindow) {
+    // Add to futureGames with empty inputs
+    futureGames.push({
+      ...gameWithInputs,
+      patte1: "",
+      patte1_open: "",
+      patte2_close: "",
+      patte2: "",
     });
+  } else {
+    // Only add games NOT in futureGames window to allGames
+    allGames.push(gameWithInputs);
+  }
+});
 
-    res.json({ futureGames, allGames });
+// Send final response as before
+res.json({ futureGames, allGames });
+
   } catch (err) {
     console.error("getNearestGames error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
