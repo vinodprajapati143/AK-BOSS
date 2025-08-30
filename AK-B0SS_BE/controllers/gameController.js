@@ -202,39 +202,38 @@ games.forEach(game => {
     patte1: input.patte1 || "",
     patte1_open: input.patte1_open || "",
     patte2_close: input.patte2_close || "",
-    patte2: input.patte2 || "",
+    patte2: input.patte2 || ""
   };
 
   const openDateTime = new Date(`${todayIST}T${game.open_time}`);
   const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-  const insideOpenWindow =
-    nowIST >= new Date(openDateTime.getTime() - 30 * 60000) && nowIST < openDateTime;
-  const insideCloseWindow =
-    nowIST >= new Date(closeDateTime.getTime() - 30 * 60000) && nowIST < closeDateTime;
+  const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+  const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
 
-if (insideOpenWindow) {
-  // Open ki window hai, to sirf open inputs blank karo
-  futureGames.push({
-    ...gameWithInputs,
-    patte1: "",          // open input blank
-    patte1_open: "",     // open input blank
-    // close inputs same as original
-    // (ye gameWithInputs se aa rahe - yaani jo bhi last input tha, wahi dikhega)
-  });
-} else if (insideCloseWindow) {
-  // Close ki window hai, to sirf close inputs blank karo
-  futureGames.push({
-    ...gameWithInputs,
-    patte2_close: "",    // close input blank
-    patte2: "",          // close input blank
-    // open inputs same as original
-  });
-} else {
-  allGames.push(gameWithInputs);
-}
+  const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+  const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
+  if (insideOpenWindow && (!gameWithInputs.patte1 && !gameWithInputs.patte1_open)) {
+    // Jab open window hai AUR dono open inputs empty hain, tabhi futureGames me dikhao
+    futureGames.push({
+      ...gameWithInputs,
+      patte1: "",
+      patte1_open: ""
+    });
+  } else if (insideCloseWindow && (!gameWithInputs.patte2_close && !gameWithInputs.patte2)) {
+    // Jab close window hai AUR dono close inputs empty hain, tabhi futureGames me dikhao
+    futureGames.push({
+      ...gameWithInputs,
+      patte2_close: "",
+      patte2: ""
+    });
+  } else {
+    // Baaki sab cases me allGames me dikhado (yaani input ho gaya hai)
+    allGames.push(gameWithInputs);
+  }
 });
+
 
 // Send final response as before
 res.json({ futureGames, allGames });
