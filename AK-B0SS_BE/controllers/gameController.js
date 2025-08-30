@@ -196,6 +196,10 @@ const futureGames = [];
 
 games.forEach(game => {
   const input = inputsMap[game.id] || {};
+  const inputDate = input.input_date || null;
+  console.log('inputDate: ', inputDate);
+  console.log('todayIST: ', todayIST);
+
 
   let gameWithInputs = {
     ...game,
