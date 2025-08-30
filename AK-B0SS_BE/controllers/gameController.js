@@ -522,9 +522,17 @@ exports.getPublicGames = async (req, res) => {
   }
 };
 
+function convertTo12HourFormat(time24) {
+  let [hour, minute] = time24.split(':');
+  hour = parseInt(hour, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  hour = hour ? hour : 12; // 0 ko 12 se replace karna
+  return `${hour}:${minute} ${ampm}`;
+}
+
 exports.getPublicGameResults = async (req, res) => {
   try {
-    // 1. Get all today's games (public ke liye, saare games ya schedule wise as per need)
     const now = new Date();
     const offset = 5.5 * 60 * 60 * 1000;
     const nowIST = new Date(now.getTime() + offset);
@@ -533,12 +541,10 @@ exports.getPublicGameResults = async (req, res) => {
     const day = nowIST.getDate().toString().padStart(2, '0');
     const todayIST = `${year}-${month}-${day}`;
 
-    // Fetch games
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time FROM games ORDER BY id DESC`
     );
 
-    // Fetch today's results for each game
     const gameIds = games.map(g => g.id);
     let resultsMap = {};
     if (gameIds.length > 0) {
@@ -549,16 +555,14 @@ exports.getPublicGameResults = async (req, res) => {
         [gameIds, todayIST]
       );
       results.forEach(r => {
-        // Simplify result string as per your display logic
         resultsMap[r.game_id] = `${r.patte1 || ""}-${r.patte1_open || ""}-${r.patte2_close || ""}-${r.patte2 || ""}`.replace(/(^-+|-+$)/g,'').replace(/-+/g,'-').replace(/-+$/, "");
       });
     }
 
-    // Prepare final data
     const data = games.map(g => ({
       game_name: g.game_name,
-      result: resultsMap[g.id] || "", // blank if result not entered yet
-      timing: `${g.open_time.slice(0,5)} AM - ${g.close_time.slice(0,5)} AM` // format as needed
+      result: resultsMap[g.id] || "",
+      timing: `${convertTo12HourFormat(g.open_time.slice(0,5))} - ${convertTo12HourFormat(g.close_time.slice(0,5))}`
     }));
 
     res.json({ games: data });
@@ -567,6 +571,7 @@ exports.getPublicGameResults = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 
