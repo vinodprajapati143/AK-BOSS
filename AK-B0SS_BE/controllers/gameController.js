@@ -196,14 +196,13 @@ const futureGames = [];
 
 games.forEach(game => {
   const input = inputsMap[game.id] || {};
-  const inputDate = input.input_date || null; // latest db input_date
 
   let gameWithInputs = {
     ...game,
     patte1: input.patte1 || "",
     patte1_open: input.patte1_open || "",
     patte2_close: input.patte2_close || "",
-    patte2: input.patte2 || "",
+    patte2: input.patte2 || ""
   };
 
   const openDateTime = new Date(`${todayIST}T${game.open_time}`);
@@ -215,41 +214,25 @@ games.forEach(game => {
   const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
   const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-  // Check: Kya aaj ka input pehli baar aa raha hai (yaani input_date aaj ka nahi hai)
-  const isFirstInputToday = inputDate !== todayIST;
-
-  if (isFirstInputToday && (insideOpenWindow || insideCloseWindow)) {
-    // Naye din ki pehli open ya close window (futureGames me blank values)
-    futureGames.push({
-      ...gameWithInputs,
-      patte1: "",
-      patte1_open: "",
-      patte2_close: "",
-      patte2: ""
-    });
-  } 
-  else if (insideOpenWindow && (!gameWithInputs.patte1 && !gameWithInputs.patte1_open)) {
-    // Only open window, open input blank ho abhi input nahi bhara (futureGames me only open input blank)
+  if (insideOpenWindow && (!gameWithInputs.patte1 && !gameWithInputs.patte1_open)) {
+    // Jab open window hai AUR dono open inputs empty hain, tabhi futureGames me dikhao
     futureGames.push({
       ...gameWithInputs,
       patte1: "",
       patte1_open: ""
     });
-  } 
-  else if (insideCloseWindow && (!gameWithInputs.patte2_close && !gameWithInputs.patte2)) {
-    // Only close window, close input blank ho abhi input nahi bhara (futureGames me only close input blank)
+  } else if (insideCloseWindow && (!gameWithInputs.patte2_close && !gameWithInputs.patte2)) {
+    // Jab close window hai AUR dono close inputs empty hain, tabhi futureGames me dikhao
     futureGames.push({
       ...gameWithInputs,
       patte2_close: "",
       patte2: ""
     });
-  } 
-  else {
-    // Otherwise allGames me dikhao
+  } else {
+    // Baaki sab cases me allGames me dikhado (yaani input ho gaya hai)
     allGames.push(gameWithInputs);
   }
 });
-
 
 
 // Send final response as before
