@@ -196,9 +196,18 @@ const futureGames = [];
 
 games.forEach(game => {
   const input = inputsMap[game.id] || {};
-  const inputDate = input.input_date || null;
-  console.log('inputDate: ', inputDate);
-  console.log('todayIST: ', todayIST);
+const formatDateToYMD = (date) => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// Usage in your loop:
+const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+const isNewDay = formattedInputDate !== todayIST;
+console.log('isNewDay: ', isNewDay);
 
 
   let gameWithInputs = {
