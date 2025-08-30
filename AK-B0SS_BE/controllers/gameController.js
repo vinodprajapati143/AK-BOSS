@@ -561,7 +561,7 @@ exports.getPublicGameResults = async (req, res) => {
       timing: `${g.open_time.slice(0,5)} AM - ${g.close_time.slice(0,5)} AM` // format as needed
     }));
 
-    res.json(data);
+    res.json({ games: data });
   } catch (err) {
     console.error("getPublicGameResults error:", err);
     res.status(500).json({ message: "Server error", error: err.message });

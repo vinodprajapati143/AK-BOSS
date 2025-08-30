@@ -114,6 +114,7 @@ subscriptions: { [gameId: number]: Subscription } = {};
 
   ngOnInit(): void {
     this.loadpubligames()
+     this.loadpubligamesResult()
   }
 
 startCountdown(game: any) {
@@ -222,7 +223,9 @@ startCountdown(game: any) {
     loadpubligamesResult(){
     this.gameService.getpublicGamesResult().subscribe({
     next: (res) => {
+      console.log('res: ', res);
       this.gamesResult = res.games;
+      console.log('this.gamesResult: ', this.gamesResult);
     },
     error: (err) => {
       console.error('Failed to fetch games', err);
