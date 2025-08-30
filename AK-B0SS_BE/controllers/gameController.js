@@ -213,19 +213,27 @@ games.forEach(game => {
   const insideCloseWindow =
     nowIST >= new Date(closeDateTime.getTime() - 30 * 60000) && nowIST < closeDateTime;
 
-  if (insideOpenWindow || insideCloseWindow) {
-    // Add to futureGames with empty inputs
-    futureGames.push({
-      ...gameWithInputs,
-      patte1: "",
-      patte1_open: "",
-      patte2_close: "",
-      patte2: "",
-    });
-  } else {
-    // Only add games NOT in futureGames window to allGames
-    allGames.push(gameWithInputs);
-  }
+if (insideOpenWindow) {
+  // Open ki window hai, to sirf open inputs blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",          // open input blank
+    patte1_open: "",     // open input blank
+    // close inputs same as original
+    // (ye gameWithInputs se aa rahe - yaani jo bhi last input tha, wahi dikhega)
+  });
+} else if (insideCloseWindow) {
+  // Close ki window hai, to sirf close inputs blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",    // close input blank
+    patte2: "",          // close input blank
+    // open inputs same as original
+  });
+} else {
+  allGames.push(gameWithInputs);
+}
+
 });
 
 // Send final response as before
