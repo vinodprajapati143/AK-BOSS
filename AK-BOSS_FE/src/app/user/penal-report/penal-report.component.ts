@@ -16,4 +16,10 @@ export class PenalReportComponent {
     window.history.back();
   }
 
+  scrollTo(target: string) {
+  const element = document.getElementById(target);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
 }

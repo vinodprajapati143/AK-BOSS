@@ -5,6 +5,11 @@
 
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 
+html {
+  scroll-behavior: smooth;
+}
+
+
 .bg-gray-200 {
   border: 1px solid #000;
   background: #FFF;
@@ -13,8 +18,8 @@
 
 .bg-color {
   border-radius: 10px;
-    background: linear-gradient(90deg, #219EBC 0%, #FB8500 75%);
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: linear-gradient(90deg, #219EBC 0%, #FB8500 75%);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 }
 
 .akboss-text {
@@ -166,8 +171,9 @@
     align-items: center;
     height: 70vh;
   }
+
   .akboss-text {
-   font-size: 32px;
+    font-size: 32px;
   }
 
   .fixed-btn {

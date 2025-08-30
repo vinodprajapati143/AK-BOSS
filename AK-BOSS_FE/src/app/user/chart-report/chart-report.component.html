@@ -1,5 +1,5 @@
 <!-- Header -->
-<div class="min-h-screen bg-gray-100 font-sans">
+<div id="top" class="min-h-screen bg-gray-100 font-sans">
 
   <!-- Top Title -->
   <app-header></app-header>
@@ -53,7 +53,7 @@
   </div>
 
   <div class="text-center my-3 flex items-center justify-center gap-1">
-    <a href="#bottom"
+    <button (click)="scrollTo('bottom')"
       class="bg-[#EDF0F5] text-black flex items-center gap-x-2 px-4 border border-solid border-black py-1 rounded font-semibold">Go
       To Bottom <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
         <g clip-path="url(#clip0_609_11911)">
@@ -66,7 +66,7 @@
             <rect width="24" height="24" fill="white" />
           </clipPath>
         </defs>
-      </svg></a>
+      </svg></button>
   </div>
 
   <div class="bg-gray-100 lg:px-10 w-[calc(100%-1rem)] xl:w-[calc(100%-40rem)] mx-auto">
@@ -695,7 +695,7 @@
 
 
   <div class="text-center my-3 flex items-center justify-center gap-1">
-    <a href="#bottom"
+    <button (click)="scrollTo('top')"
       class="bg-[#EDF0F5] text-black flex items-center gap-x-2 px-4 border border-solid border-black py-1 rounded font-semibold">Go
       To Top
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -709,7 +709,7 @@
             <rect width="24" height="24" fill="white" transform="matrix(1 0 0 -1 0 24)" />
           </clipPath>
         </defs>
-      </svg></a>
+      </svg></button>
   </div>
  
   <!-- Notice -->
@@ -740,7 +740,7 @@
   </div>
 
   <!-- Bottom Links -->
-  <div class="bg-cyan-700 h-20 flex items-center mt-2 justify-center border-y border-y-solid border-y-black shadow">
+  <div id="bottom" class="bg-cyan-700 h-20 flex items-center mt-2 justify-center border-y border-y-solid border-y-black shadow">
     <div class="text-center text-white py-2 text-xs">
       © 2011 - 2025 Ak247pro.com <br />
       <a href="#" class="underline-none mx-1">About us</a> |

@@ -1,11 +1,11 @@
 <!-- Header -->
-<div class="min-h-screen bg-gray-100 font-sans">
+<div id="top" class="min-h-screen bg-gray-100 font-sans">
 
     <!-- Top Title -->
     <app-header></app-header>
     <app-floating-buttons />
     <!-- Yellow Title Bar -->
-    <div
+    <div 
         class="bg-[#EDF0F5] border border-solid border-black flex items-center justify-between px-4 h-14 border-b mt-[65px]">
         <button (click)="goBack()"
             class="bg-[#0A7E8D] flex justify-center items-center gap-x-1 text-white px-2 py-1 rounded shadow text-sm">
@@ -54,7 +54,7 @@
         </div>
     </div>
     <div class="text-center my-3 flex items-center justify-center gap-1">
-        <a href="#bottom"
+        <button (click)="scrollTo('bottom')"
             class="bg-[#EDF0F5] text-black flex items-center gap-x-2 px-4 border border-solid border-black py-1 rounded font-semibold">Go
             To Bottom <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <g clip-path="url(#clip0_609_11911)">
@@ -67,7 +67,7 @@
                         <rect width="24" height="24" fill="white" />
                     </clipPath>
                 </defs>
-            </svg></a>
+            </svg></button>
     </div>
 
     <div class="bg-gray-100 px-2 lg:px-10 w-[calc(100%-1rem)] xl:w-[calc(100%-40rem)] mx-auto">
@@ -974,8 +974,8 @@
     </div>
 
 
-    <div class="text-center my-3 flex items-center justify-center gap-1">
-        <a href="#bottom"
+    <div id="bottom" class="text-center my-3 flex items-center justify-center gap-1">
+        <button (click)="scrollTo('top')"
             class="bg-[#EDF0F5] text-black flex items-center gap-x-2 px-4 border border-solid border-black py-1 rounded font-semibold">Go
             To Top
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -989,7 +989,7 @@
                         <rect width="24" height="24" fill="white" transform="matrix(1 0 0 -1 0 24)" />
                     </clipPath>
                 </defs>
-            </svg></a>
+            </svg></button>
     </div>
 
     <!-- Notice -->
