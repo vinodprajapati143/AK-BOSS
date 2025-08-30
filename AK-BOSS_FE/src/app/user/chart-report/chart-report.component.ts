@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { MarqureeComponent } from '../../shared/marquree/marquree.component';
 import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating-buttons.component";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chart-report',
@@ -12,9 +13,10 @@ import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating
   styleUrl: './chart-report.component.scss'
 })
 export class ChartReportComponent {
+  router = inject(Router);
 
    goBack() {
-    window.history.back();
+    this.router.navigate(['/user/home']);
   }
 
     scrollTo(target: string) {
