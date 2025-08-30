@@ -55,6 +55,12 @@ getpublicGames(): Observable<any> {
     switchMap(() => this.http.get<any>(`${this.baseUrl}/api/games/public-game-list`))
   );
 }
+
+getpublicGamesResult(): Observable<any> {
+  return timer(0, 30000).pipe(
+    switchMap(() => this.http.get<any>(`${this.baseUrl}/api/games/public-game-result`))
+  );
+}
   
   saveGameInput(gameData: any) {
    return this.http.post(`${this.baseUrl}/api/games/save-game-input`, gameData,{ withCredentials: true });
