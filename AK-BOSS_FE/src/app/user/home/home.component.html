@@ -212,46 +212,20 @@
   <div class="space-y-2">
 
     <!-- Madhur Day Card -->
-    <div
+    <div *ngFor="let game of gamesResult"
       class="bg-teal-700 text-white mt-2 border-y border-y-solid border-y-black shadow-md p-4 sm:py-4 sm:px-8 flex justify-between items-center">
-      <button (click)="chartReport()"
+      <button (click)="chartReport(game)"
         class="bg-white text-black font-semibold px-4 py-1 rounded shadow-btn">Jodi</button>
       <div class="text-center">
-        <div class="text-lg font-bold">MADHUR DAY</div>
-        <div class="text-xl font-extrabold tracking-wider">170-87-340</div>
-        <div class="text-sm mt-1">10:30 AM - 11:30 AM</div>
+        <div class="text-lg font-bold">{{game.game_name}}</div>
+        <div class="text-xl font-extrabold tracking-wider">{{game.result}}</div>
+        <div class="text-sm mt-1">{{game.timing}}</div>
       </div>
-      <button (click)="todayReport()"
+      <button (click)="todayReport(game)"
         class="bg-white text-black font-semibold px-4 py-1 rounded shadow-btn">Panel</button>
     </div>
 
-    <!-- Prabhat Card -->
-    <div
-      class="bg-white text-teal-700 border-y border-y-solid border-y-black mt-2 shadow-md p-4 sm:py-4 sm:px-8 flex justify-between items-center">
-      <button (click)="chartReport()"
-        class="bg-white text-black font-semibold px-4 py-1 rounded shadow-btn">Jodi</button>
-      <div class="text-center">
-        <div class="text-lg font-bold">PRABHAT</div>
-        <div class="text-xl font-extrabold tracking-wider">113-5</div>
-        <div class="text-sm mt-1">10:30 AM - 11:30 AM</div>
-      </div>
-      <button (click)="todayReport()"
-        class="bg-white text-black font-semibold px-4 py-1 rounded shadow-btn">Panel</button>
-    </div>
-
-    <!-- Madhur Day Card -->
-    <div
-      class="bg-teal-700 text-white mt-2 border-y border-y-solid border-y-black p-4 sm:py-4 sm:px-8 flex justify-between items-center">
-      <button (click)="chartReport()"
-        class="bg-white text-black font-semibold px-4 py-1 rounded shadow-btn">Jodi</button>
-      <div class="text-center">
-        <div class="text-lg font-bold">MADHUR DAY</div>
-        <div class="text-xl font-extrabold tracking-wider">170-87-340</div>
-        <div class="text-sm mt-1">10:30 AM - 11:30 AM</div>
-      </div>
-      <button (click)="todayReport()"
-        class="bg-white text-black font-semibold px-4 py-1 rounded shadow-btn">Panel</button>
-    </div>
+    
 
   </div>
 

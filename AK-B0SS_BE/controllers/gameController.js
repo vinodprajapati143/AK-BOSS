@@ -522,6 +522,53 @@ exports.getPublicGames = async (req, res) => {
   }
 };
 
+exports.getPublicGameResults = async (req, res) => {
+  try {
+    // 1. Get all today's games (public ke liye, saare games ya schedule wise as per need)
+    const now = new Date();
+    const offset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(now.getTime() + offset);
+    const year = nowIST.getFullYear();
+    const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+    const day = nowIST.getDate().toString().padStart(2, '0');
+    const todayIST = `${year}-${month}-${day}`;
+
+    // Fetch games
+    const [games] = await db.query(
+      `SELECT id, game_name, open_time, close_time FROM games ORDER BY id DESC`
+    );
+
+    // Fetch today's results for each game
+    const gameIds = games.map(g => g.id);
+    let resultsMap = {};
+    if (gameIds.length > 0) {
+      const [results] = await db.query(
+        `SELECT game_id, patte1, patte1_open, patte2_close, patte2, input_date
+         FROM game_inputs
+         WHERE game_id IN (?) AND input_date = ?`,
+        [gameIds, todayIST]
+      );
+      results.forEach(r => {
+        // Simplify result string as per your display logic
+        resultsMap[r.game_id] = `${r.patte1 || ""}-${r.patte1_open || ""}-${r.patte2_close || ""}-${r.patte2 || ""}`.replace(/(^-+|-+$)/g,'').replace(/-+/g,'-').replace(/-+$/, "");
+      });
+    }
+
+    // Prepare final data
+    const data = games.map(g => ({
+      game_name: g.game_name,
+      result: resultsMap[g.id] || "", // blank if result not entered yet
+      timing: `${g.open_time.slice(0,5)} AM - ${g.close_time.slice(0,5)} AM` // format as needed
+    }));
+
+    res.json(data);
+  } catch (err) {
+    console.error("getPublicGameResults error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
 
 
 

@@ -16,6 +16,7 @@ import { map, Subscription, timer } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
   games: any;
+  gamesResult: any;
 constructor(private router: Router, private gameService: ApiService ) {}
    
    chartData = [
@@ -196,11 +197,11 @@ startCountdown(game: any) {
     this.router.navigate(['/admin/users']);
   }
 
-   chartReport() {
+   chartReport(game:any) {
    this.router.navigate(['/user/chart-report']);
   }
 
-   todayReport() {
+   todayReport(game:any) {
     this.router.navigate(['/user/today-report']);
   }
 
@@ -210,6 +211,18 @@ startCountdown(game: any) {
       this.games = res.games;
       this.games.forEach((game: any) => this.startCountdown(game));
       console.log('this.games: ', this.games);
+    },
+    error: (err) => {
+      console.error('Failed to fetch games', err);
+    }
+  });
+
+  }
+
+    loadpubligamesResult(){
+    this.gameService.getpublicGamesResult().subscribe({
+    next: (res) => {
+      this.gamesResult = res.games;
     },
     error: (err) => {
       console.error('Failed to fetch games', err);
