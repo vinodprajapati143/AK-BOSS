@@ -152,7 +152,7 @@ exports.getNearestGames = async (req, res) => {
     const day = nowIST.getDate().toString().padStart(2, '0');
     const todayIST = `${year}-${month}-${day}`;
 
-     // Yesterday date nikalo
+    // Yesterday date
     const yesterdayIST = new Date(nowIST);
     yesterdayIST.setDate(yesterdayIST.getDate() - 1);
     const yYear = yesterdayIST.getFullYear();
@@ -160,21 +160,28 @@ exports.getNearestGames = async (req, res) => {
     const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
     const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
 
-    // ✅ Get all games for admin
+    // Get all games for admin
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, days 
+      `SELECT id, game_name, open_time, close_time, days, created_at
        FROM games WHERE created_by = ? ORDER BY id DESC`,
       [req.user.id]
     );
 
-    // ✅ Fetch inputs for today for all games
+    // Fetch latest input per game for today or yesterday whichever is latest
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
     if (gameIds.length > 0) {
       const [inputs] = await db.query(
-        `SELECT * FROM game_inputs 
-         WHERE game_id IN (?) AND input_date = ?`,
-        [gameIds, todayIST,yesterdayDate]
+        `SELECT gi.*
+         FROM game_inputs gi
+         INNER JOIN (
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+           GROUP BY game_id
+         ) t
+         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+        [gameIds, todayIST, yesterdayDate]
       );
 
       inputs.forEach(input => {
@@ -182,44 +189,52 @@ exports.getNearestGames = async (req, res) => {
       });
     }
 
-    const futureOpen = [];
     const allGames = [];
+    const futureGames = [];
 
     games.forEach(game => {
-      // 👉 Add inputs if exists
       const input = inputsMap[game.id] || {};
-      game.patte1 = input.patte1 || "";
-      game.patte1_open = input.patte1_open || "";
-      game.patte2_close = input.patte2_close || "";
-      game.patte2 = input.patte2 || "";
 
-      // 👉 Time calculations
+      // Prepare game object with real inputs for allGames
+      let gameWithInputs = {
+        ...game,
+        patte1: input.patte1 || "",
+        patte1_open: input.patte1_open || "",
+        patte2_close: input.patte2_close || "",
+        patte2: input.patte2 || "",
+      };
+
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-      const openWindowEnd = new Date(openDateTime.getTime() + 60 * 60000);
-      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-      const closeWindowEnd = new Date(closeDateTime.getTime() + 60 * 60000);
+      // 30 min window before open and close time
+      const insideOpenWindow =
+        nowIST >= new Date(openDateTime.getTime() - 30 * 60000) && nowIST < openDateTime;
+      const insideCloseWindow =
+        nowIST >= new Date(closeDateTime.getTime() - 30 * 60000) && nowIST < closeDateTime;
 
-      const insideOpenWindow = nowIST >= openWindowStart && nowIST <= openWindowEnd;
-      const insideCloseWindow = nowIST >= closeWindowStart && nowIST <= closeWindowEnd;
+      // Add all games with real inputs
+      allGames.push(gameWithInputs);
 
-      const openInputsFilled = game.patte1 || game.patte1_open;
-      const closeInputsFilled = game.patte2_close || game.patte2;
-
-      if ((insideOpenWindow && !openInputsFilled) || (insideCloseWindow && !closeInputsFilled)) {
-        futureOpen.push(game);
-      } else {
-        allGames.push(game);
+      // If game is in the 30 min window before open or close, also add to futureGames with input fields empty
+      if (insideOpenWindow || insideCloseWindow) {
+        futureGames.push({
+          ...gameWithInputs,
+          patte1: "",
+          patte1_open: "",
+          patte2_close: "",
+          patte2: "",
+        });
       }
     });
 
-    res.json({ futureOpen, allGames });
+    res.json({ futureGames, allGames });
   } catch (err) {
+    console.error("getNearestGames error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 // exports.getNearestGames = async (req, res) => {
