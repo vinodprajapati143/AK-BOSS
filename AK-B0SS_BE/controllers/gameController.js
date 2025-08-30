@@ -227,7 +227,18 @@ console.log('isNewDay: ', isNewDay);
   const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
   const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-  if (insideOpenWindow && (!gameWithInputs.patte1 && !gameWithInputs.patte1_open)) {
+   if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
+    // Naye din pehli baar open ya close window me dono inputs blank chahiye
+    futureGames.push({
+      ...gameWithInputs,
+      patte1: "",
+      patte1_open: "",
+      patte2_close: "",
+      patte2: ""
+    });
+  }
+
+  else if (insideOpenWindow && (!gameWithInputs.patte1 && !gameWithInputs.patte1_open)) {
     // Jab open window hai AUR dono open inputs empty hain, tabhi futureGames me dikhao
     futureGames.push({
       ...gameWithInputs,
