@@ -6,7 +6,7 @@ import { MarqureeComponent } from '../../shared/marquree/marquree.component';
 import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating-buttons.component";
 import { GameDisplayComponent } from "../../shared/game-display/game-display.component";
 import { ApiService } from '../../core/services/api.service';
-import { map, Subscription, timer } from 'rxjs';
+import { interval, map, startWith, Subscription, timer } from 'rxjs';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -116,6 +116,11 @@ subscriptions: { [gameId: number]: Subscription } = {};
     this.loadpubligames()
      this.loadpubligamesResult()
   }
+
+  now$ = interval(60_000).pipe(
+    startWith(0),
+    map(() => new Date())
+  )
 
 startCountdown(game: any) {
   // Unsubscribe previous timer if it exists

@@ -374,8 +374,9 @@
   </div>
 
   <div class="text-[#0A7E8D] border-y border-y-solid border-y-black shadow text-center py-1 mt-2 font-bold">
-    ✔DATE:↬ : 06/08/2025 ↫ FREE GUESSING DAILY OPEN TO CLOSE FIX ANK
+  ✔DATE:↬ : {{ now$ | async | date:'dd/MM/yyyy':'Asia/Kolkata' }} ↫ FREE GUESSING DAILY OPEN TO CLOSE FIX ANK
   </div>
+
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 mt-2">
     <div *ngFor="let card of cards" class="border shadow rounded overflow-hidden">
