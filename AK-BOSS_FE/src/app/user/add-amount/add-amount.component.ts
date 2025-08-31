@@ -1,17 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
-import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-user-dashboard',
+  selector: 'app-add-amount',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent],
-  templateUrl: './user-dashboard.component.html',
-  styleUrl: './user-dashboard.component.scss'
+  imports: [HeaderComponent, FooterComponent],
+  templateUrl: './add-amount.component.html',
+  styleUrl: './add-amount.component.scss'
 })
-export class UserDashboardComponent {
-  router = inject(Router);
+export class AddAmountComponent {
 
   openWhatsApp() {
     const phoneNumber = "918979108932";
@@ -23,9 +21,5 @@ export class UserDashboardComponent {
   closeWhatsApp() {
     const url = `https://wa.me/918979108932?text=Goodbye`;
     window.open(url, "_blank");
-  }
-
-  openChart() {
-    this.router.navigate(['/user/share-page']);
   }
 }

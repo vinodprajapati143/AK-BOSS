@@ -1,0 +1,67 @@
+<app-header></app-header>
+<div class="min-h-[90vh] mt-12 bg-gray-100">
+  <!-- Header -->
+  <div class="bg-pink-600 text-white text-lg font-bold p-4">
+    Add Amount
+  </div>
+
+  <!-- User Card -->
+  <div class="bg-white shadow rounded-lg mx-4 mt-4 overflow-hidden">
+    <div class="bg-black text-white text-center p-3">
+      <p class="font-semibold">Ajay</p>
+      <p class="text-sm">8319369590</p>
+    </div>
+    <div class="flex items-center gap-3 p-4">
+      <img src="/assets/images/amount-wallet.svg" alt="wallet" class="w-10 h-10" />
+      <div>
+        <p class="text-gray-800 font-semibold">₹ 5</p>
+        <p class="text-gray-500 text-sm">Current Balance</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount Input -->
+  <div class="mx-4 mt-5">
+    <input
+      type="number"
+      placeholder="Enter Amount"
+      class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-500"
+    />
+  </div>
+
+  <!-- Quick Amount Buttons -->
+  <div class="flex justify-between mx-4 mt-4 gap-2">
+    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
+      500
+    </button>
+    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
+      1000
+    </button>
+    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
+      2000
+    </button>
+    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
+      5000
+    </button>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="mx-4 mt-6">
+    <button
+      class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow"
+    >
+      Submit
+    </button>
+  </div>
+
+  <!-- WhatsApp Button -->
+  <div class="mx-4 mt-4">
+    <button (click)="openWhatsApp()"
+      class="w-full flex items-center justify-center gap-2 bg-pink-600 text-white font-semibold py-3 rounded-lg shadow"
+    >
+      <img src="/assets/images/whatsapp.png" alt="whatsapp" class="w-5 h-5" />
+      WhatsApp Us
+    </button>
+  </div>
+</div>
+<app-footer></app-footer>

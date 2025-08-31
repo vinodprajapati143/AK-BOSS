@@ -4,6 +4,12 @@ import { HomeComponent } from './home/home.component';
 import { ChartReportComponent } from './chart-report/chart-report.component';
 import { PenalReportComponent } from './penal-report/penal-report.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
+import { SharePageComponent } from './share-page/share-page.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ChangesPwdComponent } from './changes-pwd/changes-pwd.component';
+import { ProfileEditComponent } from './profile-edit/profile-edit.component';
+import { AddAmountComponent } from './add-amount/add-amount.component';
+import { WithdrawalComponent } from './withdrawal/withdrawal.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -11,6 +17,12 @@ const routes: Routes = [
   { path: 'dashboard', component: UserDashboardComponent },
   { path: 'chart-report', component: ChartReportComponent },
   { path: 'today-report', component: PenalReportComponent },
+  { path: 'share-page', component: SharePageComponent },
+  { path: 'profile', component: ProfileComponent },
+  { path: 'change-pwd', component: ChangesPwdComponent },
+  { path: 'edit-profile', component: ProfileEditComponent },
+  { path: 'add-amount', component: AddAmountComponent },
+  { path: 'withdrawal', component: WithdrawalComponent }
 ];
 
 
