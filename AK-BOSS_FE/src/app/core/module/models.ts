@@ -42,3 +42,8 @@ export interface gamebyid {
   days: string[];      // Adjust type as per your needs
   prices: any;         // Adjust type as needed
 }
+
+export interface JodiRecord {
+  input_date: string;
+  jodi_value: string;
+}

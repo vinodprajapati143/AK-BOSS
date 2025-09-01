@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, timer } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 import { LoginResponse } from '../module/login-response.model';
-import { Game, gamebyid } from '../module/models';
+import { Game, gamebyid, JodiRecord } from '../module/models';
 
 @Injectable({
   providedIn: 'root'
@@ -76,5 +76,11 @@ getpublicGamesResult(): Observable<any> {
   
   saveGameInput(gameData: any) {
    return this.http.post(`${this.baseUrl}/api/games/save-game-input`, gameData,{ withCredentials: true });
+  }
+
+
+    getJodiRecords(gameId: string, fromDate: string, toDate: string): Observable<{ records: JodiRecord[] }> {
+    const url = `${this.baseUrl}/games/${gameId}/jodi-records?from=${fromDate}&to=${toDate}`;
+    return this.http.get<{ records: JodiRecord[] }>(url);
   }
 }

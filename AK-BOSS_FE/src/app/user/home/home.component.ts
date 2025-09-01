@@ -203,9 +203,10 @@ startCountdown(game: any) {
     this.router.navigate(['/admin/users']);
   }
 
-   chartReport(game:any) {
-   this.router.navigate(['/user/chart-report']);
-  }
+chartReport(game: any) {
+  console.log('game: ', game);
+  this.router.navigate(['/user/chart-report'], { queryParams: { gameId: game.id } });
+}
 
    todayReport(game:any) {
     this.router.navigate(['/user/today-report']);

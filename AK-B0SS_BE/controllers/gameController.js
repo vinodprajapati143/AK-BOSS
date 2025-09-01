@@ -776,6 +776,7 @@ exports.getPublicGameResults = async (req, res) => {
     });
 
     const data = filteredGames.map(g => ({
+       id: g.id,
       game_name: g.game_name,
       result: resultsMap[g.id] || "",
       timing: `${convertTo12HourFormat(g.open_time.slice(0, 5))} - ${convertTo12HourFormat(g.close_time.slice(0, 5))}`
@@ -787,6 +788,59 @@ exports.getPublicGameResults = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
+exports.getJodiRecords = async (req, res) => {
+  const gameId = req.params.gameId;
+  const { from, to } = req.query;
+
+  // Helper to generate array of dates in YYYY-MM-DD between from and to
+  function getDateRange(startDate, endDate) {
+    const dateArray = [];
+    let currentDate = new Date(startDate);
+    const end = new Date(endDate);
+    while (currentDate <= end) {
+      const y = currentDate.getFullYear();
+      const m = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+      const d = currentDate.getDate().toString().padStart(2, '0');
+      dateArray.push(`${y}-${m}-${d}`);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dateArray;
+  }
+
+  try {
+    const dates = getDateRange(from, to);
+
+    const [rows] = await db.query(
+      `SELECT input_date, patte1_open, patte2_close
+       FROM game_inputs
+       WHERE game_id = ? AND input_date BETWEEN ? AND ?
+       ORDER BY input_date ASC`,
+      [gameId, from, to]
+    );
+
+    // Map input_date to jodi_value (concatenation)
+    const inputMap = {};
+    rows.forEach(row => {
+      inputMap[row.input_date] = `${row.patte1_open || ''}${row.patte2_close || ''}`;
+    });
+
+    // Prepare final records array with ** for missing dates
+    const records = dates.map(date => ({
+      input_date: date,
+      jodi_value: inputMap[date] || '**'
+    }));
+
+    res.json({ records });
+  } catch (err) {
+    console.error("getJodiRecords error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
 
 
 
