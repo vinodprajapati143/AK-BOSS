@@ -568,78 +568,79 @@ exports.getPublicGames = async (req, res) => {
       });
     }
 
-    const resultGames = games.map(game => {
-      const input = inputsMap[game.id] || {};
-      const patte1 = input.patte1 || "";
-      const patte1_open = input.patte1_open || "";
-      const patte2_close = input.patte2_close || "";
-      const patte2 = input.patte2 || "";
+    // Grace period
+    const gracePeriodMinutes = 90;
 
-      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+   const resultGames = games.map(game => {
+  const input = inputsMap[game.id] || {};
+  const patte1 = input.patte1 || "";
+  const patte1_open = input.patte1_open || "";
+  const patte2_close = input.patte2_close || "";
+  const patte2 = input.patte2 || "";
 
-      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-      // Whether 30-minute window has started for open or close
-      const hasOpenWindowStarted = nowIST >= openWindowStart;
-      const hasCloseWindowStarted = nowIST >= closeWindowStart;
+  // New day check: compare input_date with todayIST
+  const formatDateToYMD = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-      // Inputs missing
-      const missingOpenInput = !patte1 && !patte1_open;
-      const missingCloseInput = !patte2_close && !patte2;
+  const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+  const isNewDay = formattedInputDate !== todayIST;  // True if input date is not today
 
-      // Pending flag: input missing and window started
-      const isPendingInput =
-        (missingOpenInput && hasOpenWindowStarted) ||
-        (missingCloseInput && hasCloseWindowStarted);
+  // Empty stars array
+  let stars = Array(8).fill("★");
 
-      // Existing phase calculation
-      let phase = 'waiting';
-      if (nowIST >= openDateTime && nowIST < closeDateTime) {
-        phase = 'open';
-      } else if (nowIST >= closeDateTime) {
-        phase = 'close';
+  // If new day, reset stars to empty values (e.g., use "-")
+  if (isNewDay) {
+    stars = Array(8).fill("★");
+  } else {
+    // Existing stars assignment using input values
+    for (let i = 0; i < 3; i++) {
+      if (patte1 && patte1.length > i) {
+        stars[i] = patte1.charAt(i);
       }
+    }
+    if (patte1_open && patte1_open.length > 0) {
+      stars[3] = patte1_open.charAt(0);
+    }
+    if (patte2_close && patte2_close.length > 0) {
+      stars[4] = patte2_close.charAt(0);
+    }
+    for (let i = 0; i < 3; i++) {
+      if (patte2 && patte2.length > i) {
+        stars[5 + i] = patte2.charAt(i);
+      }
+    }
+  }
 
-      // Stars array generation (unchanged)
-      let stars = Array(8).fill("★");
-      for (let i = 0; i < 3; i++) {
-        if (patte1 && patte1.length > i) {
-          stars[i] = patte1.charAt(i);
-        }
-      }
-      if (patte1_open && patte1_open.length > 0) {
-        stars[3] = patte1_open.charAt(0);
-      }
-      if (patte2_close && patte2_close.length > 0) {
-        stars[4] = patte2_close.charAt(0);
-      }
-      for (let i = 0; i < 3; i++) {
-        if (patte2 && patte2.length > i) {
-          stars[5 + i] = patte2.charAt(i);
-        }
-      }
+  const starsWithDashes = [
+    ...stars.slice(0, 3),
+    '-',
+    stars[3],
+    stars[4],
+    '-',
+    ...stars.slice(5, 8),
+  ];
 
-      const starsWithDashes = [
-        ...stars.slice(0, 3),
-        '-',
-        stars[3],
-        stars[4],
-        '-',
-        ...stars.slice(5, 8),
-      ];
+  // ... existing calculation for phase and isPendingInput unmodified ...
 
-      return {
-        id: game.id,
-        game_name: game.game_name,
-        starsWithDashes,
-        open_time: game.open_time,
-        close_time: game.close_time,
-        phase,
-        isPendingInput,       // NEW field marking if input is pending and window started
-      };
-    });
+  return {
+    id: game.id,
+    game_name: game.game_name,
+    starsWithDashes,
+    open_time: game.open_time,
+    close_time: game.close_time,
+    phase,
+    isPendingInput,
+  };
+});
+
 
     res.json({ games: resultGames });
   } catch (err) {
@@ -647,6 +648,7 @@ exports.getPublicGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 function convertTo12HourFormat(time24) {
