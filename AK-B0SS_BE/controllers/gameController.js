@@ -361,6 +361,9 @@ exports.getNearestGames = async (req, res) => {
       const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
       const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
 
+      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
+      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
+
       if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
         // New day first input window
         futureGames.push({
@@ -372,29 +375,27 @@ exports.getNearestGames = async (req, res) => {
         });
       }
       // Admin has full grace time after input window to enter data
-      else if ((insideOpenWindow || insideOpenGracePeriod) && (!gameWithInputs.patte1 && !gameWithInputs.patte1_open)) {
+      else if ((insideOpenWindow && missingOpenInput)) {
         futureGames.push({
           ...gameWithInputs,
           patte1: "",
           patte1_open: ""
         });
-      } else if ((insideCloseWindow || insideCloseGracePeriod) && (!gameWithInputs.patte2_close && !gameWithInputs.patte2)) {
+      } else if ((insideCloseWindow && missingCloseInput)) {
         futureGames.push({
           ...gameWithInputs,
           patte2_close: "",
           patte2: ""
         });
-      }// If all required inputs are filled, consider game done, move to allGames
-      else if (
-        (gameWithInputs.patte1 || gameWithInputs.patte1_open) &&
-        (gameWithInputs.patte2_close || gameWithInputs.patte2)
-      ) {
+      }
+
+      else if (missingOpenInput || missingCloseInput) {
+      futureGames.push(gameWithInputs);
+      }
+      
+      else {
         allGames.push(gameWithInputs);
       }
-      // Otherwise, inputs missing but window/grace passed - keep in futureGames until input filled
-      else {
-        futureGames.push(gameWithInputs);
-}
     });
 
     // Send final response as before
