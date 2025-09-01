@@ -80,7 +80,7 @@ getpublicGamesResult(): Observable<any> {
 
 
     getJodiRecords(gameId: string, fromDate: string, toDate: string): Observable<{ records: JodiRecord[] }> {
-    const url = `${this.baseUrl}/games/${gameId}/jodi-records?from=${fromDate}&to=${toDate}`;
+    const url = `${this.baseUrl}/api/games/${gameId}/jodi-records?from=${fromDate}&to=${toDate}`;
     return this.http.get<{ records: JodiRecord[] }>(url);
   }
 }

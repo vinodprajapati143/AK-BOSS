@@ -45,9 +45,9 @@ ngOnInit() {
 
   this.fromDate = this.formatDate(oneWeekAgo);
   this.toDate = this.formatDate(today);
+  this.selectedGameId = queryParams.get('gameId');
 
   this.loadJodiRecords();
-    this.selectedGameId = queryParams.get('gameId');
     // Use gameId
   });
 }
@@ -63,12 +63,9 @@ loadJodiRecords() {
   this.apiService.getJodiRecords(this.selectedGameId, this.fromDate, this.toDate)
     .subscribe(data => {
       this.records = data.records;
-      this.populateTable();
     });
 }
-  populateTable() {
-    throw new Error('Method not implemented.');
-  }
+ 
 
 
 }

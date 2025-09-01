@@ -789,12 +789,11 @@ exports.getPublicGameResults = async (req, res) => {
   }
 };
 
-
 exports.getJodiRecords = async (req, res) => {
   const gameId = req.params.gameId;
   const { from, to } = req.query;
 
-  // Helper to generate array of dates in YYYY-MM-DD between from and to
+  // Date range helper
   function getDateRange(startDate, endDate) {
     const dateArray = [];
     let currentDate = new Date(startDate);
@@ -809,35 +808,105 @@ exports.getJodiRecords = async (req, res) => {
     return dateArray;
   }
 
+  // Format DB date to 'YYYY-MM-DD'
+  function formatDate(dt) {
+    const d = new Date(dt);
+    const y = d.getFullYear();
+    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   try {
     const dates = getDateRange(from, to);
 
+    // Get game name
+    const [[gameRow]] = await db.query(
+      `SELECT game_name FROM games WHERE id = ? LIMIT 1`,
+      [gameId]
+    );
+    const game_name = gameRow ? gameRow.game_name : "";
+
+    // Get input records
     const [rows] = await db.query(
-      `SELECT input_date, patte1_open, patte2_close
+      `SELECT input_date, patte1, patte1_open, patte2_close, patte2
        FROM game_inputs
        WHERE game_id = ? AND input_date BETWEEN ? AND ?
        ORDER BY input_date ASC`,
       [gameId, from, to]
     );
 
-    // Map input_date to jodi_value (concatenation)
+    // Map input_date to full record
     const inputMap = {};
     rows.forEach(row => {
-      inputMap[row.input_date] = `${row.patte1_open || ''}${row.patte2_close || ''}`;
+      const key = formatDate(row.input_date);
+      inputMap[key] = {
+        patte1: row.patte1 || "",
+        patte1_open: row.patte1_open || "",
+        patte2_close: row.patte2_close || "",
+        patte2: row.patte2 || "",
+        jodi_value: (row.patte1_open || '') + (row.patte2_close || ''),
+        result: `${row.patte1 || ""}-${row.patte1_open || ""}${row.patte2_close || ""}-${row.patte2 || ""}`
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, "")
+      };
     });
 
-    // Prepare final records array with ** for missing dates
-    const records = dates.map(date => ({
-      input_date: date,
-      jodi_value: inputMap[date] || '**'
-    }));
+    // Find latest input for overall result string
+    let latestInput = null;
+    if (rows.length > 0) {
+      latestInput = rows.reduce((a, b) => (new Date(a.input_date) > new Date(b.input_date) ? a : b));
+    }
 
-    res.json({ records });
+    const latestResultString = latestInput
+      ? `${latestInput.patte1 || ""}-${latestInput.patte1_open || ""}${latestInput.patte2_close || ""}-${latestInput.patte2 || ""}`
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, "")
+      : "";
+
+    // Prepare records array with "**" for missing dates
+    const records = dates.map(date => {
+      if (inputMap[date]) {
+        return {
+          input_date: date,
+          patte1: inputMap[date].patte1,
+          patte1_open: inputMap[date].patte1_open,
+          patte2_close: inputMap[date].patte2_close,
+          patte2: inputMap[date].patte2,
+          jodi_value: inputMap[date].jodi_value,
+          result: inputMap[date].result
+        };
+      } else {
+        return {
+          input_date: date,
+          patte1: "",
+          patte1_open: "",
+          patte2_close: "",
+          patte2: "",
+          jodi_value: "**",
+          result: "**"
+        };
+      }
+    });
+
+    // Final response
+    const response = {
+      game_name,
+      result: latestResultString,
+      records
+    };
+
+    res.json(response);
   } catch (err) {
     console.error("getJodiRecords error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
+
 
 
 
