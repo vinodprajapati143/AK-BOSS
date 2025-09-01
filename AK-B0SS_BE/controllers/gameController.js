@@ -743,13 +743,43 @@ exports.getPublicGameResults = async (req, res) => {
       });
     }
 
-    const data = games.map(g => ({
-      game_name: g.game_name,
-      result: resultsMap[g.id] || "",
-      timing: `${convertTo12HourFormat(g.open_time.slice(0,5))} - ${convertTo12HourFormat(g.close_time.slice(0,5))}`
-    }));
+ const gracePeriodMinutes = 30; // Adjust as needed (30 min window before open/close)
 
-    res.json({ games: data });
+// Helper to parse time string
+const parseTime = (timeStr) => {
+  const [h, m] = timeStr.split(':').map(Number);
+  return { h, m };
+};
+
+const filteredGames = games.filter(g => {
+  const openDateTime = new Date(`${todayIST}T${g.open_time}`);
+  const closeDateTime = new Date(`${todayIST}T${g.close_time}`);
+
+  const openWindowStart = new Date(openDateTime.getTime() - gracePeriodMinutes * 60000);
+  const closeWindowStart = new Date(closeDateTime.getTime() - gracePeriodMinutes * 60000);
+
+  const now = nowIST;
+
+  // Check if current time is inside open input window (30 min before open_time) or close input window
+  const isInOpenWindow = now >= openWindowStart && now < openDateTime;
+  const isInCloseWindow = now >= closeWindowStart && now < closeDateTime;
+
+  // Check if inputs exist for game today
+  const input = resultsMap[g.id];
+
+  // Include game only if NOT in any active input window AND has input
+  return !isInOpenWindow && !isInCloseWindow && input; // input is the formatted string ("" or non-empty)
+});
+
+// Now build the data with filteredGames
+const data = filteredGames.map(g => ({
+  game_name: g.game_name,
+  result: resultsMap[g.id] || "",
+  timing: `${convertTo12HourFormat(g.open_time.slice(0,5))} - ${convertTo12HourFormat(g.close_time.slice(0,5))}`
+}));
+
+res.json({ games: data });
+
   } catch (err) {
     console.error("getPublicGameResults error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
