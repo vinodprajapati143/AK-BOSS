@@ -100,7 +100,32 @@ export class AddGameComponent implements OnInit {
   }
 
 
-  togglePopup() {
+  togglePopup(gameId?:any) {
+    console.log('gameId: ', gameId);
+      if (gameId) {
+    // Fetch game data from backend by ID
+    this.loadGameData(gameId);
+  }
     this.addGamePopupOpen = !this.addGamePopupOpen;
   }
+
+  loadGameData(gameId: any) {
+  this.apiService.getGameById(gameId).subscribe({
+    next: (gameData) => {
+      this.gameForm.patchValue({
+        game_name: gameData.game.game_name,
+        open_time: gameData.game.open_time,
+        close_time: gameData.game.close_time,
+        // For days, you may need to set checkboxes accordingly in your component
+        selectedDays: gameData.game.days // Make sure to handle this correctly
+      });
+      // Also update your selectedDays array if you use it
+      this.selectedDays = [...gameData.game.days];
+    },
+    error: (err) => {
+      console.error('Error loading game data', err);
+    }
+  })
+}
+
 }

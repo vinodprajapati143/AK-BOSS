@@ -10,6 +10,7 @@ router.get("/nearest-game-list",verifyToken, gameController.getNearestGames);
 router.post("/save-game-input",verifyToken, gameController.saveGameInput);
 router.get("/public-game-list", gameController.getPublicGames);
 router.get("/public-game-result", gameController.getPublicGameResults);
+router.get('/:id', gameController.getGameById);
 
 
 

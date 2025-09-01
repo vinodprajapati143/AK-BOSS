@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, timer } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 import { LoginResponse } from '../module/login-response.model';
-import { Game } from '../module/models';
+import { Game, gamebyid } from '../module/models';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +36,13 @@ constructor(private http: HttpClient) {}
   addGame(gameData: any) {
    return this.http.post(`${this.baseUrl}/api/games/add-game`, gameData,{ withCredentials: true });
   }
+
+    // Get game by ID
+  getGameById(id: string): Observable<{success: boolean, game: gamebyid}> {
+    return this.http.get<{success: boolean, game: gamebyid}>(`${this.baseUrl}/api/games/${id}`);
+  }
+
+
   getGames() {
    return this.http.get(`${this.baseUrl}/api/games/game-list`,{ withCredentials: true });
   }

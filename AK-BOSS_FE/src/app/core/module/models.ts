@@ -33,3 +33,12 @@ patte1: any;
   open_time: string;
   close_time: string;
 }
+
+export interface gamebyid {
+  id?: string;
+  game_name: string;
+  open_time: string;
+  close_time: string;
+  days: string[];      // Adjust type as per your needs
+  prices: any;         // Adjust type as needed
+}

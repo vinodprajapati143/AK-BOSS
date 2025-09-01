@@ -45,6 +45,32 @@ exports.addGame = async (req, res) => {
   }
 };
 
+exports.getGameById = async (req, res) => {
+  try {
+    const gameId = req.params.id;
+
+    const [gameData] = await db.query(
+      "SELECT id, game_name, open_time, close_time, days, prices FROM games WHERE id = ?",
+      [gameId]
+    );
+
+    if (gameData.length === 0) {
+      return res.status(404).json({ message: "Game not found" });
+    }
+
+    // Parse JSON strings to objects before sending
+    const game = gameData[0];
+    game.days = JSON.parse(game.days);
+    game.prices = JSON.parse(game.prices);
+
+    res.json({ success: true, game });
+  } catch (err) {
+    console.error("Get Game By ID error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 exports.getGameList = async (req, res) => {
   try {
     if (req.user.registerType !== "admin") {
