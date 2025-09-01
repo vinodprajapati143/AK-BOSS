@@ -335,7 +335,6 @@ exports.getNearestGames = async (req, res) => {
 
       const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
       const isNewDay = formattedInputDate !== todayIST;
-      console.log('isNewDay: ', isNewDay);
 
       let gameWithInputs = {
         ...game,
@@ -385,9 +384,17 @@ exports.getNearestGames = async (req, res) => {
           patte2_close: "",
           patte2: ""
         });
-      } else {
+      }// If all required inputs are filled, consider game done, move to allGames
+      else if (
+        (gameWithInputs.patte1 || gameWithInputs.patte1_open) &&
+        (gameWithInputs.patte2_close || gameWithInputs.patte2)
+      ) {
         allGames.push(gameWithInputs);
       }
+      // Otherwise, inputs missing but window/grace passed - keep in futureGames until input filled
+      else {
+        futureGames.push(gameWithInputs);
+}
     });
 
     // Send final response as before
@@ -398,21 +405,6 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
-
-
-
- 
-
-
- 
-
-
-
-
-
-
-
 
 exports.saveGameInput = async (req, res) => {
   try {
