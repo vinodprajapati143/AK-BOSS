@@ -724,67 +724,70 @@ exports.getPublicGameResults = async (req, res) => {
     const day = nowIST.getDate().toString().padStart(2, '0');
     const todayIST = `${year}-${month}-${day}`;
 
-    const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time FROM games ORDER BY id DESC`
-    );
+    // Yesterday date
+    const yesterdayIST = new Date(nowIST);
+    yesterdayIST.setDate(yesterdayIST.getDate() - 1);
+    const yYear = yesterdayIST.getFullYear();
+    const yMonth = (yesterdayIST.getMonth() + 1).toString().padStart(2, '0');
+    const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
+    const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
+
+    const [games] = await db.query(`SELECT id, game_name, open_time, close_time FROM games ORDER BY id DESC`);
 
     const gameIds = games.map(g => g.id);
     let resultsMap = {};
+
     if (gameIds.length > 0) {
       const [results] = await db.query(
         `SELECT game_id, patte1, patte1_open, patte2_close, patte2, input_date
          FROM game_inputs
-         WHERE game_id IN (?) AND input_date = ?`,
-        [gameIds, todayIST]
+         WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)`,
+        [gameIds, todayIST, yesterdayDate]
       );
+
       results.forEach(r => {
         resultsMap[r.game_id] = `
-        ${r.patte1 || ""}-${r.patte1_open || ""}${r.patte2_close || ""}-${r.patte2 || ""}`.replace(/(^-+|-+$)/g,'').replace(/-+/g,'-').replace(/-+$/, "");
+        ${r.patte1 || ""}-${r.patte1_open || ""}${r.patte2_close || ""}-${r.patte2 || ""}`
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, '');
       });
     }
 
- const gracePeriodMinutes = 30; // Adjust as needed (30 min window before open/close)
+    const gracePeriodMinutes = 30;
 
-// Helper to parse time string
-const parseTime = (timeStr) => {
-  const [h, m] = timeStr.split(':').map(Number);
-  return { h, m };
-};
+    const filteredGames = games.filter(g => {
+      const openDateTime = new Date(`${todayIST}T${g.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${g.close_time}`);
 
-const filteredGames = games.filter(g => {
-  const openDateTime = new Date(`${todayIST}T${g.open_time}`);
-  const closeDateTime = new Date(`${todayIST}T${g.close_time}`);
+      const openWindowStart = new Date(openDateTime.getTime() - gracePeriodMinutes * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - gracePeriodMinutes * 60000);
 
-  const openWindowStart = new Date(openDateTime.getTime() - gracePeriodMinutes * 60000);
-  const closeWindowStart = new Date(closeDateTime.getTime() - gracePeriodMinutes * 60000);
+      const now = nowIST;
 
-  const now = nowIST;
+      // Check if current time is inside open or close 30-minute input window
+      const isInOpenWindow = now >= openWindowStart && now < openDateTime;
+      const isInCloseWindow = now >= closeWindowStart && now < closeDateTime;
 
-  // Check if current time is inside open input window (30 min before open_time) or close input window
-  const isInOpenWindow = now >= openWindowStart && now < openDateTime;
-  const isInCloseWindow = now >= closeWindowStart && now < closeDateTime;
+      const input = resultsMap[g.id];
 
-  // Check if inputs exist for game today
-  const input = resultsMap[g.id];
+      // Include only those games NOT in any active input window AND have input (from today or yesterday)
+      return !isInOpenWindow && !isInCloseWindow && input;
+    });
 
-  // Include game only if NOT in any active input window AND has input
-  return !isInOpenWindow && !isInCloseWindow && input; // input is the formatted string ("" or non-empty)
-});
+    const data = filteredGames.map(g => ({
+      game_name: g.game_name,
+      result: resultsMap[g.id] || "",
+      timing: `${convertTo12HourFormat(g.open_time.slice(0, 5))} - ${convertTo12HourFormat(g.close_time.slice(0, 5))}`
+    }));
 
-// Now build the data with filteredGames
-const data = filteredGames.map(g => ({
-  game_name: g.game_name,
-  result: resultsMap[g.id] || "",
-  timing: `${convertTo12HourFormat(g.open_time.slice(0,5))} - ${convertTo12HourFormat(g.close_time.slice(0,5))}`
-}));
-
-res.json({ games: data });
-
+    res.json({ games: data });
   } catch (err) {
     console.error("getPublicGameResults error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 
