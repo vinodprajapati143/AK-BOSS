@@ -21,7 +21,7 @@ export class ChartReportComponent {
   selectedGameId: any;
   fromDate: any;
   toDate: any;
-  records: import("e:/Dheerendra/AK-BOSS/AK-BOSS_FE/src/app/core/module/models").JodiRecord[] | undefined;
+  records: import("../../core/module/models").JodiRecord[] | undefined;
   game_name: any;
   result: any;
   weekCells: any;

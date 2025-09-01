@@ -17,12 +17,12 @@ const routes: Routes = [
   { path: 'dashboard', component: UserDashboardComponent },
   { path: 'chart-report', component: ChartReportComponent },
   { path: 'today-report', component: PenalReportComponent },
-  { path: 'share-page', component: SharePageComponent },
+  { path: 'share', component: SharePageComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'change-pwd', component: ChangesPwdComponent },
-  { path: 'edit-profile', component: ProfileEditComponent },
+  { path: 'docs', component: ProfileEditComponent },
   { path: 'add-amount', component: AddAmountComponent },
-  { path: 'withdrawal', component: WithdrawalComponent }
+  { path: 'withdrawal', component: WithdrawalComponent },
 ];
 
 
