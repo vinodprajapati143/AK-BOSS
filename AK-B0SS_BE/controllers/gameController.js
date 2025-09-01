@@ -575,10 +575,26 @@ exports.getPublicGames = async (req, res) => {
       const patte2_close = input.patte2_close || "";
       const patte2 = input.patte2 || "";
 
-      // Calculate phases based on open and close time and current time
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+
+      // Whether 30-minute window has started for open or close
+      const hasOpenWindowStarted = nowIST >= openWindowStart;
+      const hasCloseWindowStarted = nowIST >= closeWindowStart;
+
+      // Inputs missing
+      const missingOpenInput = !patte1 && !patte1_open;
+      const missingCloseInput = !patte2_close && !patte2;
+
+      // Pending flag: input missing and window started
+      const isPendingInput =
+        (missingOpenInput && hasOpenWindowStarted) ||
+        (missingCloseInput && hasCloseWindowStarted);
+
+      // Existing phase calculation
       let phase = 'waiting';
       if (nowIST >= openDateTime && nowIST < closeDateTime) {
         phase = 'open';
@@ -586,42 +602,33 @@ exports.getPublicGames = async (req, res) => {
         phase = 'close';
       }
 
-      // Create stars array
+      // Stars array generation (unchanged)
       let stars = Array(8).fill("★");
-
-      // Replace stars based on phase and admin inputs
-   // 1st to 3rd stars from patte1
       for (let i = 0; i < 3; i++) {
         if (patte1 && patte1.length > i) {
           stars[i] = patte1.charAt(i);
         }
       }
-
-      // 4th star from patte1_open
       if (patte1_open && patte1_open.length > 0) {
         stars[3] = patte1_open.charAt(0);
       }
-
-      // 5th star from patte2_close
       if (patte2_close && patte2_close.length > 0) {
         stars[4] = patte2_close.charAt(0);
       }
-
-      // 6th to 8th stars from patte2
       for (let i = 0; i < 3; i++) {
         if (patte2 && patte2.length > i) {
           stars[5 + i] = patte2.charAt(i);
         }
       }
 
-      let starsWithDashes = [
-      ...stars.slice(0, 3),  // first 3 stars
-      '-',                   // dash after 3rd star
-      stars[3],              // 4th star
-      stars[4],              // 5th star
-      '-',                   // dash after 5th star
-      ...stars.slice(5, 8),  // 6th to 8th stars
-    ];
+      const starsWithDashes = [
+        ...stars.slice(0, 3),
+        '-',
+        stars[3],
+        stars[4],
+        '-',
+        ...stars.slice(5, 8),
+      ];
 
       return {
         id: game.id,
@@ -630,6 +637,7 @@ exports.getPublicGames = async (req, res) => {
         open_time: game.open_time,
         close_time: game.close_time,
         phase,
+        isPendingInput,       // NEW field marking if input is pending and window started
       };
     });
 
@@ -639,6 +647,7 @@ exports.getPublicGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 function convertTo12HourFormat(time24) {
   let [hour, minute] = time24.split(':');
