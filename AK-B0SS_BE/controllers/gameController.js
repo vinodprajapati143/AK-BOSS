@@ -681,11 +681,16 @@ const filteredGames = resultGames.filter(game => {
   const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
   const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
 
+    // Define missing inputs from starsWithDashes:
+  // If stars filled (not ★ or -) means input present
+  const openInputFilled = game.starsWithDashes[0] !== "★" && game.starsWithDashes[1] !== "★" && game.starsWithDashes[2] !== "★" && game.starsWithDashes[3] !== "★";
+  const closeInputFilled = game.starsWithDashes[4] !== "★" && game.starsWithDashes[5] !== "★" && game.starsWithDashes[6] !== "★" && game.starsWithDashes[7] !== "★";
+
   // Only include games where NOW is within open or close 30-min window
   const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
   const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
-
-  return insideOpenWindow || insideCloseWindow;
+  // Show only if in open window && input not filled OR close window && input not filled
+  return (insideOpenWindow && !openInputFilled) || (insideCloseWindow && !closeInputFilled);
 });
 
 res.json({ games: filteredGames });
