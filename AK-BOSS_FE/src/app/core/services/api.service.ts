@@ -42,6 +42,11 @@ constructor(private http: HttpClient) {}
     return this.http.get<{success: boolean, game: gamebyid}>(`${this.baseUrl}/api/games/${id}`);
   }
 
+    // Update game by ID
+  updateGame(id: string, gameData: Game): Observable<{ success: boolean; message: string }> {
+    return this.http.put<{ success: boolean; message: string }>(`${this.baseUrl}/api/games/${id}`, gameData);
+  }
+
 
   getGames() {
    return this.http.get(`${this.baseUrl}/api/games/game-list`,{ withCredentials: true });

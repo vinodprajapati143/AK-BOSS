@@ -69,21 +69,42 @@ export class AddGameComponent implements OnInit {
     this.selectAll = this.selectedDays.length === this.days.length;
   }
 
+  editingGameId: any;
     saveGame() {
+
+
     const payload = this.gameForm.value;
     payload.days = this.selectedDays
 
+         if (this.editingGameId) {
+    // Update existing game
+    this.apiService.updateGame(this.editingGameId, payload).subscribe({
+      next: (res: any) => {
+        this.toastr.success(res.message);
+        this.addGamePopupOpen = false;
+        this.editingGameId = null; // Reset editing state
+        this.loadGames();
+      },
+      error: (err: any) => {
+        this.toastr.error(err.error.message || 'Error updating game');
+      }
+    });
+  }
+  else{
     this.apiService.addGame(payload).subscribe({
      next: (res:any) =>{
         this.toastr.success(res.message);
         this.addGamePopupOpen =false;
         this.loadGames();
-
+  
      },
      error : (err:any) =>{
       this.toastr.error(err.data.message);
      }
     });
+
+  }
+
   }
 
     loadGames() {
@@ -113,6 +134,7 @@ export class AddGameComponent implements OnInit {
   this.apiService.getGameById(gameId).subscribe({
     next: (gameData) => {
       this.gameForm.patchValue({
+        
         game_name: gameData.game.game_name,
         open_time: gameData.game.open_time,
         close_time: gameData.game.close_time,
@@ -121,6 +143,7 @@ export class AddGameComponent implements OnInit {
       });
       // Also update your selectedDays array if you use it
       this.selectedDays = [...gameData.game.days];
+      this.editingGameId = gameData?.game?.id
     },
     error: (err) => {
       console.error('Error loading game data', err);

@@ -70,6 +70,63 @@ exports.getGameById = async (req, res) => {
   }
 };
 
+exports.updateGameById = async (req, res) => {
+  try {
+    if (req.user.registerType !== "admin") {
+      return res.status(403).json({ message: "Only admin can update games" });
+    }
+
+    const gameId = req.params.id;
+    const { game_name, open_time, close_time, days, prices } = req.body;
+
+    // Server-side validation
+    if (!game_name || game_name.trim() === "") {
+      return res.status(400).json({ message: "Game name is required" });
+    }
+
+    if (!open_time || open_time.trim() === "") {
+      return res.status(400).json({ message: "Open time is required" });
+    }
+
+    if (!close_time || close_time.trim() === "") {
+      return res.status(400).json({ message: "Close time is required" });
+    }
+
+    // Check if the game exists and belongs to admin
+    const [existingGame] = await db.query(
+      "SELECT * FROM games WHERE id = ? AND created_by = ?",
+      [gameId, req.user.id]
+    );
+
+    if (existingGame.length === 0) {
+      return res.status(404).json({ message: "Game not found or unauthorized" });
+    }
+
+    // Update query
+    const sql = `
+      UPDATE games
+      SET game_name = ?, open_time = ?, close_time = ?, days = ?, prices = ?
+      WHERE id = ? AND created_by = ?
+    `;
+
+    await db.query(sql, [
+      game_name,
+      open_time,
+      close_time,
+      JSON.stringify(days),
+      JSON.stringify(prices),
+      gameId,
+      req.user.id
+    ]);
+
+    res.json({ success: true, message: "Game updated successfully" });
+  } catch (err) {
+    console.error("Update Game Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 
 exports.getGameList = async (req, res) => {
   try {
