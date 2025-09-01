@@ -47,3 +47,9 @@ export interface JodiRecord {
   input_date: string;
   jodi_value: string;
 }
+
+export interface JodiResponse {
+  game_name: string;
+  result: string;           // Overall result string, e.g. "568-91-227"
+  records: JodiRecord[];    // Array of daily jodi records
+}

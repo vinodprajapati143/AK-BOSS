@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, timer } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 import { LoginResponse } from '../module/login-response.model';
-import { Game, gamebyid, JodiRecord } from '../module/models';
+import { Game, gamebyid, JodiRecord, JodiResponse } from '../module/models';
 
 @Injectable({
   providedIn: 'root'
@@ -79,8 +79,8 @@ getpublicGamesResult(): Observable<any> {
   }
 
 
-    getJodiRecords(gameId: string, fromDate: string, toDate: string): Observable<{ records: JodiRecord[] }> {
-    const url = `${this.baseUrl}/api/games/${gameId}/jodi-records?from=${fromDate}&to=${toDate}`;
-    return this.http.get<{ records: JodiRecord[] }>(url);
-  }
+getJodiRecords(gameId: string, fromDate: string, toDate: string): Observable<JodiResponse> {
+  const url = `${this.baseUrl}/api/games/${gameId}/jodi-records?from=${fromDate}&to=${toDate}`;
+  return this.http.get<JodiResponse>(url);
+}
 }
