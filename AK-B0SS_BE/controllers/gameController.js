@@ -871,22 +871,12 @@ exports.getJodiRecords = async (req, res) => {
       if (inputMap[date]) {
         return {
           input_date: date,
-          patte1: inputMap[date].patte1,
-          patte1_open: inputMap[date].patte1_open,
-          patte2_close: inputMap[date].patte2_close,
-          patte2: inputMap[date].patte2,
           jodi_value: inputMap[date].jodi_value,
-          result: inputMap[date].result
         };
       } else {
         return {
           input_date: date,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: "",
           jodi_value: "**",
-          result: "**"
         };
       }
     });
