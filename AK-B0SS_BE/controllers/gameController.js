@@ -581,6 +581,23 @@ exports.getPublicGames = async (req, res) => {
   const openDateTime = new Date(`${todayIST}T${game.open_time}`);
   const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
+        // Input windows start 30 min before open/close time
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+
+        // Check if time is inside input window or inside grace period after open or close
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+
+      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
+      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
+
+       const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
+
+            const missingOpenInput = !patte1 && !patte1_open;
+      const missingCloseInput = !patte2_close && !patte2;
+
   // New day check: compare input_date with todayIST
   const formatDateToYMD = (date) => {
     const d = new Date(date);
@@ -627,8 +644,19 @@ exports.getPublicGames = async (req, res) => {
     '-',
     ...stars.slice(5, 8),
   ];
-
+ // Pending (future) games criteria: missing input AND in window or grace period or after window but input not filled yet
+      const isPendingInput =
+        (missingOpenInput && (insideOpenWindow || insideOpenGracePeriod || nowIST > openDateTime)) ||
+        (missingCloseInput && (insideCloseWindow || insideCloseGracePeriod || nowIST > closeDateTime));
   // ... existing calculation for phase and isPendingInput unmodified ...
+
+
+      let phase = 'waiting';
+      if (nowIST >= openDateTime && nowIST < closeDateTime) {
+        phase = 'open';
+      } else if (nowIST >= closeDateTime) {
+        phase = 'close';
+      }
 
   return {
     id: game.id,
