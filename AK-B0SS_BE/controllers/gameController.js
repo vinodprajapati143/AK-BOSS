@@ -364,6 +364,9 @@ exports.getNearestGames = async (req, res) => {
       const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
       const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
 
+      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
+      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
+
       if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
         // New day first input window
         futureGames.push({
@@ -374,28 +377,23 @@ exports.getNearestGames = async (req, res) => {
           patte2: ""
         });
       }
-      // Admin has full grace time after input window to enter data
-      else if ((insideOpenWindow && missingOpenInput)) {
-        futureGames.push({
-          ...gameWithInputs,
-          patte1: "",
-          patte1_open: ""
-        });
-      } else if ((insideCloseWindow && missingCloseInput)) {
-        futureGames.push({
-          ...gameWithInputs,
-          patte2_close: "",
-          patte2: ""
-        });
-      }
-
-      else if (missingOpenInput || missingCloseInput) {
+      else if (openWindowStarted && missingOpenInput) {
       futureGames.push(gameWithInputs);
-      }
-      
-      else {
-        allGames.push(gameWithInputs);
-      }
+    } else if (closeWindowStarted && missingCloseInput) {
+      futureGames.push(gameWithInputs);
+    } else if (missingOpenInput && openWindowStarted) {
+      futureGames.push(gameWithInputs);
+    } else if (missingCloseInput && closeWindowStarted) {
+      futureGames.push(gameWithInputs);
+    } else if (missingOpenInput && nowIST > openDateTime) {
+      // open window gone but input missing: still futureGames
+      futureGames.push(gameWithInputs);
+    } else if (missingCloseInput && nowIST > closeDateTime) {
+      // close window gone but input missing: still futureGames
+      futureGames.push(gameWithInputs);
+    } else {
+      allGames.push(gameWithInputs);
+    }
     });
 
     // Send final response as before
