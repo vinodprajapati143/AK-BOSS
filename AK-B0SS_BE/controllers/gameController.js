@@ -669,8 +669,29 @@ exports.getPublicGames = async (req, res) => {
   };
 });
 
+const filteredGames = resultGames.filter(game => {
+  // Parse today's date and open/close times
+  const today = new Date();
+  const offset = 5.5 * 60 * 60 * 1000; // IST offset (same as above)
+  const nowIST = new Date(today.getTime() + offset);
 
-    res.json({ games: resultGames });
+  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+  const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+  const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+
+  // Only include games where NOW is within open or close 30-min window
+  const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+  const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+
+  return insideOpenWindow || insideCloseWindow;
+});
+
+res.json({ games: filteredGames });
+
+
+
   } catch (err) {
     console.error("getPublicGames error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
