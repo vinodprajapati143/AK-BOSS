@@ -78,25 +78,37 @@
 
     <!-- Table -->
 <div class="overflow-x-auto">
-  <!-- One fixed header row with days -->
-  <div class="grid grid-flow-col auto-cols-[minmax(100px,1fr)] gap-x-1 mb-2">
-    <div *ngFor="let day of weekDays" class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">
-      {{ day }}
-    </div>
-  </div>
-
-  <!-- Data rows for different weeks -->
-  <div *ngFor="let row of weekRows" class="grid grid-flow-col auto-cols-[minmax(100px,1fr)] gap-x-1 mb-3">
-    <div *ngFor="let cell of row" class="border border-black p-2 bg-[#EDF0F5] flex flex-col items-center">
-      <div class="text-xs mb-1 border border-sky-600 rounded px-2 py-0.5 w-full text-center">
-        {{ cell.date }}
+  <!-- Wrapper with fixed min-width for scroll -->
+  <div class="min-w-[700px]">
+    <!-- Fixed header row with days -->
+    <div class="grid grid-cols-7 gap-x-1 mb-2">
+      <div *ngFor="let day of weekDays"
+           class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">
+        {{ day }}
       </div>
-      <div class="text-lg font-bold text-red-600">
-        {{ cell.jodi_value }}
+    </div>
+
+    <!-- Data rows -->
+    <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-3">
+      <div *ngFor="let cell of row"
+           class="border border-black p-2 bg-[#EDF0F5] flex flex-col items-center min-h-[70px]">
+        
+        <!-- Date -->
+        <div *ngIf="cell?.date" 
+             class="text-xs mb-1 border border-sky-600 rounded px-2 py-0.5 w-full text-center">
+          {{ cell.date }}
+        </div>
+
+        <!-- Jodi Value -->
+        <div *ngIf="cell?.jodi_value" 
+             class="text-lg font-bold text-red-600">
+          {{ cell.jodi_value }}
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 
 
 
