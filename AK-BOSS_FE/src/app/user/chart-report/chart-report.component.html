@@ -81,7 +81,7 @@
   <!-- Wrapper with fixed min-width for scroll -->
   <div class="min-w-[700px]">
     <!-- Fixed header row with days -->
-    <div class="grid grid-cols-7 gap-x-1 mb-2">
+    <div class="grid grid-cols-7 gap-x-1 mb-1">
       <div *ngFor="let day of weekDays"
            class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">
         {{ day }}
@@ -89,9 +89,9 @@
     </div>
 
     <!-- Data rows -->
-    <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-3">
+    <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-1">
       <div *ngFor="let cell of row"
-           class="border border-black p-2 bg-[#EDF0F5] flex flex-col items-center min-h-[70px]">
+           class="border border-black p-2 bg-[#ffffff] flex flex-col items-center min-h-[70px]">
         
         <!-- Date -->
         <div *ngIf="cell?.date" 

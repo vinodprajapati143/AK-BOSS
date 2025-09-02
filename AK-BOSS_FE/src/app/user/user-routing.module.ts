@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'dashboard', component: UserDashboardComponent },
   { path: 'chart-report', component: ChartReportComponent },
   { path: 'today-report', component: PenalReportComponent },
+  
   { path: 'share', component: SharePageComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'change-pwd', component: ChangesPwdComponent },

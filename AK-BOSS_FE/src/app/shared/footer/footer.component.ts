@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule, RouterLinkActive, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss'
+  styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
   active: string = 'dashboard';
@@ -16,7 +16,7 @@ export class FooterComponent {
 
    setActive(tab: string) {
     this.active = tab;
-    this.router.navigate(['/' + tab]); // yaha navigate karega
+    this.router.navigate(['/user/' + tab]); // yaha navigate karega
   }
   
 
