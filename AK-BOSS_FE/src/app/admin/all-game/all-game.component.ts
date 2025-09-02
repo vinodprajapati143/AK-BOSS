@@ -258,7 +258,24 @@ this.comingSoonGames.forEach(game => {
 
 loadGames() {
   this.apiService.getNearestGames().subscribe((res: any) => {
-    this.comingSoonGames = res.futureGames;
+     const apiGames = res.futureGames;
+
+    // Preserve user edits by matching game IDs or indexes
+    apiGames.forEach((game: any) => {
+      const existing = this.comingSoonGames.find(g => g.id === game.id);
+      if (existing) {
+        // Preserve user-edited properties like input fields
+        game.patte1 = existing.patte1;
+        game.patte1_open = existing.patte1_open
+        game.patte2_close = existing.patte2_close
+        game.patte2 = existing.patte2
+
+
+        // similarly for other input-bound properties
+      }
+    });
+
+    this.comingSoonGames = apiGames;
     this.allGames = res.allGames;
 
     // Dono arrays ke har game me countdown init karo
