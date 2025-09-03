@@ -405,178 +405,83 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
     const futureGames = [];
 
-    // games.forEach(game => {
-    //   const input = inputsMap[game.id] || {};
+    games.forEach(game => {
+      const input = inputsMap[game.id] || {};
 
-    //   const formatDateToYMD = (date) => {
-    //     const d = new Date(date);
-    //     const year = d.getFullYear();
-    //     const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    //     const day = d.getDate().toString().padStart(2, '0');
-    //     return `${year}-${month}-${day}`;
-    //   };
+      const formatDateToYMD = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
 
-    //   const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-    //   const isNewDay = formattedInputDate !== todayIST;
+      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+      const isNewDay = formattedInputDate !== todayIST;
 
-    //   let gameWithInputs = {
-    //     ...game,
-    //     patte1: input.patte1 || "",
-    //     patte1_open: input.patte1_open || "",
-    //     patte2_close: input.patte2_close || "",
-    //     patte2: input.patte2 || ""
-    //   };
+      let gameWithInputs = {
+        ...game,
+        patte1: input.patte1 || "",
+        patte1_open: input.patte1_open || "",
+        patte2_close: input.patte2_close || "",
+        patte2: input.patte2 || ""
+      };
 
-    //   const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-    //   const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-    //   const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-    //   const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
 
-    //   const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-    //   const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-    //   // Grace period end times
-    //   const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
-    //   const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
+      // Grace period end times
+      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
+      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
 
-    //   // Check if still in grace period after close time
-    //   const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
-    //   const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
+      // Check if still in grace period after close time
+      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
 
-    //   const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
-    //   const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
+      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
+      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
 
-    //   const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
-    //   const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
+      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-    //   if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
-    //     // New day first input window
-    //     futureGames.push({
-    //       ...gameWithInputs,
-    //       patte1: "",
-    //       patte1_open: "",
-    //       patte2_close: "",
-    //       patte2: ""
-    //     });
-    //   }
-    //   else if (openWindowStarted && missingOpenInput) {
-    //   futureGames.push(gameWithInputs);
-    // } else if (closeWindowStarted && missingCloseInput) {
-    //   futureGames.push(gameWithInputs);
-    // } else if (missingOpenInput && openWindowStarted) {
-    //   futureGames.push(gameWithInputs);
-    // } else if (missingCloseInput && closeWindowStarted) {
-    //   futureGames.push(gameWithInputs);
-    // } else if (missingOpenInput && nowIST > openDateTime) {
-    //   // open window gone but input missing: still futureGames
-    //   futureGames.push(gameWithInputs);
-    // } else if (missingCloseInput && nowIST > closeDateTime) {
-    //   // close window gone but input missing: still futureGames
-    //   futureGames.push(gameWithInputs);
-    // } else {
-    //   allGames.push(gameWithInputs);
-    // }
-    // });
+      if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
+        // New day first input window
+        futureGames.push({
+          ...gameWithInputs,
+          patte1: "",
+          patte1_open: "",
+          patte2_close: "",
+          patte2: ""
+        });
+      }
+      else if (openWindowStarted && missingOpenInput) {
+      futureGames.push(gameWithInputs);
+    } else if (closeWindowStarted && missingCloseInput) {
+      futureGames.push(gameWithInputs);
+    } else if (missingOpenInput && openWindowStarted) {
+      futureGames.push(gameWithInputs);
+    } else if (missingCloseInput && closeWindowStarted) {
+      futureGames.push(gameWithInputs);
+    } else if (missingOpenInput && nowIST > openDateTime) {
+      // open window gone but input missing: still futureGames
+      futureGames.push(gameWithInputs);
+    } else if (missingCloseInput && nowIST > closeDateTime) {
+      // close window gone but input missing: still futureGames
+      futureGames.push(gameWithInputs);
+    } else {
+      allGames.push(gameWithInputs);
+    }
+    });
 
     // Send final response as before
 
-    games.forEach(game => {
-  const input = inputsMap[game.id] || {};
-
-  const formatDateToYMD = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const day = d.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-  const isNewDay = formattedInputDate !== todayIST;
-
-  // Get the input values to use:
-  // If input_date is today, use those values 
-  // Else keep those values (fallback to previous inputs if present)
-
-  let patte1 = "";
-  let patte1_open = "";
-  let patte2_close = "";
-  let patte2 = "";
-
-  if (input && input.input_date) {
-    if (formattedInputDate === todayIST) {
-      // Use today's input values
-      patte1 = input.patte1 || "";
-      patte1_open = input.patte1_open || "";
-      patte2_close = input.patte2_close || "";
-      patte2 = input.patte2 || "";
-    } else {
-      // Input date is not today, fallback to previous day input values
-      patte1 = input.patte1 || "";
-      patte1_open = input.patte1_open || "";
-      patte2_close = input.patte2_close || "";
-      patte2 = input.patte2 || "";
-    }
-  }
-
-  let gameWithInputs = {
-    ...game,
-    patte1,
-    patte1_open,
-    patte2_close,
-    patte2
-  };
-
-  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
-
-  const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-  const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-
-  const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-  const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
-
-  const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
-  const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
-
-  const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
-  const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
-
-  const missingOpenInput = !patte1 && !patte1_open;
-  const missingCloseInput = !patte2_close && !patte2;
-
-  const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
-  const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
-
-  if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
-    // New day first input window — clear inputs to let user input fresh values
-    futureGames.push({
-      ...gameWithInputs,
-      patte1: "",
-      patte1_open: "",
-      patte2_close: "",
-      patte2: ""
-    });
-  }
-  else if (openWindowStarted && missingOpenInput) {
-    futureGames.push(gameWithInputs);
-  } else if (closeWindowStarted && missingCloseInput) {
-    futureGames.push(gameWithInputs);
-  } else if (missingOpenInput && openWindowStarted) {
-    futureGames.push(gameWithInputs);
-  } else if (missingCloseInput && closeWindowStarted) {
-    futureGames.push(gameWithInputs);
-  } else if (missingOpenInput && nowIST > openDateTime) {
-    // open window gone but input missing: still futureGames
-    futureGames.push(gameWithInputs);
-  } else if (missingCloseInput && nowIST > closeDateTime) {
-    // close window gone but input missing: still futureGames
-    futureGames.push(gameWithInputs);
-  } else {
-    allGames.push(gameWithInputs);
-  }
-});
+ 
     res.json({ futureGames, allGames });
 
   } catch (err) {
