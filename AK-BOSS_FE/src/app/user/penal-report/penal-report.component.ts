@@ -94,10 +94,14 @@ loadPanelRecords() {
 
         // Find record for this date or ** if missing
         const rec = this.records.find(r => r.input_date === dateStr);
+        // panelLeft = ["1","2","3"];
+        // panelRight = ["6","7","8"];
         weekCells.push({
           day: this.getDayName(currentDate),
           date: dateStr,
-          jodi_value: rec ? rec.jodi : '**'
+          jodi_value: rec ? rec.jodi : '**',
+          panelLeft: rec ? rec.panelLeft : ["*","*","*"],
+          panelRight: rec ? rec.panelRight : ["*","*","*"]
         });
 
         // increment one day

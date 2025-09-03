@@ -95,12 +95,13 @@
                     <div class="flex items-center">
                         <div
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none mr-2">
-                            <span>2</span><span>8</span><span>8</span>
+                            <span *ngFor="let digit of cell.panelLeft">{{digit}}</span>
                         </div>
                         <span class="text-lg font-bold text-red-600">{{ cell.jodi_value }}</span>
                         <div
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none ml-2">
-                            <span>2</span><span>8</span><span>8</span>
+                                                       <span *ngFor="let digit of cell.panelRight">{{digit}}</span>
+
                         </div>
                     </div>
                 </div>
