@@ -450,7 +450,7 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-      if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
+      if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod ||insideCloseGracePeriod)) {
         // New day first input window
         futureGames.push({
           ...gameWithInputs,
@@ -463,27 +463,33 @@ exports.getNearestGames = async (req, res) => {
       else if (openWindowStarted && missingOpenInput) {
              futureGames.push({
           ...gameWithInputs,
-          patte1: "",
+           patte1: "",
           patte1_open: "",
+          patte2_close: "",
+          patte2: ""
         });
     } else if (closeWindowStarted && missingCloseInput) {
               futureGames.push({
           ...gameWithInputs,
-          
+            patte1: "",
+          patte1_open: "",
           patte2_close: "",
           patte2: ""
         });
     } else if (missingOpenInput && openWindowStarted) {
               futureGames.push({
           ...gameWithInputs,
-          patte1: "",
+            patte1: "",
           patte1_open: "",
+          patte2_close: "",
+          patte2: ""
       
         });
     } else if (missingCloseInput && closeWindowStarted) {
         futureGames.push({
           ...gameWithInputs,
-      
+           patte1: "",
+          patte1_open: "",
           patte2_close: "",
           patte2: ""
         });
@@ -493,13 +499,16 @@ exports.getNearestGames = async (req, res) => {
           ...gameWithInputs,
           patte1: "",
           patte1_open: "",
+          patte2_close: "",
+          patte2: ""
    
         });
     } else if (missingCloseInput && nowIST > closeDateTime) {
       // close window gone but input missing: still futureGames
               futureGames.push({
           ...gameWithInputs,
-        
+           patte1: "",
+          patte1_open: "",
           patte2_close: "",
           patte2: ""
         });
