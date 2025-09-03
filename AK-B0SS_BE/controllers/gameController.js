@@ -450,8 +450,8 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-      if (isNewDay && (insideOpenWindow || insideCloseWindow)) {
-        // New day first input window
+      if (isNewDay) {
+        // Chahe abhi window ho ya na ho, agar aaj ka input nahi hai toh show blanks
         futureGames.push({
           ...gameWithInputs,
           patte1: "",
@@ -460,6 +460,7 @@ exports.getNearestGames = async (req, res) => {
           patte2: ""
         });
       }
+      
       else if (openWindowStarted && missingOpenInput) {
       futureGames.push(gameWithInputs);
     } else if (closeWindowStarted && missingCloseInput) {
