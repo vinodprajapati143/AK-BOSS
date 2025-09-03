@@ -48,7 +48,7 @@
             <input type="date" value="2019-07-25"
                 class="btn rounded px-2 py-1 text-sm focus:outline-none min-w-[116px]">
             <button
-                class="btn text-gray-800 px-3 py-1 rounded font-semibold hover:bg-yellow-500 text-sm">Refresh</button>
+                class="btn text-gray-800 px-3 py-1 rounded font-semibold hover:bg-yellow-500 text-sm">Search</button>
             <input type="date" value="2025-12-30"
                 class="btn rounded px-2 py-1 text-sm focus:outline-none min-w-[116px]">
         </div>
@@ -92,13 +92,13 @@
                 <!-- Repeat This Card for Each Column -->
                 <div *ngFor="let cell of row" class="border-black border-l border-r border-b p-2 bg-[#EDF0F5] flex flex-col items-center">
                     <div class="border border-sky-500 rounded px-2 py-0.5 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold mb-1">{{cell.date}}</div>
-                    <div class="flex items-center">
-                        <div
+                    <div *ngIf="cell" class="flex items-center">
+                        <div *ngIf="cell?.panelLeft"
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none mr-2">
                             <span *ngFor="let digit of cell.panelLeft">{{digit}}</span>
                         </div>
-                        <span class="text-lg font-bold text-red-600">{{ cell.jodi_value }}</span>
-                        <div
+                        <span *ngIf="cell?.jodi_value" class="text-lg font-bold text-red-600">{{ cell.jodi_value }}</span>
+                        <div *ngIf="cell?.panelRight"
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none ml-2">
                                                        <span *ngFor="let digit of cell.panelRight">{{digit}}</span>
 
