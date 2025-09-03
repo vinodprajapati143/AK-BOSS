@@ -935,6 +935,117 @@ exports.getJodiRecords = async (req, res) => {
   }
 };
 
+exports.getPanelRecords = async (req, res) => {
+  const gameId = req.params.gameId;
+  const { from, to } = req.query;
+
+  // Date range helper
+  function getDateRange(startDate, endDate) {
+    const dateArray = [];
+    let currentDate = new Date(startDate);
+    const end = new Date(endDate);
+    while (currentDate <= end) {
+      const y = currentDate.getFullYear();
+      const m = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+      const d = currentDate.getDate().toString().padStart(2, '0');
+      dateArray.push(`${y}-${m}-${d}`);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dateArray;
+  }
+
+  // Format DB date to 'YYYY-MM-DD'
+  function formatDate(dt) {
+    const d = new Date(dt);
+    const y = d.getFullYear();
+    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  try {
+    const dates = getDateRange(from, to);
+
+    // Get game name
+    const [[gameRow]] = await db.query(
+      `SELECT game_name FROM games WHERE id = ? LIMIT 1`,
+      [gameId]
+    );
+    const game_name = gameRow ? gameRow.game_name : "";
+
+    // Get input records
+    const [rows] = await db.query(
+      `SELECT input_date, patte1, patte1_open, patte2_close, patte2
+       FROM game_inputs
+       WHERE game_id = ? AND input_date BETWEEN ? AND ?
+       ORDER BY input_date ASC`,
+      [gameId, from, to]
+    );
+
+    // Map input_date to full record
+    const inputMap = {};
+    rows.forEach(row => {
+      const key = formatDate(row.input_date);
+      inputMap[key] = {
+        panelLeft: [row.patte1 || ""],
+        jodi: (row.patte1_open || "") + (row.patte2_close || ""),
+        panelRight: [row.patte2 || ""],
+        resultString: `${row.patte1 || ""}-${row.patte1_open || ""}${row.patte2_close || ""}-${row.patte2 || ""}`
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, "")
+      };
+    });
+
+    // Find latest input for overall result string
+    let latestInput = null;
+    if (rows.length > 0) {
+      latestInput = rows.reduce((a, b) => (new Date(a.input_date) > new Date(b.input_date) ? a : b));
+    }
+
+    const latestResultString = latestInput
+      ? `${latestInput.patte1 || ""}-${latestInput.patte1_open || ""}${latestInput.patte2_close || ""}-${latestInput.patte2 || ""}`
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, "")
+      : "";
+
+    // Prepare records array with "**" for missing dates
+    const records = dates.map(date => {
+      if (inputMap[date]) {
+        return {
+          input_date: date,
+          panelLeft: inputMap[date].panelLeft,
+          jodi: inputMap[date].jodi,
+          panelRight: inputMap[date].panelRight,
+          resultString: inputMap[date].resultString
+        };
+      } else {
+        return {
+          input_date: date,
+          panelLeft: [""],
+          jodi: "**",
+          panelRight: [""],
+          resultString: "**"
+        };
+      }
+    });
+
+    // Final response
+    const response = {
+      game_name,
+      latestResultString,
+      records
+    };
+
+    res.json(response);
+  } catch (err) {
+    console.error("getPanelRecords error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
 
 
 

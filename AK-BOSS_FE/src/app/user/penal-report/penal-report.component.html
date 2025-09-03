@@ -20,7 +20,7 @@
 
     <!-- Blue Description Section -->
     <div
-        class="bg-[#0A7E8D] mt-2 border border-solid border-black text-white px-4 py-3 text-xs text-center leading-relaxed border-b border-gray-500">
+        class="bg-[#0A7E8D] mt-2 border border-soli text-white px-4 py-3 text-xs text-center leading-relaxed border-b border-gray-500">
         <p class="uppercase tracking-wide font-semibold mb-2">MILAN MORNING JODI RESULT CHART RECORDS</p>
         <p>
             AKBOSS MILAN MORNING jodi chart, MILAN MORNING jodi chart, old MILAN MORNING jodi chart, dpboss MILAN
@@ -79,28 +79,25 @@
         <!-- Table -->
         <div class="overflow-x-auto">
             <!-- Table -->
-            <div class="grid grid-flow-col auto-cols-[minmax(100px,1fr)] gap-x-1">
-                <!-- Table Header -->
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Mon</div>
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Tue</div>
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Wed</div>
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Thu</div>
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Fri</div>
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Sat</div>
-                <div class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">Sun</div>
-            </div>
+           <div class="grid grid-cols-7 gap-x-1 mb-1">
+      <div *ngFor="let day of weekDays"
+           class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">
+        {{ day }}
+      </div>
+    </div>
 
             <!-- Data Row -->
-            <div class="grid grid-flow-col auto-cols-[minmax(100px,1fr)] gap-x-1">
+              <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-1">
+
                 <!-- Repeat This Card for Each Column -->
-                <div class="border-black border-l border-r border-b p-2 bg-[#EDF0F5] flex flex-col items-center">
-                    <div class="border border-sky-500 rounded px-2 py-0.5 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold mb-1">25-07-2019</div>
+                <div *ngFor="let cell of row" class="border-black border-l border-r border-b p-2 bg-[#EDF0F5] flex flex-col items-center">
+                    <div class="border border-sky-500 rounded px-2 py-0.5 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold mb-1">{{cell.date}}</div>
                     <div class="flex items-center">
                         <div
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none mr-2">
                             <span>2</span><span>8</span><span>8</span>
                         </div>
-                        <span class="text-lg font-bold text-red-600">84</span>
+                        <span class="text-lg font-bold text-red-600">{{ cell.jodi_value }}</span>
                         <div
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none ml-2">
                             <span>2</span><span>8</span><span>8</span>
@@ -1021,7 +1018,7 @@
 
     <!-- Footer -->
     <div
-        class="bg-white text-black font-bold py-2 mt-2 font-bold text-2xl mb-2 flex items-center justify-center border-y border-y-solid border-y-black shadow">
+        class="bg-white text-black py-2 mt-2 font-bold text-2xl mb-2 flex items-center justify-center border-y border-y-solid border-y-black shadow">
         POWERD BY Ak247pro
     </div>
 

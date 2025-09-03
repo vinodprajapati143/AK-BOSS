@@ -53,3 +53,17 @@ export interface JodiResponse {
   result: string;           // Overall result string, e.g. "568-91-227"
   records: JodiRecord[];    // Array of daily jodi records
 }
+
+export interface PanelRecord {
+  input_date: string;           // Date in 'YYYY-MM-DD' format
+  panelLeft: string[];          // Array of digits as strings, e.g. ["2","8","8"]
+  jodi: string;                 // Combined string e.g. "84"
+  panelRight: string[];         // Array of digits as strings e.g. ["3","7","4"]
+  resultString: string;         // Result string e.g. "134-84-374"
+}
+
+export interface PanelResponse {
+  game_name: string;            // Name of the game
+  latestResultString: string;   // Latest overall result string
+  records: PanelRecord[];       // Array of PanelRecord objects
+}

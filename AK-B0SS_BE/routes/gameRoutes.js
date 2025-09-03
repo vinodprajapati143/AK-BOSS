@@ -13,6 +13,8 @@ router.get("/public-game-result", gameController.getPublicGameResults);
 router.get('/:id',verifyToken, gameController.getGameById);
 router.put('/:id',verifyToken, gameController.updateGameById);
 router.get('/:gameId/jodi-records', gameController.getJodiRecords);
+router.get('/:gameId/panel-records', gameController.getPanelRecords);
+
 
 
 
