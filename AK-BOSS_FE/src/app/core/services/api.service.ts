@@ -85,7 +85,7 @@ getJodiRecords(gameId: string, fromDate: string, toDate: string): Observable<Jod
 }
 
 getPanelRecords(gameId: string, fromDate: string, toDate: string): Observable<PanelResponse> {
-  const url = `${this.baseUrl}/api/games/${gameId}/jodi-records?from=${fromDate}&to=${toDate}`;
+  const url = `${this.baseUrl}/api/games/${gameId}/panel-records?from=${fromDate}&to=${toDate}`;
   return this.http.get<PanelResponse>(url);
 }
 }
