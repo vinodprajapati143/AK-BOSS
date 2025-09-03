@@ -990,10 +990,10 @@ exports.getPanelRecords = async (req, res) => {
         panelLeft: row.patte1 ? row.patte1.split('') : ["*","*","*"],   // "123" -> ["1","2","3"]
         jodi: (row.patte1_open || "") + (row.patte2_close || ""),  
         panelRight: row.patte2 ? row.patte2.split('') : ["*","*","*"],  // "678" -> ["6","7","8"]
-        resultString: `${row.patte1 || ""}-${row.patte1_open || ""}${row.patte2_close || ""}-${row.patte2 || ""}`
-          .replace(/(^-+|-+$)/g, '')
-          .replace(/-+/g, '-')
-          .replace(/-+$/, "")
+        // resultString: `${row.patte1 || ""}-${row.patte1_open || ""}${row.patte2_close || ""}-${row.patte2 || ""}`
+        //   .replace(/(^-+|-+$)/g, '')
+        //   .replace(/-+/g, '-')
+        //   .replace(/-+$/, "")
       };
     });
 
@@ -1024,9 +1024,9 @@ exports.getPanelRecords = async (req, res) => {
       } else {
         return {
           input_date: date,
-          panelLeft: [""],
+          panelLeft: ["*","*","*"],
           jodi: "**",
-          panelRight: [""],
+          panelRight: ["*","*","*"],
           resultString: "**"
         };
       }
