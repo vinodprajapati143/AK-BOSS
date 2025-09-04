@@ -24,6 +24,7 @@ exports.listUsers = async (req, res) => {
 };
 
 async function generateReferralCode(userId) {
+  console.log('userId: ', userId);
   // 1. Get user data by Id
   const [rows] = await db.query("SELECT id, phone, invitecode FROM users WHERE id = ?", [userId]);
   if (rows.length === 0) throw new Error("User not found");
