@@ -40,16 +40,16 @@
           <tr>
             <th class="border-b px-2 py-2">S.No.</th>
             <th class="border-b px-2 py-2">Invite Code</th>
-            <th class="border-b px-2 py-2">Bid Amount</th>
-            <th class="border-b px-2 py-2">Commission</th>
+            <th class="border-b px-2 py-2">Username</th>
+            <th class="border-b px-2 py-2">phone</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of referralList; let i = index" class="text-center">
             <td class="border-b px-2 py-2">{{ i+1 }}</td>
-            <td class="border-b px-2 py-2">{{ item.inviteCode }}</td>
-            <td class="border-b px-2 py-2">₹ {{ item.bidAmount }}</td>
-            <td class="border-b px-2 py-2">₹ {{ item.commission }}</td>
+            <td class="border-b px-2 py-2">{{ item.invite_code }}</td>
+            <td class="border-b px-2 py-2"> {{ item.invitee_username }}</td>
+            <td class="border-b px-2 py-2"> {{ item.invitee_phone }}</td>
           </tr>
         </tbody>
       </table>

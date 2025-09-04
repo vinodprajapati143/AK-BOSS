@@ -18,14 +18,7 @@ export class SharePageComponent {
   platformId = inject(PLATFORM_ID);
   
 
- referralList = [
-    { inviteCode: '12345***', bidAmount: 500, commission: 70 },
-    { inviteCode: '12345***', bidAmount: 500, commission: 70 },
-    { inviteCode: '12345***', bidAmount: 500, commission: 70 },
-    { inviteCode: '12345***', bidAmount: 500, commission: 70 },
-    { inviteCode: '12345***', bidAmount: 500, commission: 70 },
-    { inviteCode: '12345***', bidAmount: 500, commission: 70 }
-  ];
+ referralList:any
 
   inviteLink: string = '';
     getDomainUrl(): string {
@@ -55,10 +48,9 @@ referralCode(){
 referList(){
  this.apiService.getReferralList().subscribe({
     next: (res: any) => {
-      console.log('res: ', res);
-      // if (res && res.inviteCode) {
-      //   this.inviteLink = ` ${this.getDomainUrl()}/auth/register?ref=${res.inviteCode}`;
-      // }
+      if (res) {
+        this.referralList = res.referrals;
+      }
     },
     error: (err) => {
       console.error('Failed to get referral code', err);
