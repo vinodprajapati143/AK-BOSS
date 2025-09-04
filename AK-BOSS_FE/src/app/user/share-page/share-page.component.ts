@@ -35,7 +35,7 @@ export class SharePageComponent {
       return ''; // Server-side ya fallback value
     }
   ngOnInit() {
- 
+   this.referralCode();
 }
 
 referralCode(){
@@ -43,6 +43,7 @@ referralCode(){
     next: (res: any) => {
       if (res && res.inviteCode) {
         this.inviteLink = ` ${this.getDomainUrl()}/auth/register?ref=${res.inviteCode}`;
+        this.referList()
       }
     },
     error: (err) => {
