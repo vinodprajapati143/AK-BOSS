@@ -309,7 +309,6 @@ exports.logoutUser = async (req, res) => {
   }
 };
 
-
 exports.sendForgotOtp = async (req, res) => {
   const { phone, countryCode } = req.body;
 
@@ -361,8 +360,6 @@ exports.sendForgotOtp = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 exports.verifyOtpAndResetPassword = async (req, res) => {
   const { phone, countryCode, otp, newPassword } = req.body;

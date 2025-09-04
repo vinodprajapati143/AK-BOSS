@@ -122,7 +122,8 @@ export class RegisterComponent {
     this.router.navigate(['/user/home']); 
   }
   onSubmit() {
-    this.backendservice.register(this.registerForm.value).subscribe({
+    const formData = this.registerForm.getRawValue();
+    this.backendservice.register(formData).subscribe({
       next: (res) => {
         if(res){
           const response = res as { message: string }; // Type assertion

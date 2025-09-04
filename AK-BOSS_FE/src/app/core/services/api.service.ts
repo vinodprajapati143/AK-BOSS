@@ -89,9 +89,13 @@ getPanelRecords(gameId: string, fromDate: string, toDate: string): Observable<Pa
   return this.http.get<PanelResponse>(url);
 }
 
-  getReferralCode() {
-   return this.http.get(`${this.baseUrl}/api/users/referral-code`,{ withCredentials: true });
-  }
+getReferralCode() {
+  return this.http.get(`${this.baseUrl}/api/users/referral-code`,{ withCredentials: true });
+}
+
+getReferralList() {
+  return this.http.get(`${this.baseUrl}/api/users/referralList`,{ withCredentials: true });
+}
 
 
 }
