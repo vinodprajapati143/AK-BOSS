@@ -305,3 +305,8 @@
       }
     }
   }
+
+  input[readonly] {
+  background-color: #eee;
+  cursor: not-allowed;
+}

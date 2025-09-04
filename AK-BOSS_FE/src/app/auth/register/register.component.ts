@@ -2,7 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../core/services/api.service';
 import { StorageService } from '../../core/services/storage.service';
@@ -18,15 +18,20 @@ export class RegisterComponent {
 
     registerForm: FormGroup;
   password: boolean = false;
+  inviteCode: any;
+  inviteCodeFromUrl: string | null = null;
 
   constructor(
     private storageService: StorageService,
+    private route: ActivatedRoute,
     private toaster: ToastrService,
     private fb: FormBuilder,
     @Inject(PLATFORM_ID) private platformId: Object,
     private backendservice: ApiService,
     private router: Router
   ) {
+
+ 
     this.registerForm = this.fb.group({
       username: [''],
       smsvcode: [''],
@@ -46,6 +51,15 @@ export class RegisterComponent {
       countryCode: ['+91'],
       agree: [false],
     });
+
+  this.route.queryParams.subscribe(params => {
+    if (params['ref']) {
+      this.inviteCodeFromUrl = params['ref'];
+      this.registerForm.patchValue({ invitecode: this.inviteCodeFromUrl });
+      // Referral code URL se aaya hai, disable input
+      this.registerForm.get('invitecode')?.disable();
+    }
+  });
   }
 
   getDomainUrl(): string {

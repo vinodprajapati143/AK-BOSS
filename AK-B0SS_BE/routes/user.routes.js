@@ -4,5 +4,7 @@ const userController = require("../controllers/user.controller");
 const { verifyToken } = require("../middlewares/authMiddleware");
 
 router.get('/user-list', verifyToken, userController.listUsers);
+router.get('/referral-code', verifyToken, userController.getReferralCode);
+
 
 module.exports = router;

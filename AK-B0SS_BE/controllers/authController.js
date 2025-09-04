@@ -5,6 +5,135 @@ const bcrypt = require("bcrypt");
 const axios = require("axios");
 
 
+// old regiter starts
+// exports.register = async (req, res) => {
+//   try {
+//     const {
+//       username,
+//       smsvcode,
+//       registerType,
+//       pwd,
+//       invitecode,
+//       domainurl,
+//       phonetype,
+//       captchaId,
+//       track,
+//       deviceId,
+//       language,
+//       random,
+//       signature,
+//       timestamp,
+//       phone,
+//       countryCode,
+//       agree,
+//     } = req.body;
+
+//     // ✅ Required Field Validations
+//     if (!username || !pwd) {
+//       return res
+//         .status(400)
+//         .json({
+//           success: false,
+//           message: "Username and password are required",
+//         });
+//     }
+
+//     if (!phone) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Phone number is required" });
+//     }
+//     // ✅ Phone Format Check (optional)
+//     if (phone && !/^\d{6,15}$/.test(phone)) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Invalid phone number" });
+//     }
+//     // ✅ Password Strength Check
+//     if (pwd.length < 6) {
+//       return res
+//         .status(400)
+//         .json({
+//           success: false,
+//           message: "Password must be at least 6 characters long",
+//         });
+//     }
+
+//     if (agree !== true) {
+//       return res
+//         .status(400)
+//         .json({
+//           success: false,
+//           message: "You must agree to the terms and conditions",
+//         });
+//     }
+
+//     // ✅ Check if user already exists
+//     const [existingUser] = await db.query(
+//       "SELECT id FROM users WHERE username = ?",
+//       [username]
+//     );
+//     if (existingUser.length > 0) {
+//       return res
+//         .status(409)
+//         .json({ success: false, message: "Username already exists" });
+//     }
+
+//     // ✅ Hash password
+//     const hashedPwd = await bcrypt.hash(pwd, 10);
+
+//     const sql = `
+//       INSERT INTO users (
+//         username, smsvcode, registerType, pwd, invitecode,
+//         domainurl, phonetype, captchaId, track, deviceId,
+//         language, random, signature, timestamp,
+//         phone, countryCode, agree
+//       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//     `;
+
+//     const values = [
+//       username,
+//       smsvcode,
+//       registerType,
+//       hashedPwd,
+//       invitecode,
+//       domainurl,
+//       phonetype,
+//       captchaId,
+//       track,
+//       deviceId,
+//       language,
+//       random,
+//       signature,
+//       timestamp,
+//       phone,
+//       countryCode,
+//       agree,
+//     ];
+
+//     await db.query(sql, values);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "User registered successfully",
+//     });
+//   } catch (error) {
+//     console.error("Register API Error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Something went wrong",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// login api
+// old register ends
+
+// new register based on refer starts
+
+
+
 
 exports.register = async (req, res) => {
   try {
@@ -13,7 +142,7 @@ exports.register = async (req, res) => {
       smsvcode,
       registerType,
       pwd,
-      invitecode,
+      invitecode,    // Referral code received
       domainurl,
       phonetype,
       captchaId,
@@ -28,90 +157,61 @@ exports.register = async (req, res) => {
       agree,
     } = req.body;
 
-    // ✅ Required Field Validations
-    if (!username || !pwd) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Username and password are required",
-        });
+    // Basic validations
+    if (!username || !pwd || !phone || agree !== true) {
+      return res.status(400).json({ success: false, message: "Required fields missing or terms not agreed." });
     }
+    // Phone format, password length checks...
 
-    if (!phone) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Phone number is required" });
-    }
-    // ✅ Phone Format Check (optional)
-    if (phone && !/^\d{6,15}$/.test(phone)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid phone number" });
-    }
-    // ✅ Password Strength Check
-    if (pwd.length < 6) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Password must be at least 6 characters long",
-        });
-    }
-
-    if (agree !== true) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "You must agree to the terms and conditions",
-        });
-    }
-
-    // ✅ Check if user already exists
-    const [existingUser] = await db.query(
-      "SELECT id FROM users WHERE username = ?",
-      [username]
-    );
+    // Check existing user
+    const [existingUser] = await db.query("SELECT id FROM users WHERE username = ?", [username]);
     if (existingUser.length > 0) {
-      return res
-        .status(409)
-        .json({ success: false, message: "Username already exists" });
+      return res.status(409).json({ success: false, message: "Username already exists" });
     }
 
-    // ✅ Hash password
+    // Hash password
     const hashedPwd = await bcrypt.hash(pwd, 10);
 
+    // Find referrer id by invitecode if available
+    let referrerId = null;
+    if (invitecode) {
+      const [referrer] = await db.query(
+        "SELECT id FROM users WHERE invitecode = ? LIMIT 1",
+        [invitecode]
+      );
+      if (referrer.length > 0) {
+        referrerId = referrer[0].id;
+      }
+    }
+
+    // Insert new user with referrer_id
     const sql = `
       INSERT INTO users (
         username, smsvcode, registerType, pwd, invitecode,
         domainurl, phonetype, captchaId, track, deviceId,
         language, random, signature, timestamp,
-        phone, countryCode, agree
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        phone, countryCode, agree, referrer_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
-      username,
-      smsvcode,
-      registerType,
-      hashedPwd,
-      invitecode,
-      domainurl,
-      phonetype,
-      captchaId,
-      track,
-      deviceId,
-      language,
-      random,
-      signature,
-      timestamp,
-      phone,
-      countryCode,
-      agree,
+      username, smsvcode, registerType, hashedPwd, invitecode,
+      domainurl, phonetype, captchaId, track, deviceId,
+      language, random, signature, timestamp,
+      phone, countryCode, agree, referrerId
     ];
 
-    await db.query(sql, values);
+    const result = await db.query(sql, values);
+    const newUserId = result[0].insertId;
+
+    // If referrerId is present, insert referral relation record
+    if (referrerId) {
+      const referralSql = `
+        INSERT INTO referral_relations (referrer_id, invitee_id, invite_code)
+        VALUES (?, ?, ?)
+      `;
+      await db.query(referralSql, [referrerId, newUserId, invitecode]);
+    }
 
     return res.status(200).json({
       success: true,
@@ -126,8 +226,11 @@ exports.register = async (req, res) => {
     });
   }
 };
+// new register based on refer ends
 
-// login api
+
+
+
 exports.loginUser = async (req, res) => {
   try {
     const {

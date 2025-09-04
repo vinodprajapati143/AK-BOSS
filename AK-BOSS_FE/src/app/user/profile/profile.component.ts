@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
+import { ToastrService } from 'ngx-toastr';
+import { ApiService } from '../../core/services/api.service';
+import { StorageService } from '../../core/services/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -11,4 +15,25 @@ import { FooterComponent } from '../../shared/footer/footer.component';
 })
 export class ProfileComponent {
 
+ constructor(private router: Router, private strorageservice: StorageService, private toaster: ToastrService, private backendservice: ApiService) {
+
+  }
+     logout() {
+    this.backendservice.logout({}).subscribe({
+      next: (res: any) => {
+        this.toaster.success(res.message);
+        this.strorageservice.removeItem('authToken');
+        this.strorageservice.clear();
+        this.strorageservice.clearCookies();
+
+
+        this.router.navigate(['/user/home']);
+      },
+      error: err => {
+        console.error('Logout failed:', err);
+        this.strorageservice.removeItem('authToken');
+        // this.router.navigate(['/home']);
+      }
+    });
+  }
 }
