@@ -30,17 +30,12 @@ async function generateReferralCode(userId) {
   let user = rows[0];
 
   if (user.invitecode && user.invitecode.trim() !== '') {
-    console.log('Existing invitecode found:', user.invitecode);
     return user.invitecode;
   }
 
   const newInviteCode = `AK_${user.phone}`;
-  const updateResult = await db.query("UPDATE users SET invitecode = ? WHERE id = ?", [newInviteCode, userId]);
-  console.log('Update Result:', updateResult);
 
-  // Confirm update
-  const [updatedUser] = await db.query("SELECT invitecode FROM users WHERE id = ?", [userId]);
-  console.log('Updated invitecode after update:', updatedUser[0].invitecode);
+  
 
   return newInviteCode;
 }
