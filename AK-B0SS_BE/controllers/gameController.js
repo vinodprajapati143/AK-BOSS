@@ -450,71 +450,48 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-      if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod ||insideCloseGracePeriod)) {
-        // New day first input window
-        futureGames.push({
-          ...gameWithInputs,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-        });
-      }
-      else if (openWindowStarted && missingOpenInput) {
-             futureGames.push({
-          ...gameWithInputs,
-           patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-        });
-    } else if (closeWindowStarted && missingCloseInput) {
-              futureGames.push({
-          ...gameWithInputs,
-            patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-        });
-    } else if (missingOpenInput && openWindowStarted) {
-              futureGames.push({
-          ...gameWithInputs,
-            patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-      
-        });
-    } else if (missingCloseInput && closeWindowStarted) {
-        futureGames.push({
-          ...gameWithInputs,
-           patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-        });
-    } else if (missingOpenInput && nowIST > openDateTime) {
-      // open window gone but input missing: still futureGames
-              futureGames.push({
-          ...gameWithInputs,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-   
-        });
-    } else if (missingCloseInput && nowIST > closeDateTime) {
-      // close window gone but input missing: still futureGames
-              futureGames.push({
-          ...gameWithInputs,
-           patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-        });
-    } else {
-      allGames.push(gameWithInputs);
-    }
+     if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+  // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: "",
+    patte2_close: "",
+    patte2: ""
+  });
+}
+else if (openWindowStarted && missingOpenInput) {
+  // Sirf open input missing hai, to sirf open wale blank
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: ""
+  });
+} else if (closeWindowStarted && missingCloseInput) {
+  // Sirf close input missing hai, to sirf close wale blank
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+} else if (missingOpenInput && nowIST > openDateTime) {
+  // open window khatam, still missing, to bhi sirf open blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: ""
+  });
+} else if (missingCloseInput && nowIST > closeDateTime) {
+  // close window khatam, still missing, to bhi sirf close blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+} else {
+  allGames.push(gameWithInputs);
+}
+
     });
 
     // Send final response as before
