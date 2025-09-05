@@ -450,7 +450,21 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-     if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+      const shouldStillBeFuture = 
+  (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod) &&
+  (missingOpenInput || missingCloseInput);
+
+if (shouldStillBeFuture) {
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: missingOpenInput ? "" : gameWithInputs.patte1,
+    patte1_open: missingOpenInput ? "" : gameWithInputs.patte1_open,
+    patte2_close: missingCloseInput ? "" : gameWithInputs.patte2_close,
+    patte2: missingCloseInput ? "" : gameWithInputs.patte2
+  });
+}
+
+   else if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
   // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
   futureGames.push({
     ...gameWithInputs,
