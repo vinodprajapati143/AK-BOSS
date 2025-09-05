@@ -5,6 +5,7 @@ import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { CommonModule } from '@angular/common';
+import { PanelRecord } from '../../core/module/models';
 
 @Component({
   selector: 'app-penal-report',
@@ -20,7 +21,7 @@ export class PenalReportComponent {
   selectedGameId: any;
   fromDate: any;
   toDate: any;
-  records: import("e:/Dheerendra/AK-BOSS/AK-BOSS_FE/src/app/core/module/models").PanelRecord[] | undefined;
+  records: PanelRecord[] | undefined;
   game_name: any;
   result: any;
   weekCells: any;

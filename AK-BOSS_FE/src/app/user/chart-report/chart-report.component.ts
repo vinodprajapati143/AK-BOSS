@@ -5,6 +5,7 @@ import { MarqureeComponent } from '../../shared/marquree/marquree.component';
 import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating-buttons.component";
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
+import { JodiRecord } from '../../core/module/models';
 
 
 @Component({
@@ -21,7 +22,7 @@ export class ChartReportComponent {
   selectedGameId: any;
   fromDate: any;
   toDate: any;
-  records: import("../../core/module/models").JodiRecord[] | undefined;
+  records: JodiRecord[] | undefined;
   game_name: any;
   result: any;
   weekCells: any;
