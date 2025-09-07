@@ -372,8 +372,9 @@ exports.getNearestGames = async (req, res) => {
 
     // Get all games for admin
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, days, created_at 
-       FROM games WHERE created_by = ? 
+      `SELECT id, game_name, open_time, close_time, days, created_at
+       FROM games
+       WHERE created_by = ?
        ORDER BY id DESC`,
       [req.user.id]
     );
@@ -384,15 +385,14 @@ exports.getNearestGames = async (req, res) => {
 
     if (gameIds.length > 0) {
       const [inputs] = await db.query(
-        `SELECT gi.* 
+        `SELECT gi.*
          FROM game_inputs gi
          INNER JOIN (
-            SELECT game_id, MAX(input_date) AS latest_date 
-            FROM game_inputs 
-            WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
-            GROUP BY game_id
-         ) t 
-         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+           GROUP BY game_id
+         ) t ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
         [gameIds, todayIST, yesterdayDate]
       );
 
@@ -401,48 +401,78 @@ exports.getNearestGames = async (req, res) => {
       });
     }
 
-    // Set grace time duration in minutes
+    // Set grace time duration in minutes (change as needed)
     const gracePeriodMinutes = 90;
 
     const allGames = [];
     const futureGames = [];
 
-games.forEach(game => {
-  const input = inputsMap[game.id] || {};
+    games.forEach(game => {
+      const input = inputsMap[game.id] || {};
 
-  let gameWithInputs = {
-    ...game,
-    patte1: input.patte1 || "",
-    patte1_open: input.patte1_open || "",
-    patte2_close: input.patte2_close || "",
-    patte2: input.patte2 || ""
-  };
+      const formatDateToYMD = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
 
-  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+      const isNewDay = formattedInputDate !== todayIST;
 
-  const hasAnyInput = !!(gameWithInputs.patte1 || gameWithInputs.patte1_open || gameWithInputs.patte2_close || gameWithInputs.patte2);
+      let gameWithInputs = {
+        ...game,
+        patte1: input.patte1 || "",
+        patte1_open: input.patte1_open || "",
+        patte2_close: input.patte2_close || "",
+        patte2: input.patte2 || ""
+      };
 
-  if (!hasAnyInput) {
-    const minutesToOpen = (openDateTime - nowIST) / 60000;
-    const minutesToClose = (closeDateTime - nowIST) / 60000;
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-    const openWindowStarted = nowIST >= openDateTime;
-    const closeWindowStarted = nowIST >= closeDateTime;
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
 
-    // Add to futureGames only if:
-    // 1️⃣ Window is about to start (<=30 min) OR
-    // 2️⃣ Window already started but input missing
-    if (minutesToOpen <= 30 || minutesToClose <= 30 || openWindowStarted || closeWindowStarted) {
-      futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
-    }
-  } else {
-    allGames.push(gameWithInputs);
-  }
-});
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
+      // Grace period end times
+      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
+      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
 
+      // Check if still in grace period after close time
+      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
 
+      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
+      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
+
+      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
+      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
+
+      if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+        // NEW DAY, input nahi hai, value blank hi dikhao (only then!)
+        futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
+      } else if (openWindowStarted && missingOpenInput) {
+        // Sirf open input missing hai, to sirf open wale blank futureGames
+        futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "" });
+      } else if (closeWindowStarted && missingCloseInput) {
+        // Sirf close input missing hai, to sirf close wale blank futureGames
+        futureGames.push({ ...gameWithInputs, patte2_close: "", patte2: "" });
+      } else if (missingOpenInput && nowIST > openDateTime) {
+        // Open window khatam, still missing, to bhi sirf open blank futureGames
+        futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "" });
+      } else if (missingCloseInput && nowIST > closeDateTime) {
+        // Close window khatam, still missing, to bhi sirf close blank futureGames
+        futureGames.push({ ...gameWithInputs, patte2_close: "", patte2: "" });
+      } else {
+        allGames.push(gameWithInputs);
+      }
+    });
+
+    // Send final response as before
     res.json({ futureGames, allGames });
   } catch (err) {
     console.error("getNearestGames error:", err);
