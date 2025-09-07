@@ -9,12 +9,12 @@ exports.listUsers = async (req, res) => {
         u.id,
         u.username, 
         u.registerType, 
-        rr.invitee_invitecode AS invitecode, -- relation ka code show hoga
+        rr.invite_code AS invitecode, -- relation ka code show hoga
         u.phone, 
         u.joiningdate
       FROM users u
       LEFT JOIN referral_relations rr 
-        ON u.invitecode = rr.invitee_invitecode
+        ON u.invitecode = rr.invite_code
       ORDER BY u.id DESC
     `);
 
