@@ -658,7 +658,9 @@ exports.getNearestGames = async (req, res) => {
       return d;
     }
 
-    const now = convertToIST(new Date());
+    const nowUTC = new Date();
+    const IST_OFFSET = 330; // minutes
+    const now = new Date(nowUTC.getTime() + IST_OFFSET * 60000);
 
     const comingSoonGames = [];
     const allGames = [];
