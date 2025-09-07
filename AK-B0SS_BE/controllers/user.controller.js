@@ -60,7 +60,7 @@ exports.getReferralCode = async (req, res) => {
 
 exports.getReferralList = async (req, res) => {
   try {
-    const referrerId = req.user.id; // Logged in user ID from auth
+    const referrerId = req.user.id;
 
     const sql = `
       SELECT rr.id, 
@@ -77,10 +77,20 @@ exports.getReferralList = async (req, res) => {
 
     const [referrals] = await db.query(sql, [referrerId]);
 
-    return res.json({ success: true, referrals });
+    // Mask last 5 characters of invitee_code
+    const maskedReferrals = referrals.map(r => {
+      if (r.invitee_code && r.invitee_code.length > 5) {
+        const visiblePart = r.invitee_code.slice(0, -5);
+        r.invitee_code = visiblePart + "*****";
+      }
+      return r;
+    });
+
+    return res.json({ success: true, referrals: maskedReferrals });
   } catch (error) {
     console.error("Referral List API error:", error);
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
