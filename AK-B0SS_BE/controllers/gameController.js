@@ -34,14 +34,23 @@ exports.addGame = async (req, res) => {
       return res.status(400).json({ message: "Prices must be an object with numeric values" });
     }
 
+    // Check if close_time is next day (midnight crossover)
+    const openTimeParts = open_time.split(':').map(Number);
+    const closeTimeParts = close_time.split(':').map(Number);
+
+    const openTotalMinutes = openTimeParts[0] * 60 + openTimeParts[1];
+    const closeTotalMinutes = closeTimeParts[0] * 60 + closeTimeParts[1];
+
+    const isNextDayClose = closeTotalMinutes <= openTotalMinutes;
+
     // Get admin phone
     const [admin] = await db.query("SELECT phone FROM users WHERE id = ?", [req.user.id]);
     if (!admin.length) return res.status(400).json({ message: "Admin user not found" });
 
     // Insert into database
     const sql = `
-      INSERT INTO games (game_name, open_time, close_time, days, prices, created_by, created_by_phone)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO games (game_name, open_time, close_time, days, prices, created_by, created_by_phone, is_next_day_close)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await db.query(sql, [
@@ -51,7 +60,8 @@ exports.addGame = async (req, res) => {
       JSON.stringify(days),
       JSON.stringify(prices),
       req.user.id,
-      admin[0].phone
+      admin[0].phone,
+      isNextDayClose
     ]);
 
     res.json({ success: true, message: "Game added successfully", gameId: result.insertId });
@@ -61,6 +71,7 @@ exports.addGame = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 exports.getGameById = async (req, res) => {
@@ -128,6 +139,18 @@ exports.updateGameById = async (req, res) => {
       return res.status(400).json({ message: "Prices must be object with numeric values" });
     }
 
+    // After trimming and time format validations
+
+      // Calculate if close_time is next day
+      const openTimeParts = open_time.split(':').map(Number);
+      const closeTimeParts = close_time.split(':').map(Number);
+
+      const openTotalMinutes = openTimeParts[0] * 60 + openTimeParts[1];
+      const closeTotalMinutes = closeTimeParts[0] * 60 + closeTimeParts[1];
+
+      const isNextDayClose = closeTotalMinutes <= openTotalMinutes;
+
+
     const [existingGame] = await db.query("SELECT * FROM games WHERE id = ? AND created_by = ?", [gameId, req.user.id]);
     if (!existingGame.length) {
       return res.status(404).json({ message: "Game not found or unauthorized" });
@@ -135,17 +158,21 @@ exports.updateGameById = async (req, res) => {
 
     const sql = `
       UPDATE games
-      SET game_name = ?, open_time = ?, close_time = ?, days = ?, prices = ?
+      SET game_name = ?, open_time = ?, close_time = ?, days = ?, prices = ?, is_next_day_close = ?
       WHERE id = ? AND created_by = ?
     `;
 
     await db.query(sql, [
-      game_name, open_time, close_time,
+      game_name,
+      open_time,
+      close_time,
       JSON.stringify(days),
       JSON.stringify(prices),
+      isNextDayClose,
       gameId,
       req.user.id
     ]);
+
 
     res.json({ success: true, message: "Game updated successfully" });
 
