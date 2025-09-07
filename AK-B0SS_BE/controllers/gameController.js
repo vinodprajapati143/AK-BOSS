@@ -582,10 +582,10 @@ exports.getNearestGames = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    // Fetch all games user created
+    // Step 1: Fetch games with created_at & has_input flag
     const sqlGames = `
       SELECT 
-        g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close,
+        g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close, g.created_at,
 
         EXISTS (
           SELECT 1 FROM game_inputs gi 
@@ -612,7 +612,7 @@ exports.getNearestGames = async (req, res) => {
 
     const gameIds = games.map(g => g.id);
 
-    // Fetch today's inputs for these games
+    // Step 2: Fetch today's inputs
     const sqlInputs = `
       SELECT game_id, patte1, patte1_open, patte2_close, patte2
       FROM game_inputs
@@ -622,6 +622,32 @@ exports.getNearestGames = async (req, res) => {
 
     const [inputs] = await db.query(sqlInputs, [gameIds]);
 
+    // Step 3: Fetch if ever input given after created_at for each game
+    const sqlEverInput = `
+      SELECT g.id AS game_id,
+        EXISTS (
+          SELECT 1 FROM game_inputs gi
+          WHERE gi.game_id = g.id
+            AND gi.input_date >= DATE(g.created_at)
+            AND (
+              (gi.patte1 IS NOT NULL AND TRIM(gi.patte1) != '') OR
+              (gi.patte1_open IS NOT NULL AND TRIM(gi.patte1_open) != '') OR
+              (gi.patte2_close IS NOT NULL AND TRIM(gi.patte2_close) != '') OR
+              (gi.patte2 IS NOT NULL AND TRIM(gi.patte2) != '')
+            )
+          LIMIT 1
+        ) AS ever_input
+      FROM games g
+      WHERE g.id IN (?)
+    `;
+    const [everInputResults] = await db.query(sqlEverInput, [gameIds]);
+
+    const everInputMap = {};
+    everInputResults.forEach(row => {
+      everInputMap[row.game_id] = row.ever_input === 1;
+    });
+
+    // Prepare input map
     const inputMap = {};
     inputs.forEach(input => {
       inputMap[input.game_id] = {
@@ -643,7 +669,6 @@ exports.getNearestGames = async (req, res) => {
       const nowIST = convertToIST(new Date());
       const d = new Date(nowIST);
       d.setHours(h, m, s || 0, 0);
-
       if (isNextDayClose) {
         if (isOpenTime && h < 12) {
           d.setDate(d.getDate() + 1);
@@ -660,6 +685,7 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
 
     for (const game of games) {
+      const everInput = everInputMap[game.id] || false; // Did admin ever input since creation?
       const input = inputMap[game.id] || {
         patte1: null,
         patte1_open: null,
@@ -669,38 +695,41 @@ exports.getNearestGames = async (req, res) => {
 
       const openTime = timeStringToISTDate(game.open_time, game.is_next_day_close, true);
       const closeTime = timeStringToISTDate(game.close_time, game.is_next_day_close, false);
-
       const openWindowStart = new Date(openTime.getTime() - 30 * 60000);
       const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000);
 
-      const hasInput = game.has_input === 1;
+      const hasInputToday = game.has_input === 1;
 
-      /** NEW LOGIC:
-       * Game ko comingSoon tabhi rakho jab uska open ya close window start ho gaya ho
-       * Aur input na diya gaya ho
-       */
+      let isComingSoon = false;
 
-      const openWindowStarted = now >= openWindowStart && now < openTime;
-      const closeWindowStarted = now >= closeWindowStart && now < closeTime;
+      // Agar kabhi input nahi diya created ke baad to ye hamesha coming soon me rahe
+      if (!everInput) {
+        isComingSoon = true;
+      } else {
+        // Input kabhi diya to phir window ke hisaab se control
+        if (now >= openWindowStart && now < openTime) {
+          // Open window start hua hai lekin input nahi (aaj ka input check)
+          if (!hasInputToday) isComingSoon = true;
+        } else if (now >= closeWindowStart && now < closeTime) {
+          if (!hasInputToday) isComingSoon = true;
+        } else if (now >= closeTime) {
+          if (!hasInputToday) isComingSoon = true;
+        }
+      }
 
-      // Coming Soon: Jab window start ho aur input na ho
-      const isComingSoon = (openWindowStarted || closeWindowStarted) && !hasInput;
-
-      // Agar close time cross ho gaya hai par input nahi hai, tab bhi Coming Soon me hi rahega
-      const closeTimeCrossedNoInput = !hasInput && now >= closeTime;
-
+      // Console logs for debugging
       console.log({
         gameId: game.id,
         now,
         openWindowStart,
+        openWindowStarted: now >= openWindowStart && now < openTime,
+        openTime,
         closeWindowStart,
-        openWindowStarted,
-        closeWindowStarted,
+        closeWindowStarted: now >= closeWindowStart && now < closeTime,
         closeTime,
-        closeTimeCrossedNoInput,
-        hasInput,
+        hasInputToday,
+        everInput,
         isComingSoon,
-        comingSoonFinal: isComingSoon || closeTimeCrossedNoInput
       });
 
       const gameWithInputs = {
@@ -711,7 +740,7 @@ exports.getNearestGames = async (req, res) => {
         patte2: input.patte2,
       };
 
-      if (isComingSoon || closeTimeCrossedNoInput) {
+      if (isComingSoon) {
         comingSoonGames.push(gameWithInputs);
       } else {
         allGames.push(gameWithInputs);
@@ -720,16 +749,14 @@ exports.getNearestGames = async (req, res) => {
 
     res.json({
       success: true,
-      data: {
-        comingSoonGames,
-        allGames,
-      }
+      data: { comingSoonGames, allGames },
     });
   } catch (err) {
     console.error('getNearestGames Error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
