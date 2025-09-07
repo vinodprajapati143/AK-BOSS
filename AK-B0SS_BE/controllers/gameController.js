@@ -574,16 +574,18 @@ exports.getGameList = async (req, res) => {
 //   }
 // };
 
+ 
+
 exports.getNearestGames = async (req, res) => {
   try {
     if (req.user.registerType !== "admin") {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    // Fetch games with input presence check based on patte columns for today's date
     const sql = `
       SELECT 
         g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close,
+
         EXISTS (
           SELECT 1 FROM game_inputs gi 
           WHERE gi.game_id = g.id 
@@ -601,17 +603,28 @@ exports.getNearestGames = async (req, res) => {
       WHERE g.created_by = ?
       ORDER BY g.id DESC
     `;
-
     const [games] = await db.query(sql, [req.user.id]);
 
     const now = new Date();
 
-    function timeStringToDate(timeStr, isNextDayClose) {
+    // Updated Function to correctly handle open and close time with next day cases
+    function timeStringToDate(timeStr, isNextDayClose, isOpenTime = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
       const d = new Date();
       d.setHours(h, m, s || 0, 0);
-      if (isNextDayClose && (h < 12)) {
-        d.setDate(d.getDate() + 1);
+
+      if (isNextDayClose) {
+        if (isOpenTime) {
+          // If open time hour less than 12 (morning), increment day for next day open time
+          if (h < 12) {
+            d.setDate(d.getDate() + 1);
+          }
+        } else {
+          // Close time next day scenario
+          if (h < 12) {
+            d.setDate(d.getDate() + 1);
+          }
+        }
       }
       return d;
     }
@@ -620,11 +633,11 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
 
     for (const game of games) {
-      const openTime = timeStringToDate(game.open_time, game.is_next_day_close);
-      const closeTime = timeStringToDate(game.close_time, game.is_next_day_close);
+      const openTime = timeStringToDate(game.open_time, game.is_next_day_close, true);
+      const closeTime = timeStringToDate(game.close_time, game.is_next_day_close, false);
 
-      const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30 min before open
-      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30 min before close
+      const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30 mins before open
+      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30 mins before close
 
       const hasInput = game.has_input === 1;
 
@@ -635,12 +648,10 @@ exports.getNearestGames = async (req, res) => {
       if (isComingSoon) {
         comingSoonGames.push(game);
       } else {
-        // Only show in allGames if input exists or outside coming soon pre-windows
         if (hasInput || now < openWindowStart || now >= closeTime) {
           allGames.push(game);
         } else {
-          // Late entry edge case, treat as coming soon
-          comingSoonGames.push(game);
+          comingSoonGames.push(game); // Late entry edge case
         }
       }
     }
@@ -658,6 +669,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 exports.saveGameInput = async (req, res) => {
