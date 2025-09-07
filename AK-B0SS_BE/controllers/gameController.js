@@ -679,9 +679,14 @@ exports.getNearestGames = async (req, res) => {
 
       const hasInput = game.has_input === 1;
 
+      // Final condition to enforce input wait even after close time crosses
       const isComingSoon =
-        ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
-        && !hasInput;
+        (
+          ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
+          && !hasInput
+        )
+        ||
+        (!hasInput && now >= closeTime); // Added clause
 
       const gameWithInputs = {
         ...game,
@@ -694,11 +699,7 @@ exports.getNearestGames = async (req, res) => {
       if (isComingSoon) {
         comingSoonGames.push(gameWithInputs);
       } else {
-        if (hasInput || now < openWindowStart || now >= closeTime) {
-          allGames.push(gameWithInputs);
-        } else {
-          comingSoonGames.push(gameWithInputs);
-        }
+        allGames.push(gameWithInputs);
       }
     }
 
@@ -711,10 +712,11 @@ exports.getNearestGames = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('getGamesWithDirectInputs Error:', err);
+    console.error('getNearestGames Error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
