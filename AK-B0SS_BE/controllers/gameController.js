@@ -416,8 +416,7 @@ exports.getNearestGames = async (req, res) => {
         return `${year}-${month}-${day}`;
       };
 
-      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-      const isNewDay = formattedInputDate !== todayIST;
+    
 
       let gameWithInputs = {
         ...game,
@@ -450,49 +449,89 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
- 
+      // const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+      // const isNewDay = formattedInputDate !== todayIST;
+      // const noTodayInput = formattedInputDate !== todayIST;  // today ka input nahi hai
 
-   if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
-  // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
-  futureGames.push({
-    ...gameWithInputs,
-    patte1: "",
-    patte1_open: "",
-    patte2_close: "",
-    patte2: ""
-  });
-}
-else if (openWindowStarted && missingOpenInput) {
-  // Sirf open input missing hai, to sirf open wale blank
+      //    if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+      //   // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
+      //   futureGames.push({
+      //     ...gameWithInputs,
+      //     patte1: "",
+      //     patte1_open: "",
+      //     patte2_close: "",
+      //     patte2: ""
+      //   });
+      // }
+// Game input date check
+const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+const noTodayInput = formattedInputDate !== todayIST;
+
+// Case 1: Aaj ka input bilkul bhi nahi hai
+if (noTodayInput) {
+  if (insideOpenWindow || insideCloseWindow) {
+    // 🟢 30 min window ke andar aa gaya → futureGames
+    futureGames.push({
+      ...gameWithInputs,
+      patte1: "",
+      patte1_open: "",
+      patte2_close: "",
+      patte2: ""
+    });
+  } else {
+    // ⏳ Game ka time abhi start nahi hua (30 min se pehle) → allGames
+    allGames.push({
+      ...gameWithInputs,
+      patte1: "",
+      patte1_open: "",
+      patte2_close: "",
+      patte2: ""
+    });
+  }
+} 
+
+// Case 2: Input hai but open missing
+else if (insideOpenWindow && missingOpenInput) {
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
     patte1_open: ""
   });
-} else if (closeWindowStarted && missingCloseInput) {
-  // Sirf close input missing hai, to sirf close wale blank
+} 
+
+// Case 3: Input hai but close missing
+else if (insideCloseWindow && missingCloseInput) {
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
     patte2: ""
   });
-} else if (missingOpenInput && nowIST > openDateTime) {
-  // open window khatam, still missing, to bhi sirf open blank karo
+} 
+
+// Case 4: Open time khatam, input missing
+else if (missingOpenInput && nowIST > openDateTime) {
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
     patte1_open: ""
   });
-} else if (missingCloseInput && nowIST > closeDateTime) {
-  // close window khatam, still missing, to bhi sirf close blank karo
+} 
+
+// Case 5: Close time khatam, input missing
+else if (missingCloseInput && nowIST > closeDateTime) {
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
     patte2: ""
   });
-} else {
+} 
+
+// Case 6: Normal case
+else {
   allGames.push(gameWithInputs);
 }
+
+
 
     });
 
