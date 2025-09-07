@@ -17,15 +17,20 @@ import { Time12HourPipe } from '../../core/pipes/time12-hour.pipe';
 export class AddGameComponent implements OnInit {
   addGamePopupOpen: boolean = false;
   days: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  priceList = [
-    { gameType: "Single Digit", price: 24000 },
-    { gameType: "Jodi Digit", price: 24000 },
-    { gameType: "Single Panna", price: 24000 },
-    { gameType: "Double Panna", price: 24000 },
-    { gameType: "Triple Panna", price: 24000 },
-    { gameType: "Half Sangam", price: 24000 },
-    { gameType: "Full Sangam", price: 24000 },
-  ];
+  // priceList = [
+  //   { gameType: "Single Digit", price: 24000 },
+  //   { gameType: "Jodi Digit", price: 24000 },
+  //   { gameType: "Single Panna", price: 24000 },
+  //   { gameType: "Double Panna", price: 24000 },
+  //   { gameType: "Triple Panna", price: 24000 },
+  //   { gameType: "Half Sangam", price: 24000 },
+  //   { gameType: "Full Sangam", price: 24000 },
+  // ];
+  priceList= {
+    "singleDigit": 24000,
+    "jodiDigit": 24000,
+    "singlePanna": 24000
+  } 
   selectedDays: string[] = [];
   selectAll: boolean = false;
   gameForm: FormGroup;
