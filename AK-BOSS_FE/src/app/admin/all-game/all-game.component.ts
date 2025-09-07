@@ -158,21 +158,41 @@ ngOnInit() {
     });
 }
 
-  // Har game ka openCountdown aur closeCountdown update karna
 updateCountdowns() {
-  const today = new Date().toISOString().split('T')[0]; // Current date
-  const now = Date.now();
+    const now = new Date();
 
-  const updateGame = (game: any) => {
-    const openDateTime = new Date(`${today}T${game.open_time}`);
-    const closeDateTime = new Date(`${today}T${game.close_time}`);
+    const updateGame = (game: any) => {
+      const openDateTime = this.getGameDateTime(now, game.open_time, !!game.is_next_day_close);
+      const closeDateTime = this.getGameDateTime(now, game.close_time, !!game.is_next_day_close);
 
-    game.openCountdown = isNaN(openDateTime.getTime()) ? 0 : Math.max(0, Math.floor((openDateTime.getTime() - now) / 1000));
-    game.closeCountdown = isNaN(closeDateTime.getTime()) ? 0 : Math.max(0, Math.floor((closeDateTime.getTime() - now) / 1000));
-  };
+      const nowTime = now.getTime();
 
-  this.comingSoonGames.forEach(updateGame);
-  this.allGames.forEach(updateGame);
+      game.openCountdown = isNaN(openDateTime.getTime())
+        ? 0
+        : Math.max(0, Math.floor((openDateTime.getTime() - nowTime) / 1000));
+
+      game.closeCountdown = isNaN(closeDateTime.getTime())
+        ? 0
+        : Math.max(0, Math.floor((closeDateTime.getTime() - nowTime) / 1000));
+    };
+
+    this.comingSoonGames.forEach(updateGame);
+    this.allGames.forEach(updateGame);
+
+    this.setInputEnabledFlags();
+  }
+
+
+getGameDateTime(baseDate: Date, timeStr: string, isNextDay: boolean): Date {
+  // timeStr = "23:30:00"
+  const [h, m, s] = timeStr.split(':').map(Number);
+  const d = new Date(baseDate); // Start with today
+  d.setHours(h, m, s || 0, 0);
+
+  if (isNextDay && h < 12) {
+    d.setDate(d.getDate() + 1); // next day
+  }
+  return d;
 }
 
 isOpenInputEnabled(game: any): boolean {
@@ -199,49 +219,47 @@ getGraceCountdown(game: any): number {
 
 
 setInputEnabledFlags() {
-this.comingSoonGames.forEach(game => {
-  const openWindowStarted = game.openCountdown <= (2.5 * 60 * 60) && game.openCountdown > 0;
-  const closeWindowStarted = game.closeCountdown <= (2.5 * 60 * 60) && game.closeCountdown > 0;
+    this.comingSoonGames.forEach(game => {
+      const openWindowStarted = game.openCountdown <= (2.5 * 60 * 60) && game.openCountdown > 0;
+      const closeWindowStarted = game.closeCountdown <= (2.5 * 60 * 60) && game.closeCountdown > 0;
 
-  const openFilled = !!(game.patte1 || game.patte1_open);
-  const closeFilled = !!(game.patte2 || game.patte2_close);
+      const openFilled = !!(game.patte1 || game.patte1_open);
+      const closeFilled = !!(game.patte2 || game.patte2_close);
 
-  // Open window logic
-  if (openWindowStarted && !openFilled) {
-    game.openInputEnabled = true;
-    game.closeInputEnabled = false;
-    return; // Exclusive priority
-  }
-  // After open window ends, but input is still not filled
-  if (game.openCountdown <= 0 && !openFilled) {
-    game.openInputEnabled = true;
-    game.closeInputEnabled = false;
-    return;
-  }
-  // Close window logic
-  if (closeWindowStarted && !closeFilled) {
-    game.openInputEnabled = false;
-    game.closeInputEnabled = true;
-    return;
-  }
-  // After close window ends, but input is still not filled
-  if (game.closeCountdown <= 0 && !closeFilled) {
-    game.openInputEnabled = false;
-    game.closeInputEnabled = true;
-    return;
-  }
-  // If both inputs are filled, disable both
-  if (openFilled && closeFilled) {
-    game.openInputEnabled = false;
-    game.closeInputEnabled = false;
-    return;
-  }
-  // Default fallback (shouldn't be reached in normal operation)
-  game.openInputEnabled = false;
-  game.closeInputEnabled = false;
-});
+      if (openWindowStarted && !openFilled) {
+        game.openInputEnabled = true;
+        game.closeInputEnabled = false;
+        return;
+      }
 
-}
+      if (game.openCountdown <= 0 && !openFilled) {
+        game.openInputEnabled = true;
+        game.closeInputEnabled = false;
+        return;
+      }
+
+      if (closeWindowStarted && !closeFilled) {
+        game.openInputEnabled = false;
+        game.closeInputEnabled = true;
+        return;
+      }
+
+      if (game.closeCountdown <= 0 && !closeFilled) {
+        game.openInputEnabled = false;
+        game.closeInputEnabled = true;
+        return;
+      }
+
+      if (openFilled && closeFilled) {
+        game.openInputEnabled = false;
+        game.closeInputEnabled = false;
+        return;
+      }
+
+      game.openInputEnabled = false;
+      game.closeInputEnabled = false;
+    });
+  }
 
 
 
@@ -257,51 +275,53 @@ this.comingSoonGames.forEach(game => {
 
 
 loadGames() {
-  this.apiService.getNearestGames().subscribe((res: any) => {
-     const apiGames = res.data.comingSoonGames;
+    this.apiService.getNearestGames().subscribe((res: any) => {
+      const apiGames = res.data.comingSoonGames;
 
-    // Preserve user edits by matching game IDs or indexes
-    apiGames.forEach((game: any) => {
-      const existing = this.comingSoonGames.find(g => g.id === game.id);
-      if (existing) {
-        // Preserve user-edited properties like input fields
-        game.patte1 = existing.patte1;
-        game.patte1_open = existing.patte1_open
-        game.patte2_close = existing.patte2_close
-        game.patte2 = existing.patte2
+      // Preserve user edits if needed (optional)
+      apiGames.forEach((game: any) => {
+        const existing = this.comingSoonGames.find(g => g.id === game.id);
+        if (existing) {
+          game.patte1 = existing.patte1;
+          game.patte1_open = existing.patte1_open;
+          game.patte2_close = existing.patte2_close;
+          game.patte2 = existing.patte2;
+        }
+      });
 
+      this.comingSoonGames = apiGames;
+      this.allGames = res.data.allGames;
 
-        // similarly for other input-bound properties
+      // Initialize countdowns for all games
+      const now = new Date();
+
+      const initCountdown = (game: any) => {
+        const openDateTime = this.getGameDateTime(now, game.open_time, !!game.is_next_day_close);
+        const closeDateTime = this.getGameDateTime(now, game.close_time, !!game.is_next_day_close);
+
+        const nowTime = now.getTime();
+
+        game.openCountdown = isNaN(openDateTime.getTime())
+          ? 0
+          : Math.max(0, Math.floor((openDateTime.getTime() - nowTime) / 1000));
+
+        game.closeCountdown = isNaN(closeDateTime.getTime())
+          ? 0
+          : Math.max(0, Math.floor((closeDateTime.getTime() - nowTime) / 1000));
+      };
+
+      this.comingSoonGames.forEach(initCountdown);
+      this.allGames.forEach(initCountdown);
+
+      this.setInputEnabledFlags();
+
+      if (!this.timerSubscription) {
+        this.timerSubscription = interval(1000).subscribe(() => {
+          this.updateCountdowns();
+        });
       }
     });
-
-    this.comingSoonGames = apiGames;
-    this.allGames = res.data.allGames;
-
-    // Dono arrays ke har game me countdown init karo
-    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
-
-    const initCountdown = (game: any) => {
-      const openDateTime = new Date(`${today}T${game.open_time}`);
-      const closeDateTime = new Date(`${today}T${game.close_time}`);
-      const now = Date.now();
-
-      game.openCountdown = isNaN(openDateTime.getTime()) ? 0 : Math.max(0, Math.floor((openDateTime.getTime() - now) / 1000));
-      game.closeCountdown = isNaN(closeDateTime.getTime()) ? 0 : Math.max(0, Math.floor((closeDateTime.getTime() - now) / 1000));
-    };
-
-    this.comingSoonGames.forEach(initCountdown);
-    this.allGames.forEach(initCountdown);
-
-    this.setInputEnabledFlags();
-    // Timer start karo agar already start nahi hua ho
-    if (!this.timerSubscription) {
-      this.timerSubscription = interval(1000).subscribe(() => {
-        this.updateCountdowns();
-      });
-    }
-  });
-}
+  }
 
 restrictToThreeDigits(value: any): string {
   // Only allow up to 3 digits, and only numbers
