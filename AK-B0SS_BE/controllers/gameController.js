@@ -696,6 +696,17 @@ exports.getNearestGames = async (req, res) => {
         patte2: input.patte2,
       };
 
+            console.log({
+        gameId: game.id,
+        now,
+        openWindowStart,
+        openTime,
+        closeWindowStart,
+        closeTime,
+        hasInput,
+        isComingSoon
+      });
+
       if (isComingSoon) {
         comingSoonGames.push(gameWithInputs);
       } else {
