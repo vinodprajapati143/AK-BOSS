@@ -372,24 +372,26 @@ exports.getNearestGames = async (req, res) => {
 
     // Get all games for admin
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, days, created_at
-       FROM games WHERE created_by = ? ORDER BY id DESC`,
+      `SELECT id, game_name, open_time, close_time, days, created_at 
+       FROM games WHERE created_by = ? 
+       ORDER BY id DESC`,
       [req.user.id]
     );
 
     // Fetch latest input per game for today or yesterday whichever is latest
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
+
     if (gameIds.length > 0) {
       const [inputs] = await db.query(
-        `SELECT gi.*
+        `SELECT gi.* 
          FROM game_inputs gi
          INNER JOIN (
-           SELECT game_id, MAX(input_date) AS latest_date
-           FROM game_inputs
-           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
-           GROUP BY game_id
-         ) t
+            SELECT game_id, MAX(input_date) AS latest_date 
+            FROM game_inputs 
+            WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+            GROUP BY game_id
+         ) t 
          ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
         [gameIds, todayIST, yesterdayDate]
       );
@@ -399,7 +401,7 @@ exports.getNearestGames = async (req, res) => {
       });
     }
 
-    // Set grace time duration in minutes (change as needed)
+    // Set grace time duration in minutes
     const gracePeriodMinutes = 90;
 
     const allGames = [];
@@ -416,7 +418,7 @@ exports.getNearestGames = async (req, res) => {
         return `${year}-${month}-${day}`;
       };
 
-    
+      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
 
       let gameWithInputs = {
         ...game,
@@ -439,7 +441,6 @@ exports.getNearestGames = async (req, res) => {
       const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
       const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
 
-      // Check if still in grace period after close time
       const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
       const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
 
@@ -449,104 +450,30 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-      const isNewDay = formattedInputDate !== todayIST;
-      const noTodayInput = formattedInputDate !== todayIST;  // today ka input nahi hai
+      // 🔑 MAIN FIX: Jab tak input nahi, tab tak allGames me na bhejo
+      const hasAnyInput = !!(gameWithInputs.patte1 || gameWithInputs.patte1_open || gameWithInputs.patte2_close || gameWithInputs.patte2);
 
-         if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
-        // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
-        futureGames.push({
-          ...gameWithInputs,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: ""
-        });
+      if (!hasAnyInput) {
+        // Sirf futureGames me rahega chahe din badal jaye
+        if (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod || openWindowStarted || closeWindowStarted) {
+          futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
+        } else {
+          // Game ki window pass ho gayi lekin input abhi tak nahi, fir bhi futureGames me hi dikhana hai
+          futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
+        }
+      } else {
+        // Input hai to normal flow
+        allGames.push(gameWithInputs);
       }
-// Game input date check
-// const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-// const noTodayInput = formattedInputDate !== todayIST;
-
-// // Case 1: Aaj ka input bilkul bhi nahi hai
-// if (noTodayInput) {
-//   if (insideOpenWindow || insideCloseWindow) {
-//     // 🟢 30 min window ke andar aa gaya → futureGames
-//     futureGames.push({
-//       ...gameWithInputs,
-//       patte1: "",
-//       patte1_open: "",
-//       patte2_close: "",
-//       patte2: ""
-//     });
-//   } else {
-//     // ⏳ Game ka time abhi start nahi hua (30 min se pehle) → allGames
-//     allGames.push({
-//       ...gameWithInputs,
-//       patte1: "",
-//       patte1_open: "",
-//       patte2_close: "",
-//       patte2: ""
-//     });
-//   }
-// } 
-
-// Case 2: Input hai but open missing
-else if (insideOpenWindow && missingOpenInput) {
-  futureGames.push({
-    ...gameWithInputs,
-    patte1: "",
-    patte1_open: ""
-  });
-} 
-
-// Case 3: Input hai but close missing
-else if (insideCloseWindow && missingCloseInput) {
-  futureGames.push({
-    ...gameWithInputs,
-    patte2_close: "",
-    patte2: ""
-  });
-} 
-
-// Case 4: Open time khatam, input missing
-else if (missingOpenInput && nowIST > openDateTime) {
-  futureGames.push({
-    ...gameWithInputs,
-    patte1: "",
-    patte1_open: ""
-  });
-} 
-
-// Case 5: Close time khatam, input missing
-else if (missingCloseInput && nowIST > closeDateTime) {
-  futureGames.push({
-    ...gameWithInputs,
-    patte2_close: "",
-    patte2: ""
-  });
-} 
-
-// Case 6: Normal case
-else {
-  allGames.push(gameWithInputs);
-}
-
-
-
     });
 
-    // Send final response as before
-
- 
-
-
     res.json({ futureGames, allGames });
-
   } catch (err) {
     console.error("getNearestGames error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 exports.saveGameInput = async (req, res) => {
   try {
