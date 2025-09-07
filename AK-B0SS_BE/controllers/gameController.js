@@ -373,16 +373,13 @@ exports.getNearestGames = async (req, res) => {
     // Get all games for admin
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days, created_at
-       FROM games
-       WHERE created_by = ?
-       ORDER BY id DESC`,
+       FROM games WHERE created_by = ? ORDER BY id DESC`,
       [req.user.id]
     );
 
     // Fetch latest input per game for today or yesterday whichever is latest
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
-
     if (gameIds.length > 0) {
       const [inputs] = await db.query(
         `SELECT gi.*
@@ -392,7 +389,8 @@ exports.getNearestGames = async (req, res) => {
            FROM game_inputs
            WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
            GROUP BY game_id
-         ) t ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+         ) t
+         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
         [gameIds, todayIST, yesterdayDate]
       );
 
@@ -452,34 +450,62 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-      if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
-        // NEW DAY, input nahi hai, value blank hi dikhao (only then!)
-        futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
-      } else if (openWindowStarted && missingOpenInput) {
-        // Sirf open input missing hai, to sirf open wale blank futureGames
-        futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "" });
-      } else if (closeWindowStarted && missingCloseInput) {
-        // Sirf close input missing hai, to sirf close wale blank futureGames
-        futureGames.push({ ...gameWithInputs, patte2_close: "", patte2: "" });
-      } else if (missingOpenInput && nowIST > openDateTime) {
-        // Open window khatam, still missing, to bhi sirf open blank futureGames
-        futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "" });
-      } else if (missingCloseInput && nowIST > closeDateTime) {
-        // Close window khatam, still missing, to bhi sirf close blank futureGames
-        futureGames.push({ ...gameWithInputs, patte2_close: "", patte2: "" });
-      } else {
-        allGames.push(gameWithInputs);
-      }
+ 
+
+   if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+  // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: "",
+    patte2_close: "",
+    patte2: ""
+  });
+}
+else if (openWindowStarted && missingOpenInput) {
+  // Sirf open input missing hai, to sirf open wale blank
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: ""
+  });
+} else if (closeWindowStarted && missingCloseInput) {
+  // Sirf close input missing hai, to sirf close wale blank
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+} else if (missingOpenInput && nowIST > openDateTime) {
+  // open window khatam, still missing, to bhi sirf open blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: ""
+  });
+} else if (missingCloseInput && nowIST > closeDateTime) {
+  // close window khatam, still missing, to bhi sirf close blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+} else {
+  allGames.push(gameWithInputs);
+}
+
     });
 
     // Send final response as before
+
+ 
     res.json({ futureGames, allGames });
+
   } catch (err) {
     console.error("getNearestGames error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 
 exports.saveGameInput = async (req, res) => {
   try {
