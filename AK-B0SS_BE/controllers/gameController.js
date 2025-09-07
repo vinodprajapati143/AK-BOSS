@@ -198,8 +198,13 @@ exports.getGameList = async (req, res) => {
       ORDER BY id DESC`,
       [req.user.id]
     );
+    // Convert 1/0 to true/false
+    const gamesWithBoolFlag = games.map(game => ({
+      ...game,
+      is_next_day_close: Boolean(game.is_next_day_close),
+    }));
 
-    res.json({ success: true, data: games });
+    res.json({ success: true, data: gamesWithBoolFlag });
   } catch (err) {
     console.error("Get Game List Error:", err);
     res.status(500).json({ success: false, message: "Server error" });
