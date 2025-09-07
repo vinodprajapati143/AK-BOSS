@@ -6,29 +6,45 @@ exports.addGame = async (req, res) => {
       return res.status(403).json({ message: "Only admin can add games" });
     }
 
-    const { game_name, open_time, close_time, days, prices } = req.body;
+    let { game_name, open_time, close_time, days, prices } = req.body;
 
-        // ---------------- Server-side Validation ----------------
-    if (!game_name || game_name.trim() === "") {
-      return res.status(400).json({ message: "Game name is required" });
+    // Trim inputs
+    game_name = (game_name || "").trim();
+    open_time = (open_time || "").trim();
+    close_time = (close_time || "").trim();
+
+    // Validate required fields
+    if (!game_name) return res.status(400).json({ message: "Game name is required" });
+    if (!open_time) return res.status(400).json({ message: "Open time is required" });
+    if (!close_time) return res.status(400).json({ message: "Close time is required" });
+
+    // Time format regex: HH:mm or HH:mm:ss
+    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/;
+    if (!timeRegex.test(open_time)) return res.status(400).json({ message: "Open time format is invalid" });
+    if (!timeRegex.test(close_time)) return res.status(400).json({ message: "Close time format is invalid" });
+
+    // Validate days (must be array of valid weekday strings)
+    const allowedDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    if (!Array.isArray(days) || !days.every(d => allowedDays.includes(d))) {
+      return res.status(400).json({ message: "Days must be an array of valid weekdays" });
     }
 
-    if (!open_time || open_time.trim() === "") {
-      return res.status(400).json({ message: "Open time is required" });
+    // Validate prices (must be an object with numeric values)
+    if (typeof prices !== 'object' || prices === null || Object.values(prices).some(v => typeof v !== "number")) {
+      return res.status(400).json({ message: "Prices must be an object with numeric values" });
     }
 
-    if (!close_time || close_time.trim() === "") {
-      return res.status(400).json({ message: "Close time is required" });
-    }
-
+    // Get admin phone
     const [admin] = await db.query("SELECT phone FROM users WHERE id = ?", [req.user.id]);
+    if (!admin.length) return res.status(400).json({ message: "Admin user not found" });
 
+    // Insert into database
     const sql = `
       INSERT INTO games (game_name, open_time, close_time, days, prices, created_by, created_by_phone)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    await db.query(sql, [
+    const [result] = await db.query(sql, [
       game_name,
       open_time,
       close_time,
@@ -38,16 +54,21 @@ exports.addGame = async (req, res) => {
       admin[0].phone
     ]);
 
-    res.json({ success: true, message: "Game added successfully" });
+    res.json({ success: true, message: "Game added successfully", gameId: result.insertId });
+
   } catch (err) {
     console.error("Add Game Error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+
 exports.getGameById = async (req, res) => {
   try {
-    const gameId = req.params.id;
+    const gameId = Number(req.params.id);
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: "Invalid game ID" });
+    }
 
     const [gameData] = await db.query(
       "SELECT id, game_name, open_time, close_time, days, prices FROM games WHERE id = ?",
@@ -58,51 +79,60 @@ exports.getGameById = async (req, res) => {
       return res.status(404).json({ message: "Game not found" });
     }
 
-    // Parse JSON strings to objects before sending
     const game = gameData[0];
-    game.days = JSON.parse(game.days);
-    game.prices = JSON.parse(game.prices);
+    try {
+      game.days = JSON.parse(game.days);
+    } catch {
+      game.days = [];
+    }
+    try {
+      game.prices = JSON.parse(game.prices);
+    } catch {
+      game.prices = {};
+    }
 
     res.json({ success: true, game });
+
   } catch (err) {
     console.error("Get Game By ID error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+
 exports.updateGameById = async (req, res) => {
   try {
+    // Example time regex, days validation like in addGame
+    const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$/;
+    const allowedDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     if (req.user.registerType !== "admin") {
       return res.status(403).json({ message: "Only admin can update games" });
     }
 
-    const gameId = req.params.id;
-    const { game_name, open_time, close_time, days, prices } = req.body;
+    const gameId = Number(req.params.id);
+    if (!gameId) return res.status(400).json({ message: "Invalid game id" });
 
-    // Server-side validation
-    if (!game_name || game_name.trim() === "") {
-      return res.status(400).json({ message: "Game name is required" });
+    let { game_name, open_time, close_time, days, prices } = req.body;
+
+    game_name = (game_name || "").trim();
+    open_time = (open_time || "").trim();
+    close_time = (close_time || "").trim();
+
+    if (!game_name) return res.status(400).json({ message: "Game name is required" });
+    if (!timeRegex.test(open_time)) return res.status(400).json({ message: "Open time is invalid" });
+    if (!timeRegex.test(close_time)) return res.status(400).json({ message: "Close time is invalid" });
+    if (!Array.isArray(days) || !days.every(d => allowedDays.includes(d))) {
+      return res.status(400).json({ message: "Days must be valid weekdays" });
+    }
+    if (typeof prices !== 'object' || prices === null || Object.values(prices).some(v => typeof v !== 'number')) {
+      return res.status(400).json({ message: "Prices must be object with numeric values" });
     }
 
-    if (!open_time || open_time.trim() === "") {
-      return res.status(400).json({ message: "Open time is required" });
-    }
-
-    if (!close_time || close_time.trim() === "") {
-      return res.status(400).json({ message: "Close time is required" });
-    }
-
-    // Check if the game exists and belongs to admin
-    const [existingGame] = await db.query(
-      "SELECT * FROM games WHERE id = ? AND created_by = ?",
-      [gameId, req.user.id]
-    );
-
-    if (existingGame.length === 0) {
+    const [existingGame] = await db.query("SELECT * FROM games WHERE id = ? AND created_by = ?", [gameId, req.user.id]);
+    if (!existingGame.length) {
       return res.status(404).json({ message: "Game not found or unauthorized" });
     }
 
-    // Update query
     const sql = `
       UPDATE games
       SET game_name = ?, open_time = ?, close_time = ?, days = ?, prices = ?
@@ -110,9 +140,7 @@ exports.updateGameById = async (req, res) => {
     `;
 
     await db.query(sql, [
-      game_name,
-      open_time,
-      close_time,
+      game_name, open_time, close_time,
       JSON.stringify(days),
       JSON.stringify(prices),
       gameId,
@@ -120,6 +148,7 @@ exports.updateGameById = async (req, res) => {
     ]);
 
     res.json({ success: true, message: "Game updated successfully" });
+
   } catch (err) {
     console.error("Update Game Error:", err);
     res.status(500).json({ success: false, message: "Server error" });
