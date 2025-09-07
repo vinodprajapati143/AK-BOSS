@@ -351,6 +351,8 @@ exports.getGameList = async (req, res) => {
 //   }
 // };
 
+
+// secod bext up to mark still working to achive best
 exports.getNearestGames = async (req, res) => {
   try {
     const now = new Date();
@@ -450,7 +452,12 @@ exports.getNearestGames = async (req, res) => {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
- 
+ console.log('nowIST:', nowIST);
+console.log('openWindowStart:', openWindowStart);
+console.log('openDateTime:', openDateTime);
+console.log('Is insideOpenWindow:', nowIST >= openWindowStart && nowIST < openDateTime);
+console.log('Game Name:', game.game_name, 'Open Time:', game.open_time, 'Today IST:', todayIST);
+
 
    if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
   // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
