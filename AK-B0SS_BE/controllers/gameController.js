@@ -192,10 +192,10 @@ exports.getGameList = async (req, res) => {
 
     // Ab sabhi required columns lo
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time
-       FROM games 
-       WHERE created_by = ? 
-       ORDER BY id DESC`,
+      `SELECT id, game_name, open_time, close_time, is_next_day_close
+      FROM games
+      WHERE created_by = ?
+      ORDER BY id DESC`,
       [req.user.id]
     );
 
