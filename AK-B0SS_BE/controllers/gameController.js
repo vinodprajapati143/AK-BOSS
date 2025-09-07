@@ -682,13 +682,13 @@ exports.getNearestGames = async (req, res) => {
       const hasInput = game.has_input === 1;
 
       // Final condition to enforce input wait even after close time crosses
-      const isComingSoon =
-        (
-          ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
-          && !hasInput
-        )
-        ||
-        (!hasInput && now >= closeTime); // Added clause
+    const isComingSoon =
+      (
+        ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
+        && !hasInput
+      )
+      ||
+      (!hasInput && now >= closeTime); // Added clause
 
       const gameWithInputs = {
         ...game,
