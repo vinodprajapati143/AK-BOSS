@@ -582,6 +582,7 @@ exports.getNearestGames = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
+    // Fetch all games user created
     const sqlGames = `
       SELECT 
         g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close,
@@ -611,6 +612,7 @@ exports.getNearestGames = async (req, res) => {
 
     const gameIds = games.map(g => g.id);
 
+    // Fetch today's inputs for these games
     const sqlInputs = `
       SELECT game_id, patte1, patte1_open, patte2_close, patte2
       FROM game_inputs
@@ -643,10 +645,10 @@ exports.getNearestGames = async (req, res) => {
       d.setHours(h, m, s || 0, 0);
 
       if (isNextDayClose) {
-        if (isOpenTime) {
-          if (h < 12) d.setDate(d.getDate() + 1);
-        } else {
-          if (h < 12) d.setDate(d.getDate() + 1);
+        if (isOpenTime && h < 12) {
+          d.setDate(d.getDate() + 1);
+        } else if (!isOpenTime && h < 12) {
+          d.setDate(d.getDate() + 1);
         }
       }
       return d;
@@ -673,22 +675,32 @@ exports.getNearestGames = async (req, res) => {
 
       const hasInput = game.has_input === 1;
 
-      const isComingSoon =
-        (
-          ((now >= openWindowStart && now < openTime) && !hasInput)  // Open window started, before openTime, no input
-          || ((now >= closeWindowStart && now < closeTime) && !hasInput) // Close window started, before closeTime, no input
-          || (!hasInput && now >= closeTime) // Close time crossed but no input yet
-        );
+      /** NEW LOGIC:
+       * Game ko comingSoon tabhi rakho jab uska open ya close window start ho gaya ho
+       * Aur input na diya gaya ho
+       */
+
+      const openWindowStarted = now >= openWindowStart && now < openTime;
+      const closeWindowStarted = now >= closeWindowStart && now < closeTime;
+
+      // Coming Soon: Jab window start ho aur input na ho
+      const isComingSoon = (openWindowStarted || closeWindowStarted) && !hasInput;
+
+      // Agar close time cross ho gaya hai par input nahi hai, tab bhi Coming Soon me hi rahega
+      const closeTimeCrossedNoInput = !hasInput && now >= closeTime;
 
       console.log({
         gameId: game.id,
         now,
         openWindowStart,
-        openTime,
         closeWindowStart,
+        openWindowStarted,
+        closeWindowStarted,
         closeTime,
+        closeTimeCrossedNoInput,
         hasInput,
-        isComingSoon
+        isComingSoon,
+        comingSoonFinal: isComingSoon || closeTimeCrossedNoInput
       });
 
       const gameWithInputs = {
@@ -699,7 +711,7 @@ exports.getNearestGames = async (req, res) => {
         patte2: input.patte2,
       };
 
-      if (isComingSoon) {
+      if (isComingSoon || closeTimeCrossedNoInput) {
         comingSoonGames.push(gameWithInputs);
       } else {
         allGames.push(gameWithInputs);
@@ -713,12 +725,12 @@ exports.getNearestGames = async (req, res) => {
         allGames,
       }
     });
-
   } catch (err) {
     console.error('getNearestGames Error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
