@@ -537,7 +537,7 @@ exports.getNearestGames = async (req, res) => {
 
     // Send final response as before
 
- games.forEach(game => {
+games.forEach(game => {
   const input = inputsMap[game.id] || {};
 
   const formatDateToYMD = (date) => {
@@ -575,8 +575,8 @@ exports.getNearestGames = async (req, res) => {
   // 🚩 FIXED CONDITIONS
   // --------------------
 
-  // Case 1: Aaj ka input bilkul bhi nahi hai → hamesha Coming Soon me rakho
-  if (noTodayInput) {
+  // Case 1: Aaj ka input nahi hai → sirf tab FutureGames me lo jab 30 min window start ho chuki hai
+  if (noTodayInput && (insideOpenWindow || insideCloseWindow || nowIST >= openDateTime || nowIST >= closeDateTime)) {
     futureGames.push({
       ...gameWithInputs,
       patte1: "",
@@ -627,6 +627,7 @@ exports.getNearestGames = async (req, res) => {
     allGames.push(gameWithInputs);
   }
 });
+
 
     res.json({ futureGames, allGames });
 
