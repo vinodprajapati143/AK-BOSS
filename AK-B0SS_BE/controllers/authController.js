@@ -135,6 +135,7 @@ const axios = require("axios");
 
 
 
+// REGISTER API
 exports.register = async (req, res) => {
   try {
     const {
@@ -142,7 +143,7 @@ exports.register = async (req, res) => {
       smsvcode,
       registerType,
       pwd,
-      invitecode,    // Referral code received
+      invitecode,    // Referrer ka code (agar diya h)
       domainurl,
       phonetype,
       captchaId,
@@ -161,7 +162,6 @@ exports.register = async (req, res) => {
     if (!username || !pwd || !phone || agree !== true) {
       return res.status(400).json({ success: false, message: "Required fields missing or terms not agreed." });
     }
-    // Phone format, password length checks...
 
     // Check existing user
     const [existingUser] = await db.query("SELECT id FROM users WHERE username = ?", [username]);
@@ -184,18 +184,18 @@ exports.register = async (req, res) => {
       }
     }
 
-    // Insert new user with referrer_id
+    // Insert new user (invitecode abhi blank rakhenge, baad me generate hoga)
     const sql = `
       INSERT INTO users (
-        username, smsvcode, registerType, pwd, invitecode,
+        username, smsvcode, registerType, pwd,
         domainurl, phonetype, captchaId, track, deviceId,
         language, random, signature, timestamp,
         phone, countryCode, agree, referrer_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
-      username, smsvcode, registerType, hashedPwd, invitecode,
+      username, smsvcode, registerType, hashedPwd,
       domainurl, phonetype, captchaId, track, deviceId,
       language, random, signature, timestamp,
       phone, countryCode, agree, referrerId
@@ -204,19 +204,25 @@ exports.register = async (req, res) => {
     const result = await db.query(sql, values);
     const newUserId = result[0].insertId;
 
-    // If referrerId is present, insert referral relation record
+    // Generate unique referral code for this new user
+    const newInviteCode = `AK_${phone}`;
+    await db.query("UPDATE users SET invitecode = ? WHERE id = ?", [newInviteCode, newUserId]);
+
+    // Save referral relation if referrer exists
     if (referrerId) {
       const referralSql = `
-        INSERT INTO referral_relations (referrer_id, invitee_id, invite_code)
-        VALUES (?, ?, ?)
+        INSERT INTO referral_relations (referrer_id, invitee_id, invite_code, invitee_invitecode)
+        VALUES (?, ?, ?, ?)
       `;
-      await db.query(referralSql, [referrerId, newUserId, invitecode]);
+      await db.query(referralSql, [referrerId, newUserId, invitecode, newInviteCode]);
     }
 
     return res.status(200).json({
       success: true,
       message: "User registered successfully",
+      inviteCode: newInviteCode
     });
+
   } catch (error) {
     console.error("Register API Error:", error);
     return res.status(500).json({

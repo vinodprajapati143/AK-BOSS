@@ -41,15 +41,19 @@ async function generateReferralCode(userId) {
 }
 
 
+// GENERATE REFERRAL CODE API (if needed separately)
 exports.getReferralCode = async (req, res) => {
   try {
     const userId = req.user.id; // JWT/token se ya session se aayega
+    const [rows] = await db.query("SELECT invitecode FROM users WHERE id = ?", [userId]);
 
-    const inviteCode = await generateReferralCode(userId);
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.json({ inviteCode });
+    res.json({ inviteCode: rows[0].invitecode });
   } catch (err) {
-    console.error('Error generating referral code:', err);
+    console.error('Error fetching referral code:', err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
@@ -59,7 +63,12 @@ exports.getReferralList = async (req, res) => {
     const referrerId = req.user.id; // Logged in user ID from auth
 
     const sql = `
-      SELECT rr.id, rr.invite_code, u.username AS invitee_username, u.phone AS invitee_phone, rr.created_at
+      SELECT rr.id, 
+             rr.invite_code AS referrer_code,
+             u.username AS invitee_username,
+             u.phone AS invitee_phone,
+             u.invitecode AS invitee_code,
+             rr.created_at
       FROM referral_relations rr
       JOIN users u ON rr.invitee_id = u.id
       WHERE rr.referrer_id = ?
