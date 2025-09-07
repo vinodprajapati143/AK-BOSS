@@ -582,7 +582,6 @@ exports.getNearestGames = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    // Step 1: Fetch games with has_input flag
     const sqlGames = `
       SELECT 
         g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close,
@@ -612,7 +611,6 @@ exports.getNearestGames = async (req, res) => {
 
     const gameIds = games.map(g => g.id);
 
-    // Step 2: Fetch inputs for these games for today
     const sqlInputs = `
       SELECT game_id, patte1, patte1_open, patte2_close, patte2
       FROM game_inputs
@@ -622,7 +620,6 @@ exports.getNearestGames = async (req, res) => {
 
     const [inputs] = await db.query(sqlInputs, [gameIds]);
 
-    // Map inputs by game_id for quick lookup
     const inputMap = {};
     inputs.forEach(input => {
       inputMap[input.game_id] = {
@@ -633,15 +630,12 @@ exports.getNearestGames = async (req, res) => {
       };
     });
 
-    // IST timezone offset in minutes
     const IST_OFFSET_MINUTES = 330;
 
-    // Convert date to IST timezone Date object
     function convertToIST(date) {
       return new Date(date.getTime() + IST_OFFSET_MINUTES * 60000);
     }
 
-    // Convert time string plus next day flag to IST Date object
     function timeStringToISTDate(timeStr, isNextDayClose, isOpenTime = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
       const nowIST = convertToIST(new Date());
@@ -658,9 +652,7 @@ exports.getNearestGames = async (req, res) => {
       return d;
     }
 
-    const nowUTC = new Date();
-    const IST_OFFSET = 330; // minutes
-    const now = new Date(nowUTC.getTime() + IST_OFFSET * 60000);
+    const now = convertToIST(new Date());
 
     const comingSoonGames = [];
     const allGames = [];
@@ -676,29 +668,19 @@ exports.getNearestGames = async (req, res) => {
       const openTime = timeStringToISTDate(game.open_time, game.is_next_day_close, true);
       const closeTime = timeStringToISTDate(game.close_time, game.is_next_day_close, false);
 
-      const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30min before open
-      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30min before close
+      const openWindowStart = new Date(openTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000);
 
       const hasInput = game.has_input === 1;
 
-      // Final condition to enforce input wait even after close time crosses
-    const isComingSoon =
-      (
-        ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
-        && !hasInput
-      )
-      ||
-      (!hasInput && now >= closeTime); // Added clause
+      const isComingSoon =
+        (
+          ((now >= openWindowStart && now < openTime) && !hasInput)  // Open window started, before openTime, no input
+          || ((now >= closeWindowStart && now < closeTime) && !hasInput) // Close window started, before closeTime, no input
+          || (!hasInput && now >= closeTime) // Close time crossed but no input yet
+        );
 
-      const gameWithInputs = {
-        ...game,
-        patte1: input.patte1,
-        patte1_open: input.patte1_open,
-        patte2_close: input.patte2_close,
-        patte2: input.patte2,
-      };
-
-            console.log({
+      console.log({
         gameId: game.id,
         now,
         openWindowStart,
@@ -708,6 +690,14 @@ exports.getNearestGames = async (req, res) => {
         hasInput,
         isComingSoon
       });
+
+      const gameWithInputs = {
+        ...game,
+        patte1: input.patte1,
+        patte1_open: input.patte1_open,
+        patte2_close: input.patte2_close,
+        patte2: input.patte2,
+      };
 
       if (isComingSoon) {
         comingSoonGames.push(gameWithInputs);
@@ -729,6 +719,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
