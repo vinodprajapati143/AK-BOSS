@@ -605,22 +605,29 @@ exports.getNearestGames = async (req, res) => {
     `;
     const [games] = await db.query(sql, [req.user.id]);
 
-    const now = new Date();
+    // IST offset in minutes
+    const IST_OFFSET_MINUTES = 330;
 
-    // Updated Function to correctly handle open and close time with next day cases
-    function timeStringToDate(timeStr, isNextDayClose, isOpenTime = false) {
+    // Convert any Date to IST DateObject
+    function convertToIST(date) {
+      return new Date(date.getTime() + IST_OFFSET_MINUTES * 60000);
+    }
+
+    // Convert time string (HH:mm:ss) to IST Date object for today/next day based on isNextDayClose
+    function timeStringToISTDate(timeStr, isNextDayClose, isOpenTime = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
-      const d = new Date();
+      const nowIST = convertToIST(new Date());
+
+      // Create a date in IST timezone with today's date and given time
+      const d = new Date(nowIST);
       d.setHours(h, m, s || 0, 0);
 
       if (isNextDayClose) {
         if (isOpenTime) {
-          // If open time hour less than 12 (morning), increment day for next day open time
           if (h < 12) {
             d.setDate(d.getDate() + 1);
           }
         } else {
-          // Close time next day scenario
           if (h < 12) {
             d.setDate(d.getDate() + 1);
           }
@@ -629,23 +636,19 @@ exports.getNearestGames = async (req, res) => {
       return d;
     }
 
+    const now = convertToIST(new Date()); // Current time in IST
+
     const comingSoonGames = [];
     const allGames = [];
 
     for (const game of games) {
-      const openTime = timeStringToDate(game.open_time, game.is_next_day_close, true);
-      const closeTime = timeStringToDate(game.close_time, game.is_next_day_close, false);
+      const openTime = timeStringToISTDate(game.open_time, game.is_next_day_close, true);
+      const closeTime = timeStringToISTDate(game.close_time, game.is_next_day_close, false);
 
-      const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30 mins before open
-      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30 mins before close
+      const openWindowStart = new Date(openTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000);
 
       const hasInput = game.has_input === 1;
-
-      console.log('now:', now);
-      console.log('openTime:', openTime);
-      console.log('openWindowStart:', openWindowStart);
-      console.log('closeTime:', closeTime);
-      console.log('closeWindowStart:', closeWindowStart);
 
       const isComingSoon =
         ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
@@ -657,7 +660,7 @@ exports.getNearestGames = async (req, res) => {
         if (hasInput || now < openWindowStart || now >= closeTime) {
           allGames.push(game);
         } else {
-          comingSoonGames.push(game); // Late entry edge case
+          comingSoonGames.push(game);
         }
       }
     }
@@ -675,6 +678,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 
