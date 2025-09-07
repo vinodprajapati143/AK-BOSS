@@ -407,7 +407,7 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
     const futureGames = [];
 
-   games.forEach(game => {
+games.forEach(game => {
   const input = inputsMap[game.id] || {};
 
   let gameWithInputs = {
@@ -424,22 +424,23 @@ exports.getNearestGames = async (req, res) => {
   const hasAnyInput = !!(gameWithInputs.patte1 || gameWithInputs.patte1_open || gameWithInputs.patte2_close || gameWithInputs.patte2);
 
   if (!hasAnyInput) {
-    // 🔑 Calculate minutes left to start
     const minutesToOpen = (openDateTime - nowIST) / 60000;
     const minutesToClose = (closeDateTime - nowIST) / 60000;
 
-    // Always keep in futureGames if no input, but only if start >= 30 min away
-    if (minutesToOpen >= 30 || minutesToClose >= 30) {
-      futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
-    } else {
-      // If start < 30 min but no input yet, still keep in futureGames
+    const openWindowStarted = nowIST >= openDateTime;
+    const closeWindowStarted = nowIST >= closeDateTime;
+
+    // Add to futureGames only if:
+    // 1️⃣ Window is about to start (<=30 min) OR
+    // 2️⃣ Window already started but input missing
+    if (minutesToOpen <= 30 || minutesToClose <= 30 || openWindowStarted || closeWindowStarted) {
       futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
     }
   } else {
-    // Input is present → normal flow
     allGames.push(gameWithInputs);
   }
 });
+
 
 
     res.json({ futureGames, allGames });
