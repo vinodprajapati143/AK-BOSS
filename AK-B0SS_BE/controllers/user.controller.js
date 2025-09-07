@@ -9,12 +9,12 @@ exports.listUsers = async (req, res) => {
         u.id,
         u.username, 
         u.registerType, 
-        rr.invite_code AS invitecode, -- relation ka code show hoga
+        rr.invite_code AS invitecode, -- referral_relations ka invite_code
         u.phone, 
         u.joiningdate
       FROM users u
       LEFT JOIN referral_relations rr 
-        ON u.invitecode = rr.invite_code
+        ON u.id = rr.invitee_id   -- relation user ke id se match hoga
       ORDER BY u.id DESC
     `);
 
@@ -24,6 +24,7 @@ exports.listUsers = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 
 async function generateReferralCode(userId) {
