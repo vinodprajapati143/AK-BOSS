@@ -6,14 +6,16 @@ exports.listUsers = async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT 
-        id,
-        username, 
-        registerType, 
-        invitecode, 
-        phone, 
-        joiningdate
-      FROM users
-      ORDER BY id DESC
+        u.id,
+        u.username, 
+        u.registerType, 
+        rr.invitee_invitecode AS invitecode, -- relation ka code show hoga
+        u.phone, 
+        u.joiningdate
+      FROM users u
+      LEFT JOIN referral_relations rr 
+        ON u.invitecode = rr.invitee_invitecode
+      ORDER BY u.id DESC
     `);
 
     res.json({ success: true, data: rows });
@@ -22,6 +24,7 @@ exports.listUsers = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 async function generateReferralCode(userId) {
   const [rows] = await db.query("SELECT id, phone, invitecode FROM users WHERE id = ?", [userId]);
