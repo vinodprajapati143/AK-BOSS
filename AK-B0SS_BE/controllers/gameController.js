@@ -407,65 +407,40 @@ exports.getNearestGames = async (req, res) => {
     const allGames = [];
     const futureGames = [];
 
-    games.forEach(game => {
-      const input = inputsMap[game.id] || {};
+   games.forEach(game => {
+  const input = inputsMap[game.id] || {};
 
-      const formatDateToYMD = (date) => {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const day = d.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
+  let gameWithInputs = {
+    ...game,
+    patte1: input.patte1 || "",
+    patte1_open: input.patte1_open || "",
+    patte2_close: input.patte2_close || "",
+    patte2: input.patte2 || ""
+  };
 
-      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-      let gameWithInputs = {
-        ...game,
-        patte1: input.patte1 || "",
-        patte1_open: input.patte1_open || "",
-        patte2_close: input.patte2_close || "",
-        patte2: input.patte2 || ""
-      };
+  const hasAnyInput = !!(gameWithInputs.patte1 || gameWithInputs.patte1_open || gameWithInputs.patte2_close || gameWithInputs.patte2);
 
-      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+  if (!hasAnyInput) {
+    // 🔑 Calculate minutes left to start
+    const minutesToOpen = (openDateTime - nowIST) / 60000;
+    const minutesToClose = (closeDateTime - nowIST) / 60000;
 
-      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+    // Always keep in futureGames if no input, but only if start >= 30 min away
+    if (minutesToOpen >= 30 || minutesToClose >= 30) {
+      futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
+    } else {
+      // If start < 30 min but no input yet, still keep in futureGames
+      futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
+    }
+  } else {
+    // Input is present → normal flow
+    allGames.push(gameWithInputs);
+  }
+});
 
-      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
-
-      // Grace period end times
-      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
-      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
-
-      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
-      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
-
-      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
-      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
-
-      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
-      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
-
-      // 🔑 MAIN FIX: Jab tak input nahi, tab tak allGames me na bhejo
-      const hasAnyInput = !!(gameWithInputs.patte1 || gameWithInputs.patte1_open || gameWithInputs.patte2_close || gameWithInputs.patte2);
-
-      if (!hasAnyInput) {
-        // Sirf futureGames me rahega chahe din badal jaye
-        if (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod || openWindowStarted || closeWindowStarted) {
-          futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
-        } else {
-          // Game ki window pass ho gayi lekin input abhi tak nahi, fir bhi futureGames me hi dikhana hai
-          futureGames.push({ ...gameWithInputs, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
-        }
-      } else {
-        // Input hai to normal flow
-        allGames.push(gameWithInputs);
-      }
-    });
 
     res.json({ futureGames, allGames });
   } catch (err) {
