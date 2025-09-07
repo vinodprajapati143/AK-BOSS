@@ -582,7 +582,8 @@ exports.getNearestGames = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    const sql = `
+    // Step 1: Fetch games with has_input flag
+    const sqlGames = `
       SELECT 
         g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close,
 
@@ -591,62 +592,90 @@ exports.getNearestGames = async (req, res) => {
           WHERE gi.game_id = g.id 
             AND gi.input_date = CURDATE()
             AND (
-              (gi.patte1 IS NOT NULL AND gi.patte1 != '') OR
-              (gi.patte1_open IS NOT NULL AND gi.patte1_open != '') OR
-              (gi.patte2_close IS NOT NULL AND gi.patte2_close != '') OR
-              (gi.patte2 IS NOT NULL AND gi.patte2 != '')
+              (gi.patte1 IS NOT NULL AND TRIM(gi.patte1) != '') OR
+              (gi.patte1_open IS NOT NULL AND TRIM(gi.patte1_open) != '') OR
+              (gi.patte2_close IS NOT NULL AND TRIM(gi.patte2_close) != '') OR
+              (gi.patte2 IS NOT NULL AND TRIM(gi.patte2) != '')
             )
           LIMIT 1
         ) AS has_input
-
       FROM games g
       WHERE g.created_by = ?
       ORDER BY g.id DESC
     `;
-    const [games] = await db.query(sql, [req.user.id]);
 
-    // IST offset in minutes
+    const [games] = await db.query(sqlGames, [req.user.id]);
+
+    if (games.length === 0) {
+      return res.json({ success: true, data: { comingSoonGames: [], allGames: [] } });
+    }
+
+    const gameIds = games.map(g => g.id);
+
+    // Step 2: Fetch inputs for these games for today
+    const sqlInputs = `
+      SELECT game_id, patte1, patte1_open, patte2_close, patte2
+      FROM game_inputs
+      WHERE input_date = CURDATE()
+        AND game_id IN (?)
+    `;
+
+    const [inputs] = await db.query(sqlInputs, [gameIds]);
+
+    // Map inputs by game_id for quick lookup
+    const inputMap = {};
+    inputs.forEach(input => {
+      inputMap[input.game_id] = {
+        patte1: input.patte1,
+        patte1_open: input.patte1_open,
+        patte2_close: input.patte2_close,
+        patte2: input.patte2,
+      };
+    });
+
+    // IST timezone offset in minutes
     const IST_OFFSET_MINUTES = 330;
 
-    // Convert any Date to IST DateObject
+    // Convert date to IST timezone Date object
     function convertToIST(date) {
       return new Date(date.getTime() + IST_OFFSET_MINUTES * 60000);
     }
 
-    // Convert time string (HH:mm:ss) to IST Date object for today/next day based on isNextDayClose
+    // Convert time string plus next day flag to IST Date object
     function timeStringToISTDate(timeStr, isNextDayClose, isOpenTime = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
       const nowIST = convertToIST(new Date());
-
-      // Create a date in IST timezone with today's date and given time
       const d = new Date(nowIST);
       d.setHours(h, m, s || 0, 0);
 
       if (isNextDayClose) {
         if (isOpenTime) {
-          if (h < 12) {
-            d.setDate(d.getDate() + 1);
-          }
+          if (h < 12) d.setDate(d.getDate() + 1);
         } else {
-          if (h < 12) {
-            d.setDate(d.getDate() + 1);
-          }
+          if (h < 12) d.setDate(d.getDate() + 1);
         }
       }
       return d;
     }
 
-    const now = convertToIST(new Date()); // Current time in IST
+    const now = convertToIST(new Date());
 
     const comingSoonGames = [];
     const allGames = [];
 
     for (const game of games) {
+      const input = inputMap[game.id] || {
+        patte1: null,
+        patte1_open: null,
+        patte2_close: null,
+        patte2: null,
+      };
+
       const openTime = timeStringToISTDate(game.open_time, game.is_next_day_close, true);
       const closeTime = timeStringToISTDate(game.close_time, game.is_next_day_close, false);
 
-      const openWindowStart = new Date(openTime.getTime() - 30 * 60000);
-      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000);
+      const openWindowStart = new Date(openTime.getTime() - 30 * 60000); // 30min before open
+      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000); // 30min before close
 
       const hasInput = game.has_input === 1;
 
@@ -654,13 +683,21 @@ exports.getNearestGames = async (req, res) => {
         ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
         && !hasInput;
 
+      const gameWithInputs = {
+        ...game,
+        patte1: input.patte1,
+        patte1_open: input.patte1_open,
+        patte2_close: input.patte2_close,
+        patte2: input.patte2,
+      };
+
       if (isComingSoon) {
-        comingSoonGames.push(game);
+        comingSoonGames.push(gameWithInputs);
       } else {
         if (hasInput || now < openWindowStart || now >= closeTime) {
-          allGames.push(game);
+          allGames.push(gameWithInputs);
         } else {
-          comingSoonGames.push(game);
+          comingSoonGames.push(gameWithInputs);
         }
       }
     }
@@ -669,15 +706,16 @@ exports.getNearestGames = async (req, res) => {
       success: true,
       data: {
         comingSoonGames,
-        allGames
+        allGames,
       }
     });
 
   } catch (err) {
-    console.error("getGamesWithComingSoonLogic Error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error('getGamesWithDirectInputs Error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 

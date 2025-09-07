@@ -258,7 +258,7 @@ this.comingSoonGames.forEach(game => {
 
 loadGames() {
   this.apiService.getNearestGames().subscribe((res: any) => {
-     const apiGames = res.futureGames;
+     const apiGames = res.data.comingSoonGames;
 
     // Preserve user edits by matching game IDs or indexes
     apiGames.forEach((game: any) => {
@@ -276,7 +276,7 @@ loadGames() {
     });
 
     this.comingSoonGames = apiGames;
-    this.allGames = res.allGames;
+    this.allGames = res.data.allGames;
 
     // Dono arrays ke har game me countdown init karo
     const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
