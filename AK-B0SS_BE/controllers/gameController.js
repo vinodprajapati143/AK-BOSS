@@ -641,6 +641,12 @@ exports.getNearestGames = async (req, res) => {
 
       const hasInput = game.has_input === 1;
 
+      console.log('now:', now);
+      console.log('openTime:', openTime);
+      console.log('openWindowStart:', openWindowStart);
+      console.log('closeTime:', closeTime);
+      console.log('closeWindowStart:', closeWindowStart);
+
       const isComingSoon =
         ((now >= openWindowStart && now < openTime) || (now >= closeWindowStart && now < closeTime))
         && !hasInput;
