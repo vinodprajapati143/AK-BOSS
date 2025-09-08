@@ -708,11 +708,10 @@ exports.getNearestGames = async (req, res) => {
     try {
         const now = new Date();
 
-        // Fetch all games + today's input + last input + optional flag for comingSoon
         const query = `
             SELECT 
                 g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close, g.created_at,
-                g.is_in_coming_soon, -- flag to track if game already in comingSoon
+                g.is_in_coming_soon,
                 i_today.patte1 AS patte1_today, i_today.patte1_open AS patte1_open_today,
                 i_today.patte2_close AS patte2_close_today, i_today.patte2 AS patte2_today,
                 li.patte1 AS patte1_last, li.patte1_open AS patte1_open_last,
@@ -745,9 +744,12 @@ exports.getNearestGames = async (req, res) => {
 
             const inputTodayExists = !!game.patte1_today || !!game.patte2_today;
 
+            // Calculate openTime + 30 minutes cutoff
+            let comingSoonCutoff = new Date(openTime.getTime() + 30 * 60 * 1000);
+
             // Determine if game should be in comingSoon
             const moveToComingSoon =
-                !inputTodayExists && (game.is_in_coming_soon || now >= openTime);
+                !inputTodayExists && (game.is_in_coming_soon || now >= comingSoonCutoff);
 
             if (moveToComingSoon) {
                 comingSoonGames.push({
@@ -770,7 +772,6 @@ exports.getNearestGames = async (req, res) => {
                 }
 
             } else {
-                // Game goes to allGames
                 allGames.push({
                     id: game.id,
                     game_name: game.game_name,
@@ -805,6 +806,7 @@ exports.getNearestGames = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
 
 
 
