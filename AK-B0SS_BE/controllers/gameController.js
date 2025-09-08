@@ -564,9 +564,17 @@ else if (openWindowStarted && missingOpenInput) {
     });
 
     // Send final response as before
+   
 
+      return res.json({
+            success: true,
+            data: {
+                comingSoonGames:futureGames,
+                allGames
+            }
+        });
  
-    res.json({ futureGames, allGames });
+    // res.json({ futureGames, allGames });
 
   } catch (err) {
     console.error("getNearestGames error:", err);
