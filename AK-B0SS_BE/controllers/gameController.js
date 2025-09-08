@@ -732,6 +732,7 @@ exports.getGameList = async (req, res) => {
       }
       // If we are in close window but no input today
       else if (now >= closeWindowStart && now < closeTime && !hasInputToday) {
+        console.log("COMING SOON WINDOW HIT:", game.game_name);
         isComingSoon = true;
       }
       // If close time already passed and no input today
@@ -739,6 +740,15 @@ exports.getGameList = async (req, res) => {
         isComingSoon = true;
       }
     }
+
+    console.log({
+  game: game.game_name,
+  now: now.toISOString(),
+  openTime: openTime.toISOString(),
+  closeTime: closeTime.toISOString(),
+  closeWindowStart: closeWindowStart.toISOString(),
+  hasInputToday
+});
 
 
       // Compose which inputs to show: today's input has highest priority, then fallback to last valid input
