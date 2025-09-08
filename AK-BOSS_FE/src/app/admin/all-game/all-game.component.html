@@ -25,15 +25,15 @@
                     <div>
                         <div class="time">
                             <div>
-                            {{ formatTime(game.openCountdown).split(':')[0] }}
+                            {{ formatTime(game.openCountdown).h }}
                             </div>
                             :
                             <div>
-                             {{ formatTime(game.openCountdown).split(':')[1] }}
+                             {{ formatTime(game.openCountdown).m }}
                             </div>
                             :
                             <div>
-                            {{ formatTime(game.openCountdown).split(':')[2] }}
+                            {{ formatTime(game.openCountdown).s }}
                             </div>
                         </div>
                         <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Open</h5>
@@ -83,9 +83,9 @@
                         </div>
                     <div>
                         <div class="time">
-                           <div>{{ formatTime(game.closeCountdown).split(':')[0] }}</div> :
-                            <div>{{ formatTime(game.closeCountdown).split(':')[1] }}</div> :
-                            <div>{{ formatTime(game.closeCountdown).split(':')[2] }}</div>
+                           <div>{{ formatTime(game.closeCountdown).h }}</div> :
+                            <div>{{ formatTime(game.closeCountdown).m }}</div> :
+                            <div>{{ formatTime(game.closeCountdown).s }}</div>
                         </div>
                         <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Closed</h5>
                     </div>
@@ -109,16 +109,16 @@
                     <div class="right">
                         <div>
                             <div class="time">
-                            <div>
-                            {{ formatTime(game.openCountdown).split(':')[0] }}
+                          <div>
+                            {{ formatTime(game.openCountdown).h }}
                             </div>
                             :
                             <div>
-                             {{ formatTime(game.openCountdown).split(':')[1] }}
+                             {{ formatTime(game.openCountdown).m }}
                             </div>
                             :
                             <div>
-                            {{ formatTime(game.openCountdown).split(':')[2] }}
+                            {{ formatTime(game.openCountdown).s }}
                             </div>
                             </div>
                             <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Open</h5>
@@ -139,9 +139,18 @@
                         </div>
                         <div>
                             <div class="time">
-                                     <div>{{ formatTime(game.closeCountdown).split(':')[0] }}</div> :
-                            <div>{{ formatTime(game.closeCountdown).split(':')[1] }}</div> :
-                            <div>{{ formatTime(game.closeCountdown).split(':')[2] }}</div>
+                                  
+                                <div>
+                            {{ formatTime(game.closeCountdown).h }}
+                            </div>
+                            :
+                            <div>
+                             {{ formatTime(game.closeCountdown).m }}
+                            </div>
+                            :
+                            <div>
+                            {{ formatTime(game.closeCountdown).s }}
+                            </div>
                             </div>
                             <h5 class="text-center font-bold text-[#20A2A0] mt-[4px]">Closed</h5>
                         </div>

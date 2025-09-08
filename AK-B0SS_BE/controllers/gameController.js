@@ -721,18 +721,25 @@ exports.getGameList = async (req, res) => {
 
       const hasInputToday = !!inputToday; // input for today
 
-      let isComingSoon = false;
-      if (!everInput) {
+ let isComingSoon = false;
+
+    if (!everInput) {
+      isComingSoon = true;
+    } else {
+      // If we are in open window but no input today
+      if (now >= openWindowStart && now < openTime && !hasInputToday) {
         isComingSoon = true;
-      } else {
-        if (now >= openWindowStart && now < openTime) {
-          if (!hasInputToday) isComingSoon = true;
-        } else if (now >= closeWindowStart && now < closeTime) {
-          if (!hasInputToday) isComingSoon = true;
-        } else if (now >= closeTime) {
-          if (!hasInputToday) isComingSoon = true;
-        }
       }
+      // If we are in close window but no input today
+      else if (now >= closeWindowStart && now < closeTime && !hasInputToday) {
+        isComingSoon = true;
+      }
+      // If close time already passed and no input today
+      else if (now >= closeTime && !hasInputToday) {
+        isComingSoon = true;
+      }
+    }
+
 
       // Compose which inputs to show: today's input has highest priority, then fallback to last valid input
       const gameWithInputs = {

@@ -22,9 +22,10 @@ export interface User {
   templateUrl: './all-game.component.html',
   styleUrl: './all-game.component.scss'
 })
-export class AllGameComponent implements OnInit ,OnDestroy  {
+export class AllGameComponent implements OnInit  {
  private apiService = inject(ApiService); 
  private toastr = inject(ToastrService)
+ private interval: any;
 
  comingSoonGames: any[] = [];
 allGames: any[] = [];
@@ -152,48 +153,13 @@ allGames: any[] = [];
 games = [];
 ngOnInit() {
   this.loadGames();
-      // 1 second ka interval set karo jo countdown update kare
-    this.timerSubscription = interval(1000).subscribe(() => {
-      this.updateCountdowns();
-    });
+ 
 }
 
-updateCountdowns() {
-    const now = new Date();
-
-    const updateGame = (game: any) => {
-      const openDateTime = this.getGameDateTime(now, game.open_time, !!game.is_next_day_close);
-      const closeDateTime = this.getGameDateTime(now, game.close_time, !!game.is_next_day_close);
-
-      const nowTime = now.getTime();
-
-      game.openCountdown = isNaN(openDateTime.getTime())
-        ? 0
-        : Math.max(0, Math.floor((openDateTime.getTime() - nowTime) / 1000));
-
-      game.closeCountdown = isNaN(closeDateTime.getTime())
-        ? 0
-        : Math.max(0, Math.floor((closeDateTime.getTime() - nowTime) / 1000));
-    };
-
-    this.comingSoonGames.forEach(updateGame);
-    this.allGames.forEach(updateGame);
-
-    this.setInputEnabledFlags();
-  }
+ 
 
 
-getGameDateTime(baseDate: Date, timeStr: string, isNextDay: boolean): Date {
-  // timeStr = "23:30:00"
-  const [h, m, s] = timeStr.split(':').map(Number);
-  const d = new Date(baseDate); // Start with today
-  d.setHours(h, m, s || 0, 0);
-
-  if (isNextDay && h < 12) {
-    d.setDate(d.getDate() + 1); // next day
-  }
-  return d;
-}
+ 
 
 isOpenInputEnabled(game: any): boolean {
   // Open countdown > 0 and input not filled
@@ -203,19 +169,7 @@ isCloseInputEnabled(game: any): boolean {
   return game.closeCountdown > 0 && (!game.patte2 || !game.patte2_close);
 }
 
-getGraceCountdown(game: any): number {
-  // Calculate seconds till grace period ends
-  const today = new Date().toISOString().split('T')[0];
-
-  // Take max(close, open) time
-  const openDT = new Date(`${today}T${game.open_time}`);
-  const closeDT = new Date(`${today}T${game.close_time}`);
-  const graceWindowEnd = new Date(Math.max(openDT.getTime(), closeDT.getTime()) + (60 * 60 * 1000)); // 1 hour after window ends
-  const now = new Date();
-
-  // Seconds remaining in grace period
-  return Math.max(0, Math.floor((graceWindowEnd.getTime() - now.getTime()) / 1000));
-}
+ 
 
 
 setInputEnabledFlags() {
@@ -265,63 +219,102 @@ setInputEnabledFlags() {
 
 
  
-
-  ngOnDestroy() {
-    // Component destroy hone par subscription clean karo
-    if (this.timerSubscription) {
-      this.timerSubscription.unsubscribe();
-    }
-  }
+ 
 
 
 loadGames() {
-    this.apiService.getNearestGames().subscribe((res: any) => {
-      const apiGames = res.data.comingSoonGames;
+  this.apiService.getNearestGames().subscribe((res: any) => {
+    const apiGames = res.data.comingSoonGames;
 
-      // Preserve user edits if needed (optional)
-      apiGames.forEach((game: any) => {
-        const existing = this.comingSoonGames.find(g => g.id === game.id);
-        if (existing) {
-          game.patte1 = existing.patte1;
-          game.patte1_open = existing.patte1_open;
-          game.patte2_close = existing.patte2_close;
-          game.patte2 = existing.patte2;
-        }
-      });
-
-      this.comingSoonGames = apiGames;
-      this.allGames = res.data.allGames;
-
-      // Initialize countdowns for all games
-      const now = new Date();
-
-      const initCountdown = (game: any) => {
-        const openDateTime = this.getGameDateTime(now, game.open_time, !!game.is_next_day_close);
-        const closeDateTime = this.getGameDateTime(now, game.close_time, !!game.is_next_day_close);
-
-        const nowTime = now.getTime();
-
-        game.openCountdown = isNaN(openDateTime.getTime())
-          ? 0
-          : Math.max(0, Math.floor((openDateTime.getTime() - nowTime) / 1000));
-
-        game.closeCountdown = isNaN(closeDateTime.getTime())
-          ? 0
-          : Math.max(0, Math.floor((closeDateTime.getTime() - nowTime) / 1000));
-      };
-
-      this.comingSoonGames.forEach(initCountdown);
-      this.allGames.forEach(initCountdown);
-
-      this.setInputEnabledFlags();
-
-      if (!this.timerSubscription) {
-        this.timerSubscription = interval(1000).subscribe(() => {
-          this.updateCountdowns();
-        });
+    apiGames.forEach((game: any) => {
+      const existing = this.comingSoonGames.find(g => g.id === game.id);
+      if (existing) {
+        game.patte1 = existing.patte1;
+        game.patte1_open = existing.patte1_open;
+        game.patte2_close = existing.patte2_close;
+        game.patte2 = existing.patte2;
       }
+
+      // Pehli baar load pe dono timers set karo
+      game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+      game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
     });
+
+    this.comingSoonGames = apiGames;
+
+       // ✅ allGames ke liye bhi same karo
+    const allGamesApi = res.data.allGames;
+    allGamesApi.forEach((game: any) => {
+      game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+      game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
+    });
+    this.allGames = allGamesApi;
+
+    this.setInputEnabledFlags();
+
+    // Start timer update
+    this.startCountdown();
+  });
+}
+
+startCountdown() {
+  if (this.interval) {
+    clearInterval(this.interval);
   }
+
+  this.interval = setInterval(() => {
+    this.comingSoonGames.forEach((game: any) => {
+      game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+      game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
+ 
+    });
+     this.allGames.forEach((game: any) => {
+      game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+      game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
+    });
+  }, 1000);
+}
+
+
+getRemainingTime(time: string, isNextDay: number, type: 'open' | 'close'): number {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+
+  let targetDateTime = new Date(`${today}T${time}`);
+
+  // Agar time nikal gaya hai aur isNextDay hai
+  if (targetDateTime.getTime() < now.getTime() && isNextDay === 1) {
+    targetDateTime.setDate(targetDateTime.getDate() + 1);
+  }
+
+  // Special case: agar open time already nikal gaya hai (aur game shuru ho chuka hai)
+  if (type === 'open' && targetDateTime.getTime() < now.getTime()) {
+    return 0; // Open ho chuka
+  }
+
+  return Math.max(targetDateTime.getTime() - now.getTime(), 0);
+} 
+
+formatTime(ms: number): { h: string, m: string, s: string } {
+  if (!ms || ms <= 0) {
+    return { h: "00", m: "00", s: "00" };
+  }
+
+  let totalSeconds = Math.floor(ms / 1000);
+  let hours = Math.floor(totalSeconds / 3600);
+  let minutes = Math.floor((totalSeconds % 3600) / 60);
+  let seconds = totalSeconds % 60;
+
+  return {
+    h: this.pad(hours),
+    m: this.pad(minutes),
+    s: this.pad(seconds)
+  };
+}
+
+pad(num: number): string {
+  return num < 10 ? '0' + num : num.toString();
+}
 
 restrictToThreeDigits(value: any): string {
   // Only allow up to 3 digits, and only numbers
@@ -361,17 +354,7 @@ submitGame(game: any) {
  
  
 
-
-// helper for countdowns
-formatTime(seconds: number): string {
-  if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
-    return '00:00:00';
-  }
-  const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
-  const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-  const secs = (seconds % 60).toString().padStart(2, '0');
-  return `${hrs}:${mins}:${secs}`;
-}
+ 
 
 
   getImageUrl(img: string, active: boolean | undefined) {
