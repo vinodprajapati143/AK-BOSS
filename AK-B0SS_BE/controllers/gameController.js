@@ -615,11 +615,8 @@ exports.getNearestGames = async (req, res) => {
       WHERE input_date = CURDATE() AND game_id IN (?)
     `;
     const [inputs] = await db.query(sqlInputs, [gameIds]);
-
     const inputMap = {};
-    inputs.forEach(input => {
-      inputMap[input.game_id] = input;
-    });
+    inputs.forEach(input => { inputMap[input.game_id] = input; });
 
     // Step 3: Fetch ever input
     const sqlEverInput = `
@@ -670,7 +667,6 @@ exports.getNearestGames = async (req, res) => {
     const now = new Date();
     const nowIST = new Date(now.getTime() + IST_OFFSET_MINUTES * 60000);
 
-    // Helper to convert hh:mm:ss to IST date based on referenceDate
     function parseTimeToIST(timeStr, referenceDate, isNextDayClose = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
       const d = new Date(referenceDate);
@@ -690,9 +686,8 @@ exports.getNearestGames = async (req, res) => {
 
       // Reference date for today IST
       const todayIST = new Date(nowIST);
-      todayIST.setHours(0,0,0,0); // 00:00 IST today
+      todayIST.setHours(0,0,0,0);
 
-      // Calculate open/close times for today
       const openTime = parseTimeToIST(game.open_time, todayIST, false);
       let closeTime = parseTimeToIST(game.close_time, todayIST, game.is_next_day_close);
 
@@ -703,13 +698,11 @@ exports.getNearestGames = async (req, res) => {
 
       // Determine Coming Soon
       let isComingSoon = false;
+
       if (!everInput) {
-        // Never got input → Coming Soon
-        isComingSoon = true;
+        isComingSoon = true; // never input → always coming soon
       } else if (
-        (nowIST >= openWindowStart && nowIST < openTime && !hasInputToday) ||
-        (nowIST >= closeWindowStart && nowIST < closeTime && !hasInputToday) ||
-        (nowIST >= closeTime && !hasInputToday)
+        !hasInputToday && nowIST < closeTime // <=== fix: window start se pehle bhi coming soon
       ) {
         isComingSoon = true;
       }
@@ -752,6 +745,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
