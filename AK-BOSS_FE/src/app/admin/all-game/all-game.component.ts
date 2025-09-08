@@ -173,47 +173,40 @@ isCloseInputEnabled(game: any): boolean {
 
 
 setInputEnabledFlags() {
+   const OPEN_WINDOW_ADVANCE = 30 * 60 * 1000; // 30 min in ms
+const CLOSE_WINDOW_ADVANCE = 30 * 60 * 1000;
+
     this.comingSoonGames.forEach(game => {
-      const openWindowStarted = game.openCountdown <= (2.5 * 60 * 60) && game.openCountdown > 0;
-      const closeWindowStarted = game.closeCountdown <= (2.5 * 60 * 60) && game.closeCountdown > 0;
+      console.log('game: ', game);
+        const openCountdown = game.openCountdown;    // in seconds
+        const closeCountdown = game.closeCountdown;  // in seconds
 
-      const openFilled = !!(game.patte1 || game.patte1_open);
-      const closeFilled = !!(game.patte2 || game.patte2_close);
+        const openFilled = !!(game.patte1 || game.patte1_open);
+        const closeFilled = !!(game.patte2 || game.patte2_close);
 
-      if (openWindowStarted && !openFilled) {
-        game.openInputEnabled = true;
-        game.closeInputEnabled = false;
-        return;
-      }
-
-      if (game.openCountdown <= 0 && !openFilled) {
-        game.openInputEnabled = true;
-        game.closeInputEnabled = false;
-        return;
-      }
-
-      if (closeWindowStarted && !closeFilled) {
-        game.openInputEnabled = false;
-        game.closeInputEnabled = true;
-        return;
-      }
-
-      if (game.closeCountdown <= 0 && !closeFilled) {
-        game.openInputEnabled = false;
-        game.closeInputEnabled = true;
-        return;
-      }
-
-      if (openFilled && closeFilled) {
+        // Reset flags
         game.openInputEnabled = false;
         game.closeInputEnabled = false;
-        return;
-      }
 
-      game.openInputEnabled = false;
-      game.closeInputEnabled = false;
+        // Open window: enable if countdown <= 30 min AND input not filled
+        if (!openFilled && openCountdown <= OPEN_WINDOW_ADVANCE) {
+            game.openInputEnabled = true;
+        }
+
+        // Close window: enable if countdown <= 30 min AND input not filled
+        if (!closeFilled && closeCountdown <= CLOSE_WINDOW_ADVANCE) {
+            game.closeInputEnabled = true;
+        }
+
+        // If both inputs filled, disable both
+        if (openFilled && closeFilled) {
+            game.openInputEnabled = false;
+            game.closeInputEnabled = false;
+        }
     });
-  }
+}
+
+
 
 
 
