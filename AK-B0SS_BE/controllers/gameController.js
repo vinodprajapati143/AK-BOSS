@@ -744,12 +744,18 @@ exports.getNearestGames = async (req, res) => {
 
             const inputTodayExists = !!game.patte1_today || !!game.patte2_today;
 
-            // Calculate openTime + 30 minutes cutoff
-            let comingSoonCutoff = new Date(openTime.getTime() + 30 * 60 * 1000);
+            // Calculate open window and close time conditions
+            let openWindowEnd = new Date(openTime.getTime() + 30 * 60 * 1000);
 
-            // Determine if game should be in comingSoon
+            // Conditions for coming soon
+            const isInOpenWindowComingSoon =
+                !inputTodayExists && (now >= openTime && now <= openWindowEnd);
+
+            const isAfterCloseComingSoon =
+                !inputTodayExists && now > closeTime;
+
             const moveToComingSoon =
-                !inputTodayExists && (game.is_in_coming_soon || now >= comingSoonCutoff);
+                isInOpenWindowComingSoon || isAfterCloseComingSoon || game.is_in_coming_soon;
 
             if (moveToComingSoon) {
                 comingSoonGames.push({
@@ -766,7 +772,6 @@ exports.getNearestGames = async (req, res) => {
                     input_date: null
                 });
 
-                // Optionally update DB flag if not already set
                 if (!game.is_in_coming_soon) {
                     await db.query(`UPDATE games SET is_in_coming_soon = 1 WHERE id = ?`, [game.id]);
                 }
@@ -786,7 +791,6 @@ exports.getNearestGames = async (req, res) => {
                     input_date: inputTodayExists ? new Date() : null
                 });
 
-                // Reset comingSoon flag if input added
                 if (game.is_in_coming_soon && inputTodayExists) {
                     await db.query(`UPDATE games SET is_in_coming_soon = 0 WHERE id = ?`, [game.id]);
                 }
@@ -806,6 +810,7 @@ exports.getNearestGames = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
 
 
 
