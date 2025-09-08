@@ -708,10 +708,11 @@ exports.getNearestGames = async (req, res) => {
     try {
         const now = new Date();
 
-        // Fetch all games + today's input + last input in one query
+        // Fetch all games + today's input + last input + optional flag for comingSoon
         const query = `
             SELECT 
                 g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close, g.created_at,
+                g.is_in_coming_soon, -- flag to track if game already in comingSoon
                 i_today.patte1 AS patte1_today, i_today.patte1_open AS patte1_open_today,
                 i_today.patte2_close AS patte2_close_today, i_today.patte2 AS patte2_today,
                 li.patte1 AS patte1_last, li.patte1_open AS patte1_open_last,
@@ -731,6 +732,7 @@ exports.getNearestGames = async (req, res) => {
             ) li ON li.game_id = g.id
             ORDER BY g.id ASC
         `;
+
         const [games] = await db.query(query);
 
         const comingSoonGames = [];
@@ -739,15 +741,15 @@ exports.getNearestGames = async (req, res) => {
         for (const game of games) {
             let openTime = getTimeToday(game.open_time);
             let closeTime = getTimeToday(game.close_time);
-
-            // Next-day close
             if (game.is_next_day_close) closeTime.setDate(closeTime.getDate() + 1);
 
             const inputTodayExists = !!game.patte1_today || !!game.patte2_today;
 
-            // Determine list placement
-            if (!inputTodayExists && now >= openTime && now <= closeTime) {
-                // Coming Soon: Window started but admin input not added
+            // Determine if game should be in comingSoon
+            const moveToComingSoon =
+                !inputTodayExists && (game.is_in_coming_soon || now >= openTime);
+
+            if (moveToComingSoon) {
                 comingSoonGames.push({
                     id: game.id,
                     game_name: game.game_name,
@@ -761,8 +763,14 @@ exports.getNearestGames = async (req, res) => {
                     patte2: "",
                     input_date: null
                 });
+
+                // Optionally update DB flag if not already set
+                if (!game.is_in_coming_soon) {
+                    await db.query(`UPDATE games SET is_in_coming_soon = 1 WHERE id = ?`, [game.id]);
+                }
+
             } else {
-                // All Games: Window not started or input added
+                // Game goes to allGames
                 allGames.push({
                     id: game.id,
                     game_name: game.game_name,
@@ -776,6 +784,11 @@ exports.getNearestGames = async (req, res) => {
                     patte2: inputTodayExists ? game.patte2_today : game.patte2_last || "",
                     input_date: inputTodayExists ? new Date() : null
                 });
+
+                // Reset comingSoon flag if input added
+                if (game.is_in_coming_soon && inputTodayExists) {
+                    await db.query(`UPDATE games SET is_in_coming_soon = 0 WHERE id = ?`, [game.id]);
+                }
             }
         }
 
