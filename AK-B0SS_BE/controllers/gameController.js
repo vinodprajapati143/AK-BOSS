@@ -581,7 +581,7 @@ exports.getNearestGames = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
-    // Step 1: Fetch games
+    // Step 1: Fetch all games for this admin
     const sqlGames = `
       SELECT 
         g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close, g.created_at,
@@ -621,7 +621,7 @@ exports.getNearestGames = async (req, res) => {
       inputMap[input.game_id] = input;
     });
 
-    // Step 3: Fetch if ever input given
+    // Step 3: Fetch ever input
     const sqlEverInput = `
       SELECT g.id AS game_id,
         EXISTS (
@@ -663,22 +663,19 @@ exports.getNearestGames = async (req, res) => {
     `;
     const [lastValidInputs] = await db.query(sqlLastValidInputs, [gameIds]);
     const lastValidInputMap = {};
-    lastValidInputs.forEach(input => {
-      lastValidInputMap[input.game_id] = input;
-    });
+    lastValidInputs.forEach(input => { lastValidInputMap[input.game_id] = input; });
 
     // === Timezone helpers ===
-    const IST_OFFSET_MINUTES = 330; // IST +5:30
+    const IST_OFFSET_MINUTES = 330;
     const now = new Date();
     const nowIST = new Date(now.getTime() + IST_OFFSET_MINUTES * 60000);
 
+    // Helper to convert hh:mm:ss to IST date based on referenceDate
     function parseTimeToIST(timeStr, referenceDate, isNextDayClose = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
       const d = new Date(referenceDate);
       d.setHours(h, m, s || 0, 0);
-      if (isNextDayClose && h < 12) {
-        d.setDate(d.getDate() + 1);
-      }
+      if (isNextDayClose && h < 12) d.setDate(d.getDate() + 1);
       return d;
     }
 
@@ -689,20 +686,25 @@ exports.getNearestGames = async (req, res) => {
       const everInput = everInputMap[game.id] || false;
       const inputToday = inputMap[game.id];
       const lastInput = lastValidInputMap[game.id];
-
-      const referenceDate = new Date(game.created_at);
-
-      const openTime = parseTimeToIST(game.open_time, referenceDate, false);
-      const closeTime = parseTimeToIST(game.close_time, referenceDate, game.is_next_day_close);
-
-      const openWindowStart = new Date(openTime.getTime() - 30 * 60000);
-      const closeWindowStart = new Date(closeTime.getTime() - 30 * 60000);
-
       const hasInputToday = !!inputToday;
 
-      let isComingSoon = false;
+      // Reference date for today IST
+      const todayIST = new Date(nowIST);
+      todayIST.setHours(0,0,0,0); // 00:00 IST today
 
+      // Calculate open/close times for today
+      const openTime = parseTimeToIST(game.open_time, todayIST, false);
+      let closeTime = parseTimeToIST(game.close_time, todayIST, game.is_next_day_close);
+
+      if (closeTime < openTime) closeTime.setDate(closeTime.getDate() + 1);
+
+      const openWindowStart = new Date(openTime.getTime() - 30*60000);
+      const closeWindowStart = new Date(closeTime.getTime() - 30*60000);
+
+      // Determine Coming Soon
+      let isComingSoon = false;
       if (!everInput) {
+        // Never got input → Coming Soon
         isComingSoon = true;
       } else if (
         (nowIST >= openWindowStart && nowIST < openTime && !hasInputToday) ||
@@ -712,17 +714,7 @@ exports.getNearestGames = async (req, res) => {
         isComingSoon = true;
       }
 
-      console.log({
-        game: game.game_name,
-        now: nowIST.toISOString(),
-        openTime: openTime.toISOString(),
-        closeTime: closeTime.toISOString(),
-        openWindowStart: openWindowStart.toISOString(),
-        closeWindowStart: closeWindowStart.toISOString(),
-        hasInputToday,
-        isComingSoon
-      });
-
+      // Compose inputs to show
       const gameWithInputs = {
         ...game,
         patte1: hasInputToday ? inputToday.patte1 : (lastInput ? lastInput.patte1 : null),
@@ -737,6 +729,17 @@ exports.getNearestGames = async (req, res) => {
       } else {
         allGames.push(gameWithInputs);
       }
+
+      console.log({
+        game: game.game_name,
+        now: nowIST.toISOString(),
+        openTime: openTime.toISOString(),
+        closeTime: closeTime.toISOString(),
+        openWindowStart: openWindowStart.toISOString(),
+        closeWindowStart: closeWindowStart.toISOString(),
+        hasInputToday,
+        isComingSoon
+      });
     }
 
     res.json({
@@ -749,6 +752,7 @@ exports.getNearestGames = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
