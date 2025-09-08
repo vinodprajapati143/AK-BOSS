@@ -581,24 +581,29 @@ exports.getNearestGames = async (req, res) => {
       return res.status(403).json({ message: "Only admin can view games" });
     }
 
+    // Step 1: Fetch all games for this admin
     const sqlGames = `
-      SELECT g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close, g.created_at
+      SELECT 
+        g.id, g.game_name, g.open_time, g.close_time, g.is_next_day_close, g.created_at
       FROM games g
       WHERE g.created_by = ?
       ORDER BY g.id DESC
     `;
     const [games] = await db.query(sqlGames, [req.user.id]);
-    if (!games.length) return res.json({ success: true, data: { comingSoonGames: [], allGames: [] } });
+    if (!games.length) {
+      return res.json({ success: true, data: { comingSoonGames: [], allGames: [] } });
+    }
 
     const gameIds = games.map(g => g.id);
 
+    // Step 2: Fetch last valid input for each game
     const sqlLastValidInputs = `
       SELECT t1.*
       FROM game_inputs t1
       INNER JOIN (
         SELECT game_id, MAX(input_date) AS max_date
         FROM game_inputs
-        WHERE game_id IN (?) 
+        WHERE game_id IN (?)
           AND (
             (patte1 IS NOT NULL AND TRIM(patte1) != '') OR
             (patte1_open IS NOT NULL AND TRIM(patte1_open) != '') OR
@@ -611,13 +616,12 @@ exports.getNearestGames = async (req, res) => {
     `;
     const [lastValidInputs] = await db.query(sqlLastValidInputs, [gameIds]);
     const lastInputMap = {};
-    lastValidInputs.forEach(input => lastInputMap[input.game_id] = input);
+    lastValidInputs.forEach(input => { lastInputMap[input.game_id] = input; });
 
+    // === Timezone helpers ===
     const IST_OFFSET_MINUTES = 330;
     const now = new Date();
     const nowIST = new Date(now.getTime() + IST_OFFSET_MINUTES * 60000);
-    const todayIST = new Date(nowIST);
-    todayIST.setHours(0,0,0,0);
 
     function parseTimeToIST(timeStr, referenceDate, isNextDayClose = false) {
       const [h, m, s] = timeStr.split(':').map(Number);
@@ -632,39 +636,51 @@ exports.getNearestGames = async (req, res) => {
 
     for (const game of games) {
       const lastInput = lastInputMap[game.id];
-      const lastOpenInput = lastInput?.patte1_open || lastInput?.patte1;
-      const lastCloseInput = lastInput?.patte2_close || lastInput?.patte2;
+      const hasEverInput = !!lastInput;
+
+      // Reference date for today IST
+      const todayIST = new Date(nowIST);
+      todayIST.setHours(0,0,0,0);
 
       const openTime = parseTimeToIST(game.open_time, todayIST, false);
-      const closeTime = parseTimeToIST(game.close_time, todayIST, game.is_next_day_close);
+      let closeTime = parseTimeToIST(game.close_time, todayIST, game.is_next_day_close);
+      if (closeTime < openTime) closeTime.setDate(closeTime.getDate() + 1);
+
       const openWindowStart = new Date(openTime.getTime() - 30*60000);
       const closeWindowStart = new Date(closeTime.getTime() - 30*60000);
 
-      // === Determine Coming Soon ===
       let isComingSoon = false;
 
-      // Never any input → Coming Soon
-      if (!lastInput) {
+      if (!hasEverInput) {
+        // never input → coming soon
         isComingSoon = true;
       } else {
-        // If open window started AND open input missing → Coming Soon
-        if (!lastOpenInput && nowIST >= openWindowStart) isComingSoon = true;
+        // Input already exists, check window
+        const lastOpenInput = lastInput?.patte1_open || lastInput?.patte1;
+        const lastCloseInput = lastInput?.patte2_close || lastInput?.patte2;
 
-        // If close window started AND close input missing → Coming Soon
-        if (!lastCloseInput && nowIST >= closeWindowStart) isComingSoon = true;
+        // If open/close window started & input missing → coming soon
+        if ((nowIST >= openWindowStart && !lastOpenInput) || (nowIST >= closeWindowStart && !lastCloseInput)) {
+          isComingSoon = true;
+        }
+        // Otherwise all games
       }
 
+      // Compose inputs to show
       const gameWithInputs = {
         ...game,
-        patte1: lastOpenInput || null,
-        patte1_open: lastOpenInput || null,
-        patte2_close: lastCloseInput || null,
-        patte2: lastCloseInput || null,
-        input_date: lastInput?.input_date || null
+        patte1: lastInput ? lastInput.patte1 : null,
+        patte1_open: lastInput ? lastInput.patte1_open : null,
+        patte2_close: lastInput ? lastInput.patte2_close : null,
+        patte2: lastInput ? lastInput.patte2 : null,
+        input_date: lastInput ? lastInput.input_date : null
       };
 
-      if (isComingSoon) comingSoonGames.push(gameWithInputs);
-      else allGames.push(gameWithInputs);
+      if (isComingSoon) {
+        comingSoonGames.push(gameWithInputs);
+      } else {
+        allGames.push(gameWithInputs);
+      }
 
       console.log({
         game: game.game_name,
@@ -673,19 +689,23 @@ exports.getNearestGames = async (req, res) => {
         closeTime: closeTime.toISOString(),
         openWindowStart: openWindowStart.toISOString(),
         closeWindowStart: closeWindowStart.toISOString(),
-        lastOpenInput,
-        lastCloseInput,
+        lastOpenInput: lastInput?.patte1_open || lastInput?.patte1,
+        lastCloseInput: lastInput?.patte2_close || lastInput?.patte2,
         isComingSoon
       });
     }
 
-    res.json({ success: true, data: { comingSoonGames, allGames } });
+    res.json({
+      success: true,
+      data: { comingSoonGames, allGames }
+    });
 
   } catch (err) {
     console.error('getNearestGames Error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 
 
