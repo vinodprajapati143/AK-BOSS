@@ -579,7 +579,21 @@ else if (openWindowStarted && missingOpenInput) {
     patte2_close: "",
     patte2: ""
   });
-} else {
+}
+// 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
+else if (
+  formattedInputDate === yesterdayDate &&
+  !missingOpenInput &&
+  missingCloseInput
+) {
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+}
+
+else {
   allGames.push(gameWithInputs);
 }
 
