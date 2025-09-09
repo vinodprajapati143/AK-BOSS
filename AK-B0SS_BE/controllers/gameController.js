@@ -483,8 +483,20 @@ exports.getNearestGames = async (req, res) => {
 
       const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
       console.log('formattedInputDate: ', formattedInputDate);
+
+      const yesterdayDate = (() => {
+      const d = new Date(todayIST);
+      d.setDate(d.getDate() - 1);
+      return formatDateToYMD(d);
+    })();
       const isNewDay = formattedInputDate !== todayIST;
       console.log('isNewDay: ', isNewDay);
+
+      if (formattedInputDate === yesterdayDate && nowIST <= closeWindowEndWithGrace) {
+          isNewDay = false;
+        }
+
+        console.log('isNewDay: ', isNewDay);
 
       let gameWithInputs = {
         ...game,
@@ -534,8 +546,8 @@ exports.getNearestGames = async (req, res) => {
  
 
 
-   if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
-  // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
+  if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+  // NEW DAY, input nhi hai, value blank hi dikhao (Coming Soon)
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
@@ -543,38 +555,48 @@ exports.getNearestGames = async (req, res) => {
     patte2_close: "",
     patte2: ""
   });
-}
-else if (openWindowStarted && missingOpenInput) {
-  // Sirf open input missing hai, to sirf open wale blank
+} else if (openWindowStarted && missingOpenInput) {
+  // Sirf open input missing hai → Coming Soon
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
     patte1_open: ""
   });
 } else if (closeWindowStarted && missingCloseInput) {
-  // Sirf close input missing hai, to sirf close wale blank
+  // Sirf close input missing hai → Coming Soon
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
     patte2: ""
   });
 } else if (missingOpenInput && nowIST > openDateTime) {
-  // open window khatam, still missing, to bhi sirf open blank karo
+  // Open khatam, still missing → Coming Soon
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
     patte1_open: ""
   });
 } else if (missingCloseInput && nowIST > closeDateTime) {
-  // close window khatam, still missing, to bhi sirf close blank karo
+  // Close khatam, still missing → Coming Soon
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
     patte2: ""
   });
-} else {
+} else if (!missingOpenInput && !missingCloseInput) {
+  // ✅ Sirf jab dono inputs available hon tabhi allGames me bhejo
   allGames.push(gameWithInputs);
+} else {
+  // Default fallback → Coming Soon
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: gameWithInputs.patte1 || "",
+    patte1_open: gameWithInputs.patte1_open || "",
+    patte2_close: gameWithInputs.patte2_close || "",
+    patte2: gameWithInputs.patte2 || ""
+  });
 }
+
 
     });
 
