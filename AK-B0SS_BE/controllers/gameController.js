@@ -489,8 +489,7 @@ exports.getNearestGames = async (req, res) => {
         d.setDate(d.getDate() - 1);
         return formatDateToYMD(d);
       })();
-      console.log('yesterdayDate: ', yesterdayDate);
-      const isNewDay = formattedInputDate !== todayIST;
+      let isNewDay = formattedInputDate !== todayIST;
        
 
       let gameWithInputs = {
@@ -538,7 +537,13 @@ exports.getNearestGames = async (req, res) => {
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
       console.log('closeWindowStarted: ', closeWindowStarted);
 
- 
+ if (
+  formattedInputDate === yesterdayDate &&
+  !missingOpenInput &&
+  missingCloseInput
+) {
+  isNewDay =false
+}
 
 
    if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
@@ -551,6 +556,7 @@ exports.getNearestGames = async (req, res) => {
     patte2: "",
     formattedInputDate:formattedInputDate
   });
+  console.log("NEW DAY, input nhi hai, value blank hi dikhao (only then!)");
 }
 else if (openWindowStarted && missingOpenInput) {
   // Sirf open input missing hai, to sirf open wale blank
@@ -559,8 +565,9 @@ else if (openWindowStarted && missingOpenInput) {
     patte1: "",
     patte1_open: "",
     formattedInputDate:formattedInputDate
-
+   
   });
+  console.log(" // Sirf open input missing hai, to sirf open wale blank")
 } else if (closeWindowStarted && missingCloseInput) {
   // Sirf close input missing hai, to sirf close wale blank
   futureGames.push({
@@ -571,6 +578,8 @@ else if (openWindowStarted && missingOpenInput) {
 
 
   });
+  console.log("Sirf close input missing hai, to sirf close wale blank")
+
 } else if (missingOpenInput && nowIST > openDateTime) {
   // open window khatam, still missing, to bhi sirf open blank karo
   futureGames.push({
@@ -581,6 +590,8 @@ else if (openWindowStarted && missingOpenInput) {
 
 
   });
+  console.log("open window khatam, still missing, to bhi sirf open blank karo")
+
 } else if (missingCloseInput && nowIST > closeDateTime) {
   // close window khatam, still missing, to bhi sirf close blank karo
   futureGames.push({
@@ -590,6 +601,8 @@ else if (openWindowStarted && missingOpenInput) {
     formattedInputDate:formattedInputDate
 
   });
+  console.log("close window khatam, still missing, to bhi sirf close blank karo")
+
 }
 // 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
 else if (
@@ -604,9 +617,12 @@ else if (
     formattedInputDate:formattedInputDate
 
   });
+  console.log("close window khatam, still missing, to bhi sirf close blank karo")
 }
 
 else {
+  console.log("all Games")
+
   allGames.push(gameWithInputs);
 }
 

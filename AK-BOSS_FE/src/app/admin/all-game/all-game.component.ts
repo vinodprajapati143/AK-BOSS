@@ -173,39 +173,67 @@ isCloseInputEnabled(game: any): boolean {
 
 
 setInputEnabledFlags() {
-   const OPEN_WINDOW_ADVANCE = 30 * 60 * 1000; // 30 min in ms
-const CLOSE_WINDOW_ADVANCE = 30 * 60 * 1000;
+  const OPEN_WINDOW_ADVANCE = 30 * 60 * 1000; // 30 min
+  const CLOSE_WINDOW_ADVANCE = 30 * 60 * 1000;
 
-    this.comingSoonGames.forEach(game => {
-      console.log('game: ', game);
-        const openCountdown = game.openCountdown;    // in seconds
-        const closeCountdown = game.closeCountdown;  // in seconds
+  this.comingSoonGames.forEach(game => {
+    const openFilled = !!(game.patte1 || game.patte1_open);
+    const closeFilled = !!(game.patte2 || game.patte2_close);
 
-        const openFilled = !!(game.patte1 || game.patte1_open);
-        const closeFilled = !!(game.patte2 || game.patte2_close);
+    game.openInputEnabled = false;
+    game.closeInputEnabled = false;
 
-        // Reset flags
-        game.openInputEnabled = false;
-        game.closeInputEnabled = false;
+    const now = new Date();
+    const offset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(now.getTime() + offset);
+    const year = nowIST.getFullYear();
+    const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+    const day = nowIST.getDate().toString().padStart(2, '0');
+    const todayIST = `${year}-${month}-${day}`;
 
-        // Open window: enable if countdown <= 30 min AND input not filled
-        if (!openFilled && openCountdown <= OPEN_WINDOW_ADVANCE) {
-            game.openInputEnabled = true;
-        }
+    const formatDateToYMD = (date: any) => {
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const day = d.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
 
-        // Close window: enable if countdown <= 30 min AND input not filled
-        if (!closeFilled && closeCountdown <= CLOSE_WINDOW_ADVANCE) {
-            game.closeInputEnabled = true;
-        }
-        
+    // yesterday
+    const yesterdayDate = (() => {
+      const d = new Date(todayIST);
+      d.setDate(d.getDate() - 1);
+      return formatDateToYMD(d);
+    })();
 
-        // If both inputs filled, disable both
-        if (openFilled && closeFilled) {
-            game.openInputEnabled = false;
-            game.closeInputEnabled = false;
-        }
-    });
+    const formattedInputDate = game.formattedInputDate; // backend se mila hai
+
+    // ✅ Normal open/close countdown check
+    if (!openFilled && game.openCountdown <= OPEN_WINDOW_ADVANCE) {
+      game.openInputEnabled = true;
+    }
+
+    if (!closeFilled && game.closeCountdown <= CLOSE_WINDOW_ADVANCE) {
+      game.closeInputEnabled = true;
+    }
+
+    // ✅ Special case: yesterday ka input hai, open filled hai, close missing hai
+    if (
+      formattedInputDate === yesterdayDate &&
+      openFilled &&
+      !closeFilled
+    ) {
+      game.closeInputEnabled = true;
+    }
+
+    // ✅ If both inputs filled → disable dono
+    if (openFilled && closeFilled) {
+      game.openInputEnabled = false;
+      game.closeInputEnabled = false;
+    }
+  });
 }
+
 
 
 
