@@ -413,174 +413,189 @@ exports.getGameList = async (req, res) => {
 
 
 // secod bext up to mark still working to achive best
-// exports.getNearestGames = async (req, res) => {
-//   try {
-//     const now = new Date();
-//     const offset = 5.5 * 60 * 60 * 1000; // IST offset
-//     const nowIST = new Date(now.getTime() + offset);
+exports.getNearestGames = async (req, res) => {
+  try {
+    const now = new Date();
+    const offset = 5.5 * 60 * 60 * 1000; // IST offset
+    const nowIST = new Date(now.getTime() + offset);
 
-//     const year = nowIST.getFullYear();
-//     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
-//     const day = nowIST.getDate().toString().padStart(2, '0');
-//     const todayIST = `${year}-${month}-${day}`;
+    const year = nowIST.getFullYear();
+    const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+    const day = nowIST.getDate().toString().padStart(2, '0');
+    const todayIST = `${year}-${month}-${day}`;
+    console.log('todayIST: ', todayIST);
 
-//     // Yesterday date
-//     const yesterdayIST = new Date(nowIST);
-//     yesterdayIST.setDate(yesterdayIST.getDate() - 1);
-//     const yYear = yesterdayIST.getFullYear();
-//     const yMonth = (yesterdayIST.getMonth() + 1).toString().padStart(2, '0');
-//     const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
-//     const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
+    // Yesterday date
+    const yesterdayIST = new Date(nowIST);
+    yesterdayIST.setDate(yesterdayIST.getDate() - 1);
+    const yYear = yesterdayIST.getFullYear();
+    const yMonth = (yesterdayIST.getMonth() + 1).toString().padStart(2, '0');
+    const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
+    const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
+    console.log('yesterdayDate: ', yesterdayDate);
 
-//     // Get all games for admin
-//     const [games] = await db.query(
-//       `SELECT id, game_name, open_time, close_time, days, created_at
-//        FROM games WHERE created_by = ? ORDER BY id DESC`,
-//       [req.user.id]
-//     );
+    // Get all games for admin
+    const [games] = await db.query(
+      `SELECT id, game_name, open_time, close_time, days, created_at
+       FROM games WHERE created_by = ? ORDER BY id DESC`,
+      [req.user.id]
+    );
 
-//     // Fetch latest input per game for today or yesterday whichever is latest
-//     const gameIds = games.map(g => g.id);
-//     let inputsMap = {};
-//     if (gameIds.length > 0) {
-//       const [inputs] = await db.query(
-//         `SELECT gi.*
-//          FROM game_inputs gi
-//          INNER JOIN (
-//            SELECT game_id, MAX(input_date) AS latest_date
-//            FROM game_inputs
-//            WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
-//            GROUP BY game_id
-//          ) t
-//          ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-//         [gameIds, todayIST, yesterdayDate]
-//       );
+    // Fetch latest input per game for today or yesterday whichever is latest
+    const gameIds = games.map(g => g.id);
+    let inputsMap = {};
+    if (gameIds.length > 0) {
+      const [inputs] = await db.query(
+        `SELECT gi.*
+         FROM game_inputs gi
+         INNER JOIN (
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+           GROUP BY game_id
+         ) t
+         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+        [gameIds, todayIST, yesterdayDate]
+      );
 
-//       inputs.forEach(input => {
-//         inputsMap[input.game_id] = input;
-//       });
-//     }
+      inputs.forEach(input => {
+        inputsMap[input.game_id] = input;
+      });
+    }
 
-//     // Set grace time duration in minutes (change as needed)
-//     const gracePeriodMinutes = 90;
+    // Set grace time duration in minutes (change as needed)
+    const gracePeriodMinutes = 90;
 
-//     const allGames = [];
-//     const futureGames = [];
+    const allGames = [];
+    const futureGames = [];
 
-//     games.forEach(game => {
-//       const input = inputsMap[game.id] || {};
+    games.forEach(game => {
+      const input = inputsMap[game.id] || {};
+      console.log('input: ', input);
 
-//       const formatDateToYMD = (date) => {
-//         const d = new Date(date);
-//         const year = d.getFullYear();
-//         const month = (d.getMonth() + 1).toString().padStart(2, '0');
-//         const day = d.getDate().toString().padStart(2, '0');
-//         return `${year}-${month}-${day}`;
-//       };
+      const formatDateToYMD = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
 
-//       const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-//       const isNewDay = formattedInputDate !== todayIST;
+      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+      console.log('formattedInputDate: ', formattedInputDate);
+      const isNewDay = formattedInputDate !== todayIST;
+      console.log('isNewDay: ', isNewDay);
 
-//       let gameWithInputs = {
-//         ...game,
-//         patte1: input.patte1 || "",
-//         patte1_open: input.patte1_open || "",
-//         patte2_close: input.patte2_close || "",
-//         patte2: input.patte2 || ""
-//       };
+      let gameWithInputs = {
+        ...game,
+        patte1: input.patte1 || "",
+        patte1_open: input.patte1_open || "",
+        patte2_close: input.patte2_close || "",
+        patte2: input.patte2 || ""
+      };
 
-//       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-//       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      console.log('openDateTime: ', openDateTime);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+      console.log('closeDateTime: ', closeDateTime);
 
-//       const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-//       const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      console.log('openWindowStart: ', openWindowStart);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+      console.log('closeWindowStart: ', closeWindowStart);
 
-//       const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-//       const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+      console.log('insideOpenWindow: ', insideOpenWindow);
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      console.log('insideCloseWindow: ', insideCloseWindow);
 
-//       // Grace period end times
-//       const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
-//       const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
+      // Grace period end times
+      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
+      console.log('openWindowEndWithGrace: ', openWindowEndWithGrace);
+      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
+      console.log('closeWindowEndWithGrace: ', closeWindowEndWithGrace);
 
-//       // Check if still in grace period after close time
-//       const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
-//       const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
+      // Check if still in grace period after close time
+      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+      console.log('insideOpenGracePeriod: ', insideOpenGracePeriod);
+      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
+      console.log('insideCloseGracePeriod: ', insideCloseGracePeriod);
 
-//       const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
-//       const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
+      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
+      console.log('missingOpenInput: ', missingOpenInput);
+      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
+      console.log('missingCloseInput: ', missingCloseInput);
 
-//       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
-//       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
+      console.log('openWindowStarted: ', openWindowStarted);
+      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      console.log('closeWindowStarted: ', closeWindowStarted);
 
-//  console.log('nowIST:', nowIST);
-// console.log('openWindowStart:', openWindowStart);
-// console.log('openDateTime:', openDateTime);
-// console.log('Is insideOpenWindow:', nowIST >= openWindowStart && nowIST < openDateTime);
-// console.log('Game Name:', game.game_name, 'Open Time:', game.open_time, 'Today IST:', todayIST);
+ 
 
 
-//    if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
-//   // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
-//   futureGames.push({
-//     ...gameWithInputs,
-//     patte1: "",
-//     patte1_open: "",
-//     patte2_close: "",
-//     patte2: ""
-//   });
-// }
-// else if (openWindowStarted && missingOpenInput) {
-//   // Sirf open input missing hai, to sirf open wale blank
-//   futureGames.push({
-//     ...gameWithInputs,
-//     patte1: "",
-//     patte1_open: ""
-//   });
-// } else if (closeWindowStarted && missingCloseInput) {
-//   // Sirf close input missing hai, to sirf close wale blank
-//   futureGames.push({
-//     ...gameWithInputs,
-//     patte2_close: "",
-//     patte2: ""
-//   });
-// } else if (missingOpenInput && nowIST > openDateTime) {
-//   // open window khatam, still missing, to bhi sirf open blank karo
-//   futureGames.push({
-//     ...gameWithInputs,
-//     patte1: "",
-//     patte1_open: ""
-//   });
-// } else if (missingCloseInput && nowIST > closeDateTime) {
-//   // close window khatam, still missing, to bhi sirf close blank karo
-//   futureGames.push({
-//     ...gameWithInputs,
-//     patte2_close: "",
-//     patte2: ""
-//   });
-// } else {
-//   allGames.push(gameWithInputs);
-// }
+   if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+  // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: "",
+    patte2_close: "",
+    patte2: ""
+  });
+}
+else if (openWindowStarted && missingOpenInput) {
+  // Sirf open input missing hai, to sirf open wale blank
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: ""
+  });
+} else if (closeWindowStarted && missingCloseInput) {
+  // Sirf close input missing hai, to sirf close wale blank
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+} else if (missingOpenInput && nowIST > openDateTime) {
+  // open window khatam, still missing, to bhi sirf open blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte1: "",
+    patte1_open: ""
+  });
+} else if (missingCloseInput && nowIST > closeDateTime) {
+  // close window khatam, still missing, to bhi sirf close blank karo
+  futureGames.push({
+    ...gameWithInputs,
+    patte2_close: "",
+    patte2: ""
+  });
+} else {
+  allGames.push(gameWithInputs);
+}
 
-//     });
+    });
 
-//     // Send final response as before
+    // Send final response as before
    
 
-//       return res.json({
-//             success: true,
-//             data: {
-//                 comingSoonGames:futureGames,
-//                 allGames
-//             }
-//         });
+      return res.json({
+            success: true,
+            data: {
+                comingSoonGames:futureGames,
+                allGames
+            }
+        });
  
-//     // res.json({ futureGames, allGames });
+    // res.json({ futureGames, allGames });
 
-//   } catch (err) {
-//     console.error("getNearestGames error:", err);
-//     res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// };
+  } catch (err) {
+    console.error("getNearestGames error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
 
 // working code ends
 
@@ -836,134 +851,134 @@ exports.getGameList = async (req, res) => {
 
 
 
-const convertToIST = (date) => {
-  if (!date) return null;
-  const utc = new Date(date);
-  const offset = 5.5 * 60 * 60 * 1000;
-  return new Date(utc.getTime() + offset);
-};
+// const convertToIST = (date) => {
+//   if (!date) return null;
+//   const utc = new Date(date);
+//   const offset = 5.5 * 60 * 60 * 1000;
+//   return new Date(utc.getTime() + offset);
+// };
 
-exports.getNearestGames = async (req, res) => {
-  try {
-    const nowUTC = new Date();
-    const offset = 5.5 * 60 * 60 * 1000; // IST offset
-    const nowIST = new Date(nowUTC.getTime() + offset);
+// exports.getNearestGames = async (req, res) => {
+//   try {
+//     const nowUTC = new Date();
+//     const offset = 5.5 * 60 * 60 * 1000; // IST offset
+//     const nowIST = new Date(nowUTC.getTime() + offset);
 
-    const year = nowIST.getFullYear();
-    const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
-    const day = nowIST.getDate().toString().padStart(2, '0');
-    const todayISTStr = `${year}-${month}-${day}`;
+//     const year = nowIST.getFullYear();
+//     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+//     const day = nowIST.getDate().toString().padStart(2, '0');
+//     const todayISTStr = `${year}-${month}-${day}`;
 
-    // 1. Fetch games created by admin
-    const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, is_next_day_close, created_at
-       FROM games WHERE created_by = ? ORDER BY id DESC`,
-      [req.user.id]
-    );
+//     // 1. Fetch games created by admin
+//     const [games] = await db.query(
+//       `SELECT id, game_name, open_time, close_time, is_next_day_close, created_at
+//        FROM games WHERE created_by = ? ORDER BY id DESC`,
+//       [req.user.id]
+//     );
 
-    const gameIds = games.map(g => g.id);
-    let inputsMap = {};
+//     const gameIds = games.map(g => g.id);
+//     let inputsMap = {};
 
-    // 2. Fetch latest input per game (today or yesterday)
-    if (gameIds.length > 0) {
-      const [inputs] = await db.query(
-        `SELECT gi.*
-         FROM game_inputs gi
-         INNER JOIN (
-           SELECT game_id, MAX(input_date) AS latest_date
-           FROM game_inputs
-           WHERE game_id IN (?) 
-             AND (DATE(input_date) = ? OR DATE(input_date) = DATE_SUB(?, INTERVAL 1 DAY))
-           GROUP BY game_id
-         ) t
-         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-        [gameIds, todayISTStr, todayISTStr]
-      );
+//     // 2. Fetch latest input per game (today or yesterday)
+//     if (gameIds.length > 0) {
+//       const [inputs] = await db.query(
+//         `SELECT gi.*
+//          FROM game_inputs gi
+//          INNER JOIN (
+//            SELECT game_id, MAX(input_date) AS latest_date
+//            FROM game_inputs
+//            WHERE game_id IN (?) 
+//              AND (DATE(input_date) = ? OR DATE(input_date) = DATE_SUB(?, INTERVAL 1 DAY))
+//            GROUP BY game_id
+//          ) t
+//          ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+//         [gameIds, todayISTStr, todayISTStr]
+//       );
 
-      inputs.forEach(input => {
-        inputsMap[input.game_id] = input;
-      });
-    }
+//       inputs.forEach(input => {
+//         inputsMap[input.game_id] = input;
+//       });
+//     }
 
-    const comingSoonGames = [];
-    const allGames = [];
+//     const comingSoonGames = [];
+//     const allGames = [];
 
-    games.forEach(game => {
-      const input = inputsMap[game.id] || {};
+//     games.forEach(game => {
+//       const input = inputsMap[game.id] || {};
 
-      // Open/Close times in IST
-      let openDateTime = new Date(`${todayISTStr}T${game.open_time}`);
-      let closeDateTime = new Date(`${todayISTStr}T${game.close_time}`);
-      if (game.is_next_day_close) {
-        closeDateTime.setDate(closeDateTime.getDate() + 1);
-      }
+//       // Open/Close times in IST
+//       let openDateTime = new Date(`${todayISTStr}T${game.open_time}`);
+//       let closeDateTime = new Date(`${todayISTStr}T${game.close_time}`);
+//       if (game.is_next_day_close) {
+//         closeDateTime.setDate(closeDateTime.getDate() + 1);
+//       }
 
-      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);  // 30 min before open
-      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000); // 30 min before close
+//       const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);  // 30 min before open
+//       const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000); // 30 min before close
 
-      // Missing inputs check
-      const missingOpenInput = !input.patte1 && !input.patte1_open;
-      const missingCloseInput = !input.patte2_close && !input.patte2;
+//       // Missing inputs check
+//       const missingOpenInput = !input.patte1 && !input.patte1_open;
+//       const missingCloseInput = !input.patte2_close && !input.patte2;
 
-      // Check if windows started
-      const openWindowStarted = nowIST >= openWindowStart;
-      const closeWindowStarted = nowIST >= closeWindowStart;
+//       // Check if windows started
+//       const openWindowStarted = nowIST >= openWindowStart;
+//       const closeWindowStarted = nowIST >= closeWindowStart;
 
-      // Convert input_date
-      const inputDateIST = convertToIST(input.input_date);
+//       // Convert input_date
+//       const inputDateIST = convertToIST(input.input_date);
 
-      // Rule: If input available (today or late-night/next-day valid) → Always allGames
-      if (inputDateIST) {
-        allGames.push({
-          ...game,
-          patte1: input.patte1 || "",
-          patte1_open: input.patte1_open || "",
-          patte2_close: input.patte2_close || "",
-          patte2: input.patte2 || "",
-          input_date: input.input_date
-        });
-      }
-      // Rule: If no input yet & window started → comingSoon
-      else if ((openWindowStarted && missingOpenInput) || (closeWindowStarted && missingCloseInput)) {
-        comingSoonGames.push({
-          ...game,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: "",
-          input_date: null
-        });
-      }
-      // Else → allGames (future games / not started yet)
-      else {
-        allGames.push({
-          ...game,
-          patte1: "",
-          patte1_open: "",
-          patte2_close: "",
-          patte2: "",
-          input_date: null
-        });
-      }
-    });
+//       // Rule: If input available (today or late-night/next-day valid) → Always allGames
+//       if (inputDateIST) {
+//         allGames.push({
+//           ...game,
+//           patte1: input.patte1 || "",
+//           patte1_open: input.patte1_open || "",
+//           patte2_close: input.patte2_close || "",
+//           patte2: input.patte2 || "",
+//           input_date: input.input_date
+//         });
+//       }
+//       // Rule: If no input yet & window started → comingSoon
+//       else if ((openWindowStarted && missingOpenInput) || (closeWindowStarted && missingCloseInput)) {
+//         comingSoonGames.push({
+//           ...game,
+//           patte1: "",
+//           patte1_open: "",
+//           patte2_close: "",
+//           patte2: "",
+//           input_date: null
+//         });
+//       }
+//       // Else → allGames (future games / not started yet)
+//       else {
+//         allGames.push({
+//           ...game,
+//           patte1: "",
+//           patte1_open: "",
+//           patte2_close: "",
+//           patte2: "",
+//           input_date: null
+//         });
+//       }
+//     });
 
-    return res.json({
-      success: true,
-      data: {
-        comingSoonGames,
-        allGames
-      }
-    });
+//     return res.json({
+//       success: true,
+//       data: {
+//         comingSoonGames,
+//         allGames
+//       }
+//     });
 
-  } catch (err) {
-    console.error("getNearestGames error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: err.message
-    });
-  }
-};
+//   } catch (err) {
+//     console.error("getNearestGames error:", err);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//       error: err.message
+//     });
+//   }
+// };
 
 
 
