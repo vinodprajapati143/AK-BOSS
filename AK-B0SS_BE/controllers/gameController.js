@@ -617,7 +617,7 @@ else if (
     formattedInputDate:formattedInputDate
 
   });
-  console.log("close window khatam, still missing, to bhi sirf close blank karo")
+  console.log("Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya")
 }
 
 else {
