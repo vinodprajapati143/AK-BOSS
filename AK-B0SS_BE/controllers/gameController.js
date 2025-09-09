@@ -583,7 +583,7 @@ const openDate = getYMD(openDateTime);
 const closeDate = getYMD(closeDateTime);
 
 // Agar open input missing hai aur open time cross ho gaya
-if (missingOpenInput && nowIST > openDateTime) {
+if (missingOpenInput && nowIST > openDateTime && openWindowStarted) {
   // Check day bhi cross ho gaya
   if (nowDate !== openDate) {
     // Day change ho chuka hai → Coming Soon me hi rakho
@@ -595,7 +595,7 @@ if (missingOpenInput && nowIST > openDateTime) {
   }
 }
 // Agar close input missing hai aur close time cross ho gaya
-else if (missingCloseInput && nowIST > closeDateTime) {
+else if (missingCloseInput && nowIST > closeDateTime && closeWindowStarted) {
   if (nowDate !== closeDate) {
     futureGames.push({
       ...gameWithInputs,
