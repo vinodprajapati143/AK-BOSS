@@ -483,20 +483,10 @@ exports.getNearestGames = async (req, res) => {
 
       const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
       console.log('formattedInputDate: ', formattedInputDate);
-
-      const yesterdayDate = (() => {
-      const d = new Date(todayIST);
-      d.setDate(d.getDate() - 1);
-      return formatDateToYMD(d);
-    })();
+ 
       const isNewDay = formattedInputDate !== todayIST;
-      console.log('isNewDay: ', isNewDay);
+    
 
-      if (formattedInputDate === yesterdayDate && nowIST <= closeWindowEndWithGrace) {
-          isNewDay = false;
-        }
-
-        console.log('isNewDay: ', isNewDay);
 
       let gameWithInputs = {
         ...game,
