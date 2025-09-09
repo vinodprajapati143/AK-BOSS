@@ -533,6 +533,13 @@ exports.getNearestGames = async (req, res) => {
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
       console.log('closeWindowStarted: ', closeWindowStarted);
 
+      // Utility function: Date se sirf YYYY-MM-DD nikalo
+      const getYMD = (date) => date.toISOString().split("T")[0];
+
+      const nowDate = getYMD(nowIST);
+      const openDate = getYMD(openDateTime);
+      const closeDate = getYMD(closeDateTime);
+
  
 
 
@@ -575,34 +582,35 @@ exports.getNearestGames = async (req, res) => {
   });
 }
 
-// Utility function: Date se sirf YYYY-MM-DD nikalo
-const getYMD = (date) => date.toISOString().split("T")[0];
 
-const nowDate = getYMD(nowIST);
-const openDate = getYMD(openDateTime);
-const closeDate = getYMD(closeDateTime);
 
 // Agar open input missing hai aur open time cross ho gaya
-if (missingOpenInput && nowIST > openDateTime && openWindowStarted) {
-  // Check day bhi cross ho gaya
-  if (nowDate !== openDate) {
-    // Day change ho chuka hai → Coming Soon me hi rakho
-    futureGames.push({
-      ...gameWithInputs,
-      patte1: "",
-      patte1_open: ""
-    });
+else if(openWindowStarted){
+  if (missingOpenInput && nowIST > openDateTime) {
+    // Check day bhi cross ho gaya
+    if (nowDate !== openDate) {
+      // Day change ho chuka hai → Coming Soon me hi rakho
+      futureGames.push({
+        ...gameWithInputs,
+        patte1: "",
+        patte1_open: ""
+      });
+    }
   }
+
 }
 // Agar close input missing hai aur close time cross ho gaya
-else if (missingCloseInput && nowIST > closeDateTime && closeWindowStarted) {
-  if (nowDate !== closeDate) {
-    futureGames.push({
-      ...gameWithInputs,
-      patte2_close: "",
-      patte2: ""
-    });
+else if(closeWindowStarted){
+   if (missingCloseInput && nowIST > closeDateTime) {
+    if (nowDate !== closeDate) {
+      futureGames.push({
+        ...gameWithInputs,
+        patte2_close: "",
+        patte2: ""
+      });
+    }
   }
+
 }
 
 
