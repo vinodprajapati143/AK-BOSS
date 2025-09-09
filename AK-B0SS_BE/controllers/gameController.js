@@ -548,7 +548,8 @@ exports.getNearestGames = async (req, res) => {
     patte1: "",
     patte1_open: "",
     patte2_close: "",
-    patte2: ""
+    patte2: "",
+    formattedInputDate:formattedInputDate
   });
 }
 else if (openWindowStarted && missingOpenInput) {
@@ -556,28 +557,38 @@ else if (openWindowStarted && missingOpenInput) {
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
-    patte1_open: ""
+    patte1_open: "",
+    formattedInputDate:formattedInputDate
+
   });
 } else if (closeWindowStarted && missingCloseInput) {
   // Sirf close input missing hai, to sirf close wale blank
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
-    patte2: ""
+    patte2: "",
+    formattedInputDate:formattedInputDate
+
+
   });
 } else if (missingOpenInput && nowIST > openDateTime) {
   // open window khatam, still missing, to bhi sirf open blank karo
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
-    patte1_open: ""
+    patte1_open: "",
+    formattedInputDate:formattedInputDate
+
+
   });
 } else if (missingCloseInput && nowIST > closeDateTime) {
   // close window khatam, still missing, to bhi sirf close blank karo
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
-    patte2: ""
+    patte2: "",
+    formattedInputDate:formattedInputDate
+
   });
 }
 // 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
@@ -589,7 +600,9 @@ else if (
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
-    patte2: ""
+    patte2: "",
+    formattedInputDate:formattedInputDate
+
   });
 }
 

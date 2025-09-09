@@ -197,6 +197,7 @@ const CLOSE_WINDOW_ADVANCE = 30 * 60 * 1000;
         if (!closeFilled && closeCountdown <= CLOSE_WINDOW_ADVANCE) {
             game.closeInputEnabled = true;
         }
+        
 
         // If both inputs filled, disable both
         if (openFilled && closeFilled) {
