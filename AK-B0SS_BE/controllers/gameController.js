@@ -483,10 +483,15 @@ exports.getNearestGames = async (req, res) => {
 
       const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
       console.log('formattedInputDate: ', formattedInputDate);
- 
-      const isNewDay = formattedInputDate !== todayIST;
-    
 
+      const yesterdayDate = (() => {
+        const d = new Date(todayIST);
+        d.setDate(d.getDate() - 1);
+        return formatDateToYMD(d);
+      })();
+      console.log('yesterdayDate: ', yesterdayDate);
+      const isNewDay = formattedInputDate !== todayIST;
+       
 
       let gameWithInputs = {
         ...game,
@@ -533,18 +538,11 @@ exports.getNearestGames = async (req, res) => {
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
       console.log('closeWindowStarted: ', closeWindowStarted);
 
-      // Utility function: Date se sirf YYYY-MM-DD nikalo
-      const getYMD = (date) => date.toISOString().split("T")[0];
-
-      const nowDate = getYMD(nowIST);
-      const openDate = getYMD(openDateTime);
-      const closeDate = getYMD(closeDateTime);
-
  
 
 
-  if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
-  // NEW DAY, input nhi hai, value blank hi dikhao (Coming Soon)
+   if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+  // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
@@ -552,82 +550,38 @@ exports.getNearestGames = async (req, res) => {
     patte2_close: "",
     patte2: ""
   });
-} else if (openWindowStarted && missingOpenInput) {
-  // Sirf open input missing hai → Coming Soon
+}
+else if (openWindowStarted && missingOpenInput) {
+  // Sirf open input missing hai, to sirf open wale blank
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
     patte1_open: ""
   });
 } else if (closeWindowStarted && missingCloseInput) {
-  // Sirf close input missing hai → Coming Soon
+  // Sirf close input missing hai, to sirf close wale blank
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
     patte2: ""
   });
 } else if (missingOpenInput && nowIST > openDateTime) {
-  // Open khatam, still missing → Coming Soon
+  // open window khatam, still missing, to bhi sirf open blank karo
   futureGames.push({
     ...gameWithInputs,
     patte1: "",
     patte1_open: ""
   });
 } else if (missingCloseInput && nowIST > closeDateTime) {
-  // Close khatam, still missing → Coming Soon
+  // close window khatam, still missing, to bhi sirf close blank karo
   futureGames.push({
     ...gameWithInputs,
     patte2_close: "",
     patte2: ""
   });
-}
-
-
-
-// Agar open input missing hai aur open time cross ho gaya
-else if(openWindowStarted){
-  if (missingOpenInput && nowIST > openDateTime) {
-    // Check day bhi cross ho gaya
-    if (nowDate !== openDate) {
-      // Day change ho chuka hai → Coming Soon me hi rakho
-      futureGames.push({
-        ...gameWithInputs,
-        patte1: "",
-        patte1_open: ""
-      });
-    }
-  }
-
-}
-// Agar close input missing hai aur close time cross ho gaya
-else if(closeWindowStarted){
-   if (missingCloseInput && nowIST > closeDateTime) {
-    if (nowDate !== closeDate) {
-      futureGames.push({
-        ...gameWithInputs,
-        patte2_close: "",
-        patte2: ""
-      });
-    }
-  }
-
-}
-
-
-else if (!missingOpenInput && !missingCloseInput) {
-  // ✅ Sirf jab dono inputs available hon tabhi allGames me bhejo
-  allGames.push(gameWithInputs);
 } else {
-  // Default fallback → Coming Soon
-  futureGames.push({
-    ...gameWithInputs,
-    patte1: gameWithInputs.patte1 || "",
-    patte1_open: gameWithInputs.patte1_open || "",
-    patte2_close: gameWithInputs.patte2_close || "",
-    patte2: gameWithInputs.patte2 || ""
-  });
+  allGames.push(gameWithInputs);
 }
-
 
     });
 
