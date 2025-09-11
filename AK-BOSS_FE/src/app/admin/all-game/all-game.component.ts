@@ -353,15 +353,28 @@ restrictToOneDigit(value: any): string {
 
   
 submitGame(game: any) {
+
+    const todayDate = new Date().toISOString().split('T')[0];
+
+  // Agar open abhi fill ho raha hai (close missing hai)
+  // toh aaj ki date bhejo
+  let finalInputDate: string;
+  if (!game.patte1_open || !game.patte2_close) {
+    finalInputDate = todayDate;
+  } else {
+    // Agar open already filled tha, toh wahi date use karo jo backend se aayi thi
+    finalInputDate = game.formattedInputDate || todayDate;
+  }
   const payload = {
     id: game.id,
     patte1: game.patte1,
     patte1_open: game.patte1_open,
     patte2_close: game.patte2_close,
     patte2: game.patte2,
-    input_date:game.formattedInputDate
+    input_date:finalInputDate
   };
 
+  console.log('payload: ', payload);
   this.apiService.saveGameInput(payload).subscribe({
     next: (res) => {
       console.log('res: ', res);
