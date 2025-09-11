@@ -1039,32 +1039,74 @@ else {
 
 
 
+// exports.saveGameInput = async (req, res) => {
+//   try {
+//     const { id, patte1, patte1_open, patte2_close, patte2 } = req.body;
+//     if (!id) return res.status(400).json({ message: 'Game ID required' });
+
+//     const now = new Date();
+//     const inputDate = now.toISOString().split('T')[0]; // yyyy-mm-dd
+
+//     // Check if input exists for game & date
+//     const [existing] = await db.query(
+//       "SELECT id FROM game_inputs WHERE game_id = ? AND input_date = ?",
+//       [id, inputDate]
+//     );
+
+//     if (existing.length > 0) {
+//       // Update
+//       await db.query(
+//         `UPDATE game_inputs SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?, updated_at = NOW() WHERE id = ?`,
+//         [patte1, patte1_open, patte2_close, patte2, existing[0].id]
+//       );
+//     } else {
+//       // Insert
+//       await db.query(
+//         `INSERT INTO game_inputs (game_id, input_date, patte1, patte1_open, patte2_close, patte2, created_at, updated_at)
+//          VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+//         [id, inputDate, patte1, patte1_open, patte2_close, patte2]
+//       );
+//     }
+
+//     res.json({ success: true, message: 'Game inputs saved successfully' });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// };
+
+
 exports.saveGameInput = async (req, res) => {
   try {
-    const { id, patte1, patte1_open, patte2_close, patte2 } = req.body;
+    const { id, patte1, patte1_open, patte2_close, patte2, input_date } = req.body;
     if (!id) return res.status(400).json({ message: 'Game ID required' });
 
+    // Agar client se inputDate mila hai to wahi use karo, warna aaj ki date
     const now = new Date();
-    const inputDate = now.toISOString().split('T')[0]; // yyyy-mm-dd
+    const todayDate = now.toISOString().split('T')[0];
+    const finalInputDate = input_date || todayDate;
 
     // Check if input exists for game & date
     const [existing] = await db.query(
       "SELECT id FROM game_inputs WHERE game_id = ? AND input_date = ?",
-      [id, inputDate]
+      [id, finalInputDate]
     );
 
     if (existing.length > 0) {
       // Update
       await db.query(
-        `UPDATE game_inputs SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?, updated_at = NOW() WHERE id = ?`,
+        `UPDATE game_inputs 
+         SET patte1 = ?, patte1_open = ?, patte2_close = ?, patte2 = ?, updated_at = NOW() 
+         WHERE id = ?`,
         [patte1, patte1_open, patte2_close, patte2, existing[0].id]
       );
     } else {
       // Insert
       await db.query(
-        `INSERT INTO game_inputs (game_id, input_date, patte1, patte1_open, patte2_close, patte2, created_at, updated_at)
+        `INSERT INTO game_inputs 
+         (game_id, input_date, patte1, patte1_open, patte2_close, patte2, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-        [id, inputDate, patte1, patte1_open, patte2_close, patte2]
+        [id, finalInputDate, patte1, patte1_open, patte2_close, patte2]
       );
     }
 
@@ -1074,6 +1116,7 @@ exports.saveGameInput = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 
 exports.getPublicGames = async (req, res) => {
   try {

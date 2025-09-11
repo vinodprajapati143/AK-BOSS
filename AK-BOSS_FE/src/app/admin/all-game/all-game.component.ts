@@ -151,6 +151,7 @@ allGames: any[] = [];
   timerSubscription: Subscription | undefined;
  
 games = [];
+  formattedInputDate: any;
 ngOnInit() {
   this.loadGames();
  
@@ -206,7 +207,7 @@ setInputEnabledFlags() {
       return formatDateToYMD(d);
     })();
 
-    const formattedInputDate = game.formattedInputDate; // backend se mila hai
+    this.formattedInputDate = game.formattedInputDate; // backend se mila hai
 
     // ✅ Normal open/close countdown check
     if (!openFilled && game.openCountdown <= OPEN_WINDOW_ADVANCE) {
@@ -219,7 +220,7 @@ setInputEnabledFlags() {
 
     // ✅ Special case: yesterday ka input hai, open filled hai, close missing hai
     if (
-      formattedInputDate === yesterdayDate &&
+      this.formattedInputDate === yesterdayDate &&
       openFilled &&
       !closeFilled
     ) {
@@ -357,7 +358,8 @@ submitGame(game: any) {
     patte1: game.patte1,
     patte1_open: game.patte1_open,
     patte2_close: game.patte2_close,
-    patte2: game.patte2
+    patte2: game.patte2,
+    input_date:game.formattedInputDate
   };
 
   this.apiService.saveGameInput(payload).subscribe({
