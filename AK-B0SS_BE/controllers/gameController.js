@@ -1120,6 +1120,186 @@ exports.saveGameInput = async (req, res) => {
 };
 
 
+// exports.getPublicGames = async (req, res) => {
+//   try {
+//     const now = new Date();
+//     const offset = 5.5 * 60 * 60 * 1000; // IST offset
+//     const nowIST = new Date(now.getTime() + offset);
+
+//     const year = nowIST.getFullYear();
+//     const month = (nowIST.getMonth() + 1).toString().padStart(2, '0');
+//     const day = nowIST.getDate().toString().padStart(2, '0');
+//     const todayIST = `${year}-${month}-${day}`;
+
+//     // Yesterday date calculation
+//     const yesterdayIST = new Date(nowIST);
+//     yesterdayIST.setDate(yesterdayIST.getDate() - 1);
+//     const yYear = yesterdayIST.getFullYear();
+//     const yMonth = (yesterdayIST.getMonth() + 1).toString().padStart(2, '0');
+//     const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
+//     const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
+
+//     // Get all active games
+//     const [games] = await db.query(
+//       `SELECT id, game_name, open_time, close_time, days
+//        FROM games ORDER BY id ASC`
+//     );
+
+//     const gameIds = games.map(g => g.id);
+//     let inputsMap = {};
+//     if (gameIds.length > 0) {
+//       const [inputs] = await db.query(
+//         `SELECT gi.* FROM game_inputs gi
+//          INNER JOIN (
+//            SELECT game_id, MAX(input_date) AS latest_date
+//            FROM game_inputs
+//            WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+//            GROUP BY game_id
+//          ) t ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+//         [gameIds, todayIST, yesterdayDate]
+//       );
+
+//       inputs.forEach(input => {
+//         inputsMap[input.game_id] = input;
+//       });
+//     }
+
+//     // Grace period
+//     const gracePeriodMinutes = 90;
+
+//    const resultGames = games.map(game => {
+//   const input = inputsMap[game.id] || {};
+//   const patte1 = input.patte1 || "";
+//   const patte1_open = input.patte1_open || "";
+//   const patte2_close = input.patte2_close || "";
+//   const patte2 = input.patte2 || "";
+
+//   const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+//   const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+//         // Input windows start 30 min before open/close time
+//       const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+//       const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+
+//         // Check if time is inside input window or inside grace period after open or close
+//       const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+//       const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+
+//       const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
+//       const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
+
+//        const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+//       const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
+
+//             const missingOpenInput = !patte1 && !patte1_open;
+//       const missingCloseInput = !patte2_close && !patte2;
+
+//   // New day check: compare input_date with todayIST
+//   const formatDateToYMD = (date) => {
+//     const d = new Date(date);
+//     const year = d.getFullYear();
+//     const month = (d.getMonth() + 1).toString().padStart(2, '0');
+//     const day = d.getDate().toString().padStart(2, '0');
+//     return `${year}-${month}-${day}`;
+//   };
+
+//   const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+//   const isNewDay = formattedInputDate !== todayIST;  // True if input date is not today
+
+//   // Empty stars array
+//   let stars = Array(8).fill("★");
+
+//   // If new day, reset stars to empty values (e.g., use "-")
+//   if (isNewDay) {
+//     stars = Array(8).fill("★");
+//   } else {
+//     // Existing stars assignment using input values
+//     for (let i = 0; i < 3; i++) {
+//       if (patte1 && patte1.length > i) {
+//         stars[i] = patte1.charAt(i);
+//       }
+//     }
+//     if (patte1_open && patte1_open.length > 0) {
+//       stars[3] = patte1_open.charAt(0);
+//     }
+//     if (patte2_close && patte2_close.length > 0) {
+//       stars[4] = patte2_close.charAt(0);
+//     }
+//     for (let i = 0; i < 3; i++) {
+//       if (patte2 && patte2.length > i) {
+//         stars[5 + i] = patte2.charAt(i);
+//       }
+//     }
+//   }
+
+//   const starsWithDashes = [
+//     ...stars.slice(0, 3),
+//     '-',
+//     stars[3],
+//     stars[4],
+//     '-',
+//     ...stars.slice(5, 8),
+//   ];
+//  // Pending (future) games criteria: missing input AND in window or grace period or after window but input not filled yet
+//       const isPendingInput =
+//         (missingOpenInput && (insideOpenWindow || insideOpenGracePeriod || nowIST > openDateTime)) ||
+//         (missingCloseInput && (insideCloseWindow || insideCloseGracePeriod || nowIST > closeDateTime));
+//   // ... existing calculation for phase and isPendingInput unmodified ...
+
+
+//       let phase = 'waiting';
+//       if (nowIST >= openDateTime && nowIST < closeDateTime) {
+//         phase = 'open';
+//       } else if (nowIST >= closeDateTime) {
+//         phase = 'close';
+//       }
+
+//   return {
+//     id: game.id,
+//     game_name: game.game_name,
+//     starsWithDashes,
+//     open_time: game.open_time,
+//     close_time: game.close_time,
+//     phase,
+//     isPendingInput,
+//   };
+// });
+
+// const filteredGames = resultGames.filter(game => {
+//   // Parse today's date and open/close times
+//   const today = new Date();
+//   const offset = 5.5 * 60 * 60 * 1000; // IST offset (same as above)
+//   const nowIST = new Date(today.getTime() + offset);
+
+//   const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+//   const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+//   const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+//   const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+
+//     // Define missing inputs from starsWithDashes:
+//   // If stars filled (not ★ or -) means input present
+//   const openInputFilled = game.starsWithDashes[0] !== "★" && game.starsWithDashes[1] !== "★" && game.starsWithDashes[2] !== "★" && game.starsWithDashes[3] !== "★";
+//   const closeInputFilled = game.starsWithDashes[4] !== "★" && game.starsWithDashes[5] !== "★" && game.starsWithDashes[6] !== "★" && game.starsWithDashes[7] !== "★";
+
+//   // Only include games where NOW is within open or close 30-min window
+//   const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+//   const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+//   // Show only if in open window && input not filled OR close window && input not filled
+//   return (insideOpenWindow && !openInputFilled) || (insideCloseWindow && !closeInputFilled);
+// });
+
+// res.json({ games: filteredGames });
+
+
+
+//   } catch (err) {
+//     console.error("getPublicGames error:", err);
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// };
+
+
 exports.getPublicGames = async (req, res) => {
   try {
     const now = new Date();
@@ -1167,131 +1347,102 @@ exports.getPublicGames = async (req, res) => {
     // Grace period
     const gracePeriodMinutes = 90;
 
-   const resultGames = games.map(game => {
-  const input = inputsMap[game.id] || {};
-  const patte1 = input.patte1 || "";
-  const patte1_open = input.patte1_open || "";
-  const patte2_close = input.patte2_close || "";
-  const patte2 = input.patte2 || "";
+    const allGames = [];
+    const futureGames = [];
 
-  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+    games.forEach(game => {
+      const input = inputsMap[game.id] || {};
 
-        // Input windows start 30 min before open/close time
+      const formatDateToYMD = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
+
+      let gameWithInputs = {
+        ...game,
+        patte1: input.patte1 || "",
+        patte1_open: input.patte1_open || "",
+        patte2_close: input.patte2_close || "",
+        patte2: input.patte2 || "",
+        formattedInputDate
+      };
+
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
       const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
       const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
 
-        // Check if time is inside input window or inside grace period after open or close
       const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
       const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
       const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
       const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
-
-       const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
       const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
 
-            const missingOpenInput = !patte1 && !patte1_open;
-      const missingCloseInput = !patte2_close && !patte2;
+      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
+      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
 
-  // New day check: compare input_date with todayIST
-  const formatDateToYMD = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const day = d.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+      // ⭐ Stars Logic
+      let stars = Array(8).fill("★");
 
-  const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-  const isNewDay = formattedInputDate !== todayIST;  // True if input date is not today
-
-  // Empty stars array
-  let stars = Array(8).fill("★");
-
-  // If new day, reset stars to empty values (e.g., use "-")
-  if (isNewDay) {
-    stars = Array(8).fill("★");
-  } else {
-    // Existing stars assignment using input values
-    for (let i = 0; i < 3; i++) {
-      if (patte1 && patte1.length > i) {
-        stars[i] = patte1.charAt(i);
-      }
-    }
-    if (patte1_open && patte1_open.length > 0) {
-      stars[3] = patte1_open.charAt(0);
-    }
-    if (patte2_close && patte2_close.length > 0) {
-      stars[4] = patte2_close.charAt(0);
-    }
-    for (let i = 0; i < 3; i++) {
-      if (patte2 && patte2.length > i) {
-        stars[5 + i] = patte2.charAt(i);
-      }
-    }
-  }
-
-  const starsWithDashes = [
-    ...stars.slice(0, 3),
-    '-',
-    stars[3],
-    stars[4],
-    '-',
-    ...stars.slice(5, 8),
-  ];
- // Pending (future) games criteria: missing input AND in window or grace period or after window but input not filled yet
-      const isPendingInput =
-        (missingOpenInput && (insideOpenWindow || insideOpenGracePeriod || nowIST > openDateTime)) ||
-        (missingCloseInput && (insideCloseWindow || insideCloseGracePeriod || nowIST > closeDateTime));
-  // ... existing calculation for phase and isPendingInput unmodified ...
-
-
-      let phase = 'waiting';
-      if (nowIST >= openDateTime && nowIST < closeDateTime) {
-        phase = 'open';
-      } else if (nowIST >= closeDateTime) {
-        phase = 'close';
+      const isNewDay = formattedInputDate !== todayIST;
+      if (!isNewDay) {
+        for (let i = 0; i < 3; i++) {
+          if (gameWithInputs.patte1 && gameWithInputs.patte1.length > i) {
+            stars[i] = gameWithInputs.patte1.charAt(i);
+          }
+        }
+        if (gameWithInputs.patte1_open) {
+          stars[3] = gameWithInputs.patte1_open.charAt(0);
+        }
+        if (gameWithInputs.patte2_close) {
+          stars[4] = gameWithInputs.patte2_close.charAt(0);
+        }
+        for (let i = 0; i < 3; i++) {
+          if (gameWithInputs.patte2 && gameWithInputs.patte2.length > i) {
+            stars[5 + i] = gameWithInputs.patte2.charAt(i);
+          }
+        }
       }
 
-  return {
-    id: game.id,
-    game_name: game.game_name,
-    starsWithDashes,
-    open_time: game.open_time,
-    close_time: game.close_time,
-    phase,
-    isPendingInput,
-  };
-});
+      const starsWithDashes = [
+        ...stars.slice(0, 3),
+        '-',
+        stars[3],
+        stars[4],
+        '-',
+        ...stars.slice(5, 8),
+      ];
 
-const filteredGames = resultGames.filter(game => {
-  // Parse today's date and open/close times
-  const today = new Date();
-  const offset = 5.5 * 60 * 60 * 1000; // IST offset (same as above)
-  const nowIST = new Date(today.getTime() + offset);
+      // 🔹 Coming soon logic
+      if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
+        futureGames.push({ ...gameWithInputs, starsWithDashes, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
+      } else if (insideOpenWindow && missingOpenInput) {
+        futureGames.push({ ...gameWithInputs, starsWithDashes, patte1: "", patte1_open: "" });
+      } else if (insideCloseWindow && missingCloseInput) {
+        futureGames.push({ ...gameWithInputs, starsWithDashes, patte2_close: "", patte2: "" });
+      } else if (missingOpenInput && nowIST > openDateTime) {
+        futureGames.push({ ...gameWithInputs, starsWithDashes, patte1: "", patte1_open: "" });
+      } else if (missingCloseInput && nowIST > closeDateTime) {
+        futureGames.push({ ...gameWithInputs, starsWithDashes, patte2_close: "", patte2: "" });
+      } else {
+        allGames.push({ ...gameWithInputs, starsWithDashes });
+      }
+    });
 
-  const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-  const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
-
-  const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-  const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-
-    // Define missing inputs from starsWithDashes:
-  // If stars filled (not ★ or -) means input present
-  const openInputFilled = game.starsWithDashes[0] !== "★" && game.starsWithDashes[1] !== "★" && game.starsWithDashes[2] !== "★" && game.starsWithDashes[3] !== "★";
-  const closeInputFilled = game.starsWithDashes[4] !== "★" && game.starsWithDashes[5] !== "★" && game.starsWithDashes[6] !== "★" && game.starsWithDashes[7] !== "★";
-
-  // Only include games where NOW is within open or close 30-min window
-  const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-  const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
-  // Show only if in open window && input not filled OR close window && input not filled
-  return (insideOpenWindow && !openInputFilled) || (insideCloseWindow && !closeInputFilled);
-});
-
-res.json({ games: filteredGames });
-
-
+    res.json({
+      success: true,
+      data: {
+        comingSoonGames: futureGames,
+        allGames
+      }
+    });
 
   } catch (err) {
     console.error("getPublicGames error:", err);
