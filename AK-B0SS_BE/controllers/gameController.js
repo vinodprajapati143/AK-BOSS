@@ -1085,6 +1085,7 @@ exports.saveGameInput = async (req, res) => {
     const now = new Date();
     const todayDate = now.toISOString().split('T')[0];
     const finalInputDate = input_date || todayDate;
+    console.log('finalInputDate: ', finalInputDate);
 
     // Check if input exists for game & date
     const [existing] = await db.query(
@@ -1092,6 +1093,7 @@ exports.saveGameInput = async (req, res) => {
       [id, finalInputDate]
     );
 
+    console.log('existing: ', existing);
     if (existing.length > 0) {
       // Update
       await db.query(

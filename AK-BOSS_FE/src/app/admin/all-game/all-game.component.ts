@@ -355,6 +355,7 @@ restrictToOneDigit(value: any): string {
 submitGame(game: any) {
 
     const todayDate = new Date().toISOString().split('T')[0];
+    console.log('todayDate: ', todayDate);
 
   // Agar open abhi fill ho raha hai (close missing hai)
   // toh aaj ki date bhejo
@@ -365,6 +366,7 @@ submitGame(game: any) {
     // Agar open already filled tha, toh wahi date use karo jo backend se aayi thi
     finalInputDate = game.formattedInputDate || todayDate;
   }
+  console.log('finalInputDate: ', finalInputDate);
   const payload = {
     id: game.id,
     patte1: game.patte1,
