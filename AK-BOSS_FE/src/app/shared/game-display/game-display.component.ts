@@ -18,6 +18,13 @@ export class GameDisplayComponent {
   @Input() closeMM :any;
   @Input() closesSS :any;
 
+  @Input() patte1 :any;
+  @Input() patte1_open :any;
+  @Input() patte2_close :any;
+  @Input() patte2 :any;
+
+ 
+
   
 
 
