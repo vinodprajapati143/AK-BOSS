@@ -12,23 +12,37 @@
     </div>
 
     <!-- Timer boxes -->
-    <div class="flex items-center justify-center space-x-1 py-1 px-4 rounded-md border border-orange-400"
-      style="background: linear-gradient(90deg, #6EC1E4, #FBB040);">
-      
-      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">
-        {{ timer.hours }}
-      </div>
-
+<div
+  class="flex items-center justify-center space-x-3 py-1 px-4 rounded-md border border-orange-400"
+  style="background: linear-gradient(90deg, #6EC1E4, #FBB040);"
+>
+  <!-- Agar open ka time khatam nahi hua -->
+  <ng-container *ngIf="!(openHH === '00' && openMM === '00' && opensSS === '00'); else ankOpen">
+    <div class="flex items-center space-x-1">
+      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">{{ openHH }}</div>
       <span class="text-white text-sm font-bold">:</span>
-
-      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">
-        {{ timer.minutes }}
-      </div>
-
+      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">{{ openMM }}</div>
       <span class="text-white text-sm font-bold">:</span>
-
-      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">
-        {{ timer.seconds }}
-      </div>
+      <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">{{ opensSS }}</div>
     </div>
+  </ng-container>
+  <ng-template #ankOpen>
+    <!-- Jab open zero ho gaya, tab close timer ya close message dikhao -->
+    <ng-container *ngIf="!(closeHH === '00' && closeMM === '00' && closesSS === '00'); else ankClose">
+      <div class="flex items-center space-x-1">
+        <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">{{ closeHH }}</div>
+        <span class="text-white text-sm font-bold">:</span>
+        <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">{{ closeMM }}</div>
+        <span class="text-white text-sm font-bold">:</span>
+        <div class="bg-white text-sm font-bold px-1 rounded-md border-2 text-color">{{ closesSS }}</div>
+      </div>
+    </ng-container>
+    <ng-template #ankClose>
+      <span class="text-white text-sm font-bold blink-text">अंक आ रहा है</span>
+    </ng-template>
+  </ng-template>
+</div>
+
+
+
   </div>

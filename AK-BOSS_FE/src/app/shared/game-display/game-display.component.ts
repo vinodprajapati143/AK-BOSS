@@ -11,5 +11,16 @@ import { Component, Input } from '@angular/core';
 export class GameDisplayComponent {
   @Input() gameName: string = 'GAGAN DAY';
   @Input() stars: string[] = ['★', '★', '★', '-', '★', '★', '-', '★', '★', '★']; // example array with stars and dashes
-  @Input() timer = { hours: '02', minutes: '35', seconds: '45' };
+  @Input() openHH :any;
+  @Input() openMM :any;
+  @Input() opensSS:any;
+  @Input() closeHH :any;
+  @Input() closeMM :any;
+  @Input() closesSS :any;
+
+  
+
+
+
+
 }

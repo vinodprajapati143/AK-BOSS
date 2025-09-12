@@ -164,7 +164,15 @@
  <app-game-display
     [gameName]="game.game_name"
     [stars]="game.starsWithDashes"
- [timer]="countdowns[game.id] || { hours: '00', minutes: '00', seconds: '00' }"
+    [openHH]="formatTime(game.openCountdown).h"
+    [openMM]="formatTime(game.openCountdown).m"
+    [opensSS]="formatTime(game.openCountdown).s"
+    [closeHH]="formatTime(game.closeCountdown).h"
+    [closeMM]="formatTime(game.closeCountdown).m"
+    [closesSS]="formatTime(game.closeCountdown).s"
+
+
+
   
   >
 </app-game-display>

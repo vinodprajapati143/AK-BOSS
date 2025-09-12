@@ -1342,6 +1342,17 @@ exports.getPublicGames = async (req, res) => {
       inputs.forEach(input => {
         inputsMap[input.game_id] = input;
       });
+
+      let resultsMap = {};
+      if (inputs.length > 0) {
+        inputs.forEach(r => {
+          resultsMap[r.game_id] = `
+            ${r.patte1 || ""}-${r.patte1_open || ""}${r.patte2_close || ""}-${r.patte2 || ""}`
+            .replace(/(^-+|-+$)/g, '')
+            .replace(/-+/g, '-')
+            .replace(/-+$/, '');
+        });
+      }
     }
 
     // Grace period
@@ -1420,6 +1431,9 @@ exports.getPublicGames = async (req, res) => {
         ...stars.slice(5, 8),
       ];
 
+      const result = resultsMap[game.id] || "";
+      const timing = `${convertTo12HourFormat(game.open_time.slice(0, 5))} - ${convertTo12HourFormat(game.close_time.slice(0, 5))}`;
+
       // 🔹 Coming soon logic
       if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
         futureGames.push({ ...gameWithInputs, starsWithDashes, patte1: "", patte1_open: "", patte2_close: "", patte2: "" });
@@ -1431,8 +1445,24 @@ exports.getPublicGames = async (req, res) => {
         futureGames.push({ ...gameWithInputs, starsWithDashes, patte1: "", patte1_open: "" });
       } else if (missingCloseInput && nowIST > closeDateTime) {
         futureGames.push({ ...gameWithInputs, starsWithDashes, patte2_close: "", patte2: "" });
-      } else {
-        allGames.push({ ...gameWithInputs, starsWithDashes });
+      }
+      else if (
+      formattedInputDate === yesterdayDate &&
+      !missingOpenInput &&
+      missingCloseInput
+    ) {
+      futureGames.push({
+        ...gameWithInputs,
+        patte2_close: "",
+        patte2: "",
+        starsWithDashes,
+
+      });
+      console.log("Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya")
+    }
+      
+      else {
+        allGames.push({ ...gameWithInputs, starsWithDashes ,result, timing});
       }
     });
 

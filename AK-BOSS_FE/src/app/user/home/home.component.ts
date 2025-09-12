@@ -17,6 +17,7 @@ import { interval, map, startWith, Subscription, timer } from 'rxjs';
 export class HomeComponent implements OnInit {
   games: any;
   gamesResult: any;
+  interval: any;
 constructor(private router: Router, private gameService: ApiService ) {}
    
    chartData = [
@@ -110,7 +111,7 @@ constructor(private router: Router, private gameService: ApiService ) {}
   ];
 
   countdowns: { [gameId: number]: { hours: string; minutes: string; seconds: string } } = {};
-subscriptions: { [gameId: number]: Subscription } = {};
+  subscriptions: { [gameId: number]: Subscription } = {};
 
   ngOnInit(): void {
     this.loadpubligames()
@@ -122,79 +123,79 @@ subscriptions: { [gameId: number]: Subscription } = {};
     map(() => new Date())
   )
 
-startCountdown(game: any) {
-  // Unsubscribe previous timer if it exists
-  if (this.subscriptions[game.id]) {
-    this.subscriptions[game.id].unsubscribe();
-  }
+// startCountdown(game: any) {
+//   // Unsubscribe previous timer if it exists
+//   if (this.subscriptions[game.id]) {
+//     this.subscriptions[game.id].unsubscribe();
+//   }
 
-  this.subscriptions[game.id] = timer(0, 1000).pipe(
-    map(() => {
-      const nowUTC = new Date();
+//   this.subscriptions[game.id] = timer(0, 1000).pipe(
+//     map(() => {
+//       const nowUTC = new Date();
 
-      // Parse open_time and close_time strings into numbers
-      const [openH, openM, openS] = (game.open_time || "00:00:00").split(':').map(Number);
-      const [closeH, closeM, closeS] = (game.close_time || "00:00:00").split(':').map(Number);
+//       // Parse open_time and close_time strings into numbers
+//       const [openH, openM, openS] = (game.open_time || "00:00:00").split(':').map(Number);
+//       const [closeH, closeM, closeS] = (game.close_time || "00:00:00").split(':').map(Number);
 
-      // Get today's date in UTC parts
-      const yearUTC = nowUTC.getUTCFullYear();
-      const monthUTC = nowUTC.getUTCMonth();
-      const dateUTC = nowUTC.getUTCDate();
+//       // Get today's date in UTC parts
+//       const yearUTC = nowUTC.getUTCFullYear();
+//       const monthUTC = nowUTC.getUTCMonth();
+//       const dateUTC = nowUTC.getUTCDate();
 
-      // Construct open and close times in UTC corresponding to IST by subtracting 5.5 hours from IST target
-      // IST = UTC + 5:30, so subtract 5h30m to get UTC
-      const openDateTimeUTC = new Date(Date.UTC(yearUTC, monthUTC, dateUTC, openH - 5, openM - 30, openS));
-      const closeDateTimeUTC = new Date(Date.UTC(yearUTC, monthUTC, dateUTC, closeH - 5, closeM - 30, closeS));
+//       // Construct open and close times in UTC corresponding to IST by subtracting 5.5 hours from IST target
+//       // IST = UTC + 5:30, so subtract 5h30m to get UTC
+//       const openDateTimeUTC = new Date(Date.UTC(yearUTC, monthUTC, dateUTC, openH - 5, openM - 30, openS));
+//       const closeDateTimeUTC = new Date(Date.UTC(yearUTC, monthUTC, dateUTC, closeH - 5, closeM - 30, closeS));
 
-      // Adjust if minutes became negative after subtracting 30
-      if (openDateTimeUTC.getUTCMinutes() < 0) {
-        openDateTimeUTC.setUTCHours(openDateTimeUTC.getUTCHours() - 1);
-        openDateTimeUTC.setUTCMinutes(openDateTimeUTC.getUTCMinutes() + 60);
-      }
-      if (closeDateTimeUTC.getUTCMinutes() < 0) {
-        closeDateTimeUTC.setUTCHours(closeDateTimeUTC.getUTCHours() - 1);
-        closeDateTimeUTC.setUTCMinutes(closeDateTimeUTC.getUTCMinutes() + 60);
-      }
+//       // Adjust if minutes became negative after subtracting 30
+//       if (openDateTimeUTC.getUTCMinutes() < 0) {
+//         openDateTimeUTC.setUTCHours(openDateTimeUTC.getUTCHours() - 1);
+//         openDateTimeUTC.setUTCMinutes(openDateTimeUTC.getUTCMinutes() + 60);
+//       }
+//       if (closeDateTimeUTC.getUTCMinutes() < 0) {
+//         closeDateTimeUTC.setUTCHours(closeDateTimeUTC.getUTCHours() - 1);
+//         closeDateTimeUTC.setUTCMinutes(closeDateTimeUTC.getUTCMinutes() + 60);
+//       }
 
-      // If close time is earlier or equal to open time, close time is next day
-      if (closeDateTimeUTC <= openDateTimeUTC) {
-        closeDateTimeUTC.setUTCDate(closeDateTimeUTC.getUTCDate() + 1);
-      }
+//       // If close time is earlier or equal to open time, close time is next day
+//       if (closeDateTimeUTC <= openDateTimeUTC) {
+//         closeDateTimeUTC.setUTCDate(closeDateTimeUTC.getUTCDate() + 1);
+//       }
 
-      // Determine target countdown time according to current time and phase
-      let targetTimeUTC: Date;
+//       // Determine target countdown time according to current time and phase
+//       let targetTimeUTC: Date;
 
-      if (nowUTC < openDateTimeUTC) {
-        // Before open time
-        targetTimeUTC = openDateTimeUTC;
-      } else if (nowUTC >= openDateTimeUTC && nowUTC < closeDateTimeUTC) {
-        // During open-close interval
-        targetTimeUTC = closeDateTimeUTC;
-      } else {
-        // After close time, countdown to next day's open
-        openDateTimeUTC.setUTCDate(openDateTimeUTC.getUTCDate() + 1);
-        targetTimeUTC = openDateTimeUTC;
-      }
+//       if (nowUTC < openDateTimeUTC) {
+//         // Before open time
+//         targetTimeUTC = openDateTimeUTC;
+//       } else if (nowUTC >= openDateTimeUTC && nowUTC < closeDateTimeUTC) {
+//         // During open-close interval
+//         targetTimeUTC = closeDateTimeUTC;
+//       } else {
+//         // After close time, countdown to next day's open
+//         openDateTimeUTC.setUTCDate(openDateTimeUTC.getUTCDate() + 1);
+//         targetTimeUTC = openDateTimeUTC;
+//       }
 
-      // Calculate difference in milliseconds
-      let diffMs = targetTimeUTC.getTime() - nowUTC.getTime();
-      if (diffMs < 0) diffMs = 0;
+//       // Calculate difference in milliseconds
+//       let diffMs = targetTimeUTC.getTime() - nowUTC.getTime();
+//       if (diffMs < 0) diffMs = 0;
 
-      // Calculate hours, minutes, seconds
-      const hours = Math.floor(diffMs / (1000 * 60 * 60));
-      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+//       // Calculate hours, minutes, seconds
+//       const hours = Math.floor(diffMs / (1000 * 60 * 60));
+//       const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+//       const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
-      return {
-        hours: String(hours).padStart(2, '0'),
-        minutes: String(minutes).padStart(2, '0'),
-        seconds: String(seconds).padStart(2, '0'),
-      };
-    })
-  ).subscribe(time => {
-    this.countdowns[game.id] = time;
-  });
-}
+//       return {
+//         hours: String(hours).padStart(2, '0'),
+//         minutes: String(minutes).padStart(2, '0'),
+//         seconds: String(seconds).padStart(2, '0'),
+//       };
+//     })
+//   ).subscribe(time => {
+//     this.countdowns[game.id] = time;
+//   });
+// }
 
 
 
@@ -215,9 +216,20 @@ chartReport(game: any) {
   loadpubligames(){
     this.gameService.getpublicGames().subscribe({
     next: (res) => {
-      this.games = res.games;
-      this.games.forEach((game: any) => this.startCountdown(game));
-      console.log('this.games: ', this.games);
+     const apiGames = res.data.comingSoonGames;
+
+    apiGames.forEach((game: any) => {
+     
+
+      // Pehli baar load pe dono timers set karo
+      game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+      game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
+    });
+    this.games = apiGames;
+
+    this.startCountdown();
+
+
     },
     error: (err) => {
       console.error('Failed to fetch games', err);
@@ -225,6 +237,68 @@ chartReport(game: any) {
   });
 
   }
+
+  
+
+  startCountdown() {
+  if (this.interval) {
+    clearInterval(this.interval);
+  }
+
+  this.interval = setInterval(() => {
+    this.games.forEach((game: any) => {
+      game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+      game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
+ 
+    });
+    //  this.allGames.forEach((game: any) => {
+    //   game.openCountdown = this.getRemainingTime(game.open_time, game.is_next_day_close, 'open');
+    //   game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
+    // });
+  }, 1000);
+}
+
+
+
+  getRemainingTime(time: string, isNextDay: number, type: 'open' | 'close'): number {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+
+  let targetDateTime = new Date(`${today}T${time}`);
+
+  // Agar time nikal gaya hai aur isNextDay hai
+  if (targetDateTime.getTime() < now.getTime() && isNextDay === 1) {
+    targetDateTime.setDate(targetDateTime.getDate() + 1);
+  }
+
+  // Special case: agar open time already nikal gaya hai (aur game shuru ho chuka hai)
+  if (type === 'open' && targetDateTime.getTime() < now.getTime()) {
+    return 0; // Open ho chuka
+  }
+
+  return Math.max(targetDateTime.getTime() - now.getTime(), 0);
+} 
+
+formatTime(ms: number): { h: string, m: string, s: string } {
+  if (!ms || ms <= 0) {
+    return { h: "00", m: "00", s: "00" };
+  }
+
+  let totalSeconds = Math.floor(ms / 1000);
+  let hours = Math.floor(totalSeconds / 3600);
+  let minutes = Math.floor((totalSeconds % 3600) / 60);
+  let seconds = totalSeconds % 60;
+
+  return {
+    h: this.pad(hours),
+    m: this.pad(minutes),
+    s: this.pad(seconds)
+  };
+}
+
+pad(num: number): string {
+  return num < 10 ? '0' + num : num.toString();
+}
 
     loadpubligamesResult(){
     this.gameService.getpublicGamesResult().subscribe({
