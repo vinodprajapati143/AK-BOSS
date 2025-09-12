@@ -115,7 +115,7 @@ constructor(private router: Router, private gameService: ApiService ) {}
 
   ngOnInit(): void {
     this.loadpubligames()
-     this.loadpubligamesResult()
+    //  this.loadpubligamesResult()
   }
 
   now$ = interval(60_000).pipe(
@@ -226,6 +226,7 @@ chartReport(game: any) {
       game.closeCountdown = this.getRemainingTime(game.close_time, game.is_next_day_close, 'close');
     });
     this.games = apiGames;
+    this.gamesResult = res.data.allGames
 
     this.startCountdown();
 
