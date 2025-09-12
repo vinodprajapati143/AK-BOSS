@@ -1347,11 +1347,15 @@ exports.getPublicGames = async (req, res) => {
 
       if (inputs.length > 0) {
         inputs.forEach(r => {
-          resultsMap[r.game_id] = `
-            ${r.patte1 || ""}-${r.patte1_open || ""}${r.patte2_close || ""}-${r.patte2 || ""}`
-            .replace(/(^-+|-+$)/g, '')
-            .replace(/-+/g, '-')
-            .replace(/-+$/, '');
+         resultsMap[r.game_id] = (
+          (r.patte1 || "") + "-" +
+          (r.patte1_open || "") + (r.patte2_close || "") + "-" +
+          (r.patte2 || "")
+        )
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, '')
+          .trim();
         });
       }
     }
