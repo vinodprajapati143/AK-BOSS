@@ -1327,6 +1327,8 @@ exports.getPublicGames = async (req, res) => {
 
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
+      let resultsMap = {};
+
     if (gameIds.length > 0) {
       const [inputs] = await db.query(
         `SELECT gi.* FROM game_inputs gi
@@ -1343,7 +1345,6 @@ exports.getPublicGames = async (req, res) => {
         inputsMap[input.game_id] = input;
       });
 
-      let resultsMap = {};
       if (inputs.length > 0) {
         inputs.forEach(r => {
           resultsMap[r.game_id] = `
