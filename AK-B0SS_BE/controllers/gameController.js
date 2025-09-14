@@ -497,7 +497,9 @@ exports.getNearestGames = async (req, res) => {
         patte1: input.patte1 || "",
         patte1_open: input.patte1_open || "",
         patte2_close: input.patte2_close || "",
-        patte2: input.patte2 || ""
+        patte2: input.patte2 || "",
+        days: JSON.parse(game.days || '[]'),
+
       };
 
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
@@ -1005,6 +1007,7 @@ exports.getPublicGames = async (req, res) => {
         patte1_open: input.patte1_open || "",
         patte2_close: input.patte2_close || "",
         patte2: input.patte2 || "",
+        days: JSON.parse(game.days || '[]'),
         formattedInputDate
       };
 
@@ -1188,6 +1191,7 @@ exports.getPublicGameResults = async (req, res) => {
        id: g.id,
       game_name: g.game_name,
       result: resultsMap[g.id] || "",
+      days: JSON.parse(g.days || '[]'),
       timing: `${convertTo12HourFormat(g.open_time.slice(0, 5))} - ${convertTo12HourFormat(g.close_time.slice(0, 5))}`
     }));
 
