@@ -1027,7 +1027,7 @@ exports.getPublicGames = async (req, res) => {
       // ⭐ Stars Logic
       let stars = Array(8).fill("★");
 
-      const isNewDay = formattedInputDate !== todayIST;
+      let isNewDay = formattedInputDate !== todayIST;
        if (
           formattedInputDate === yesterdayDate &&
           !missingOpenInput &&
