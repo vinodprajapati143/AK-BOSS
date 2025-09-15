@@ -510,10 +510,14 @@ exports.getNearestGames = async (req, res) => {
           // 🔥 FILTERING LOGIC (holiday / off-day)
       if (gameDays.length === 0) {
         // holiday case
+       console.log("holiday case",gameWithInputs.id)
+
         allGames.push(gameWithInputs);
         return;
       }
       if (!gameDays.includes(todayName)) {
+       console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
+
         // aaj ka din is game ka nahi hai
         allGames.push(gameWithInputs);
         return;
