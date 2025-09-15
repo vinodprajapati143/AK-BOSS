@@ -502,6 +502,20 @@ exports.getNearestGames = async (req, res) => {
 
       };
 
+      const gameDays = gameWithInputs.days;
+
+          // 🔥 FILTERING LOGIC (holiday / off-day)
+      if (gameDays.length === 0) {
+        // holiday case
+        allGames.push(gameWithInputs);
+        return;
+      }
+      if (!gameDays.includes(todayName)) {
+        // aaj ka din is game ka nahi hai
+        allGames.push(gameWithInputs);
+        return;
+      }
+
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       console.log('openDateTime: ', openDateTime);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
