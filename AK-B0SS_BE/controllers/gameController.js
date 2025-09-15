@@ -434,6 +434,9 @@ exports.getNearestGames = async (req, res) => {
     const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
     console.log('yesterdayDate: ', yesterdayDate);
 
+    const todayName = nowIST.toLocaleDateString('en-US', { weekday: 'long' }); 
+    console.log('todayName: ', todayName);
+
     // Get all games for admin
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days, created_at
