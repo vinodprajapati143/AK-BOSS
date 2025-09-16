@@ -1113,7 +1113,7 @@ exports.getPublicGames = async (req, res) => {
        console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
 
         // aaj ka din is game ka nahi hai
-        allGames.push(...gameWithInputs, starsWithDashes ,result, timing);
+        allGames.push({...gameWithInputs, starsWithDashes ,result, timing});
         return;
       }
 
