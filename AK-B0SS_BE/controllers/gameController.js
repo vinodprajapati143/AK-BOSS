@@ -962,6 +962,9 @@ exports.getPublicGames = async (req, res) => {
     const yDay = yesterdayIST.getDate().toString().padStart(2, '0');
     const yesterdayDate = `${yYear}-${yMonth}-${yDay}`;
 
+    const todayName = nowIST.toLocaleDateString('en-US', { weekday: 'long' }); 
+
+
     // Get all active games
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days
@@ -1031,6 +1034,26 @@ exports.getPublicGames = async (req, res) => {
         days: JSON.parse(game.days || '[]'),
         formattedInputDate
       };
+
+            const gameDays = gameWithInputs.days;
+
+          // 🔥 FILTERING LOGIC (holiday / off-day)
+      if (gameDays.length === 0) {
+        // holiday case
+       console.log("holiday case",gameWithInputs.id)
+
+        allGames.push(gameWithInputs);
+        return;
+      }
+      if (!gameDays.includes(todayName)) {
+       console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
+
+        // aaj ka din is game ka nahi hai
+        allGames.push(gameWithInputs);
+        return;
+      }
+
+      
 
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
