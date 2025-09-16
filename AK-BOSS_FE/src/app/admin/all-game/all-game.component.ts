@@ -280,6 +280,15 @@ loadGames() {
   });
 }
 
+getTodayName(): string {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long' });
+}
+
+isHoliday(game: any): boolean {
+  if (!game.days || game.days.length === 0) return true; // empty means holiday
+  return !game.days.includes(this.getTodayName());
+}
+
 startCountdown() {
   if (this.interval) {
     clearInterval(this.interval);
