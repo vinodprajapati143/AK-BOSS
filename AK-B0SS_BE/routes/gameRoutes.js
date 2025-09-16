@@ -7,6 +7,7 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 router.post("/add-game", verifyToken, gameController.addGame);
 router.get("/game-list",verifyToken, gameController.getGameList);
 router.get("/nearest-game-list",verifyToken, gameController.getNearestGames);
+router.get("/user-game-list",verifyToken, gameController.getUserBoardGames);
 router.post("/save-game-input",verifyToken, gameController.saveGameInput);
 router.get("/public-game-list", gameController.getPublicGames);
 router.get("/public-game-result", gameController.getPublicGameResults);
@@ -14,7 +15,6 @@ router.get('/:id',verifyToken, gameController.getGameById);
 router.put('/:id',verifyToken, gameController.updateGameById);
 router.get('/:gameId/jodi-records', gameController.getJodiRecords);
 router.get('/:gameId/panel-records', gameController.getPanelRecords);
-router.get("/user-game-list",verifyToken, gameController.getUserBoardGames);
 
 
 
