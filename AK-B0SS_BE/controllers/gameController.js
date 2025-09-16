@@ -1262,13 +1262,14 @@ exports.getUserBoardGames = async (req, res) => {
     const offset = 5.5 * 60 * 60 * 1000; // IST offset
     const nowIST = new Date(now.getTime() + offset);
 
-    const year = nowIST.getFullYear();
-    const month = (nowIST.getMonth() + 1).toString().padStart(2, "0");
-    const day = nowIST.getDate().toString().padStart(2, "0");
-    const todayIST = `${year}-${month}-${day}`;
+    const todayIST = nowIST.toISOString().split('T')[0];
     const todayName = nowIST.toLocaleDateString("en-US", { weekday: "long" });
 
-    // 🎯 1. Fetch all active games
+    const yesterdayIST = new Date(nowIST);
+    yesterdayIST.setDate(yesterdayIST.getDate() - 1);
+    const yesterdayDate = yesterdayIST.toISOString().split('T')[0];
+
+    // Fetch all active games
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days
        FROM games ORDER BY id ASC`
@@ -1296,61 +1297,79 @@ exports.getUserBoardGames = async (req, res) => {
       });
     }
 
-    // 🎯 2. Prepare response with status logic
-    const responseData = games.map((game) => {
+    const gracePeriodMinutes = 90;
+    const responseData = [];
+
+    games.forEach(game => {
       const input = inputsMap[game.id] || {};
+      const gameDays = JSON.parse(game.days || "[]");
+
+      const openDateTime = new Date(`${todayIST}T${game.open_time}`);
+      const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
+
+      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
+      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
+
+      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
+      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
+
+      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
+      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
+
+      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
+      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
+
+      const missingOpenInput = !input.patte1 && !input.patte1_open;
+      const missingCloseInput = !input.patte2_close && !input.patte2;
+
+      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
+      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
       const formattedInputDate = input.input_date
-        ? new Date(input.input_date).toISOString().split("T")[0]
+        ? new Date(input.input_date).toISOString().split('T')[0]
         : null;
 
-      // ✅ Partial result formatting (jo available h wahi dikhayenge)
+      let isNewDay = formattedInputDate !== todayIST;
+
+      let status = "Result";
+
+      // 🔹 Holiday / off-day
+      if (gameDays.length === 0 || !gameDays.includes(todayName)) {
+        status = "Holiday";
+      }
+      // 🔹 Special yesterday case
+      else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
+        isNewDay = false;
+      }
+
+      // 🔹 Determine Play / Close
+      if (
+        isNewDay &&
+        (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)
+      ) {
+        status = "Play";
+      } else if (openWindowStarted && missingOpenInput) {
+        status = "Play";
+      } else if (closeWindowStarted && missingCloseInput) {
+        status = "Play";
+      } else if (missingOpenInput && nowIST > openDateTime) {
+        status = "Play";
+      } else if (missingCloseInput && nowIST > closeDateTime) {
+        status = "Play";
+      } else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
+        status = "Play";
+      } else {
+        status = "Close";
+      }
+
+      // 🔹 Format result
       const result = [
         input.patte1 || "XXX",
         (input.patte1_open || "X") + (input.patte2_close || "X"),
         input.patte2 || "XXX"
       ].join("-");
 
-      const openDateTime = new Date(`${todayIST}T${game.open_time}+05:30`);
-      const closeDateTime = new Date(`${todayIST}T${game.close_time}+05:30`);
-
-      // Default
-      let status = "Result";
-      const gameDays = JSON.parse(game.days || "[]");
-
-      // 1. Holiday check
-      if (gameDays.length > 0 && !gameDays.includes(todayName)) {
-        status = "Holiday";
-      }
-      // 2. Abhi open se pehle → Play
-      else if (nowIST < openDateTime) {
-        status = "Play";
-      }
-      // 3. Open aur close ke beech → Play (agar close input missing h)
-      else if (nowIST >= openDateTime && nowIST < closeDateTime) {
-        if (!input.patte2) {
-          status = "Play"; 
-        } else {
-          status = "Close";
-        }
-      }
-      // 4. Close ke baad → Close
-      else if (nowIST >= closeDateTime) {
-        status = "Close";
-      }
-
-      // 5. Full result mil gaya toh → Close
-      if (
-        input.patte1 &&
-        input.patte1_open &&
-        input.patte2_close &&
-        input.patte2 &&
-        formattedInputDate === todayIST
-      ) {
-        status = "Close";
-      }
-
-      return {
+      responseData.push({
         id: game.id,
         name: game.game_name,
         date: todayIST,
@@ -1359,7 +1378,9 @@ exports.getUserBoardGames = async (req, res) => {
         close_time: convertTo12HourFormat(game.close_time.slice(0, 5)),
         result,
         status,
-      };
+        formattedInputDate,
+     
+      });
     });
 
     res.json({
@@ -1371,6 +1392,8 @@ exports.getUserBoardGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
 
 
 
