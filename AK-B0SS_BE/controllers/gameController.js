@@ -1100,22 +1100,22 @@ exports.getPublicGames = async (req, res) => {
                   const gameDays = gameWithInputs.days;
 
           // 🔥 FILTERING LOGIC (holiday / off-day)
-      // if (gameDays.length === 0) {
-      //   // holiday case
-      //  console.log("holiday case",gameWithInputs.id)
+      if (gameDays.length === 0) {
+        // holiday case
+       console.log("holiday case",gameWithInputs.id)
 
-      //   allGames.push({
-      //   ...gameWithInputs, starsWithDashes ,result, timing
-      //   });
-      //   return;
-      // }
-      // if (!gameDays.includes(todayName)) {
-      //  console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
+        allGames.push({
+        ...gameWithInputs, starsWithDashes ,result, timing
+        });
+        return;
+      }
+      if (!gameDays.includes(todayName)) {
+       console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
 
-      //   // aaj ka din is game ka nahi hai
-      //   allGames.push({...gameWithInputs, starsWithDashes ,result, timing});
-      //   return;
-      // }
+        // aaj ka din is game ka nahi hai
+        allGames.push({...gameWithInputs, starsWithDashes ,result, timing});
+        return;
+      }
 
       // 🔹 Coming soon logic
       if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
