@@ -1,32 +1,43 @@
 <div class="sidebar w-[280px] h-full lg:block hidden">
-    <div class="logo bg-[#0A7E8D] flex justify-center items-center h-[90px]">
-        <img src="/assets/images/dashboard/images/logo.png" alt="">
-    </div>
-    <div class="admin-navigation flex">
+  <div class="logo bg-[#0A7E8D] flex justify-center items-center h-[90px]">
+    <img src="/assets/images/dashboard/images/logo.png" alt="">
+  </div>
+
+  <div class="admin-navigation flex">
+   <!-- Left Main Menu -->
         <div class="left px-4">
-            <ul>
-                <li *ngFor="let link of links">
-                    <a [href]='link.href' [class.active]="link.active">
-                        <img [src]="getImageUrl(link.img, link.active)" alt="">{{link.text}}
-                    </a>
-                </li>
-                  <li  >
-                    <a (click)="logout()"   >
-                        <img [src]="getImageUrl('logout', false)" alt="">Logout
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="right flex-1">
-            <ul>
-                <li *ngFor="let link of subLinks">
-                    <a [href]="link.href" [class.active]="link.active">
-                        <img [src]="getImageUrl(link.img, !link.active)" alt="">{{link.text}}
-                    </a>
-                </li>
-                
-            </ul>
+        <ul>
+            <li *ngFor="let link of links">
+            <a [routerLink]="link.href"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: false }">
+                <img [src]="getImageUrl(link.img, false)" alt="" class="">
+                {{ link.text }}
+            </a>
+            </li>
+
+            <li>
+            <a (click)="logout()">
+                <img [src]="getImageUrl('logout', false)" alt="">
+                Logout
+            </a>
+            </li>
+        </ul>
         </div>
 
-    </div>
+        <!-- Right Submenu -->
+        <div class="right flex-1">
+        <ul>
+            <li *ngFor="let sub of currentSubLinks">
+            <a [routerLink]="sub.href"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                <img [src]="getImageUrl(sub.img, false)" alt="">
+                {{ sub.text }}
+            </a>
+            </li>
+        </ul>
+        </div>
+
+  </div>
 </div>

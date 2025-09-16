@@ -96,7 +96,7 @@
         <!-- Date -->
         <div *ngIf="cell?.date" 
              class="text-xs mb-1 border border-sky-600 rounded px-2 py-0.5 w-full text-center">
-          {{ cell.date }}
+          {{ cell.date | date: 'dd-M-yy' }}
         </div>
 
         <!-- Jodi Value -->

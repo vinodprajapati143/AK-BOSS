@@ -319,18 +319,18 @@
     <table class="min-w-full text-sm text-left">
       <thead>
         <tr class="bg-[#EDF0F5] text-black">
-          <th class="px-4 py-2 font-semibold">Time</th>
-          <th class="px-4 py-2 font-semibold">Result</th>
-          <th class="px-4 py-2 font-semibold">Time</th>
-          <th class="px-4 py-2 font-semibold">Result</th>
+          <th class="px-4 py-2 font-semibold text-center">Time</th>
+          <th class="px-4 py-2 font-semibold text-center">Result</th>
+          <th class="px-4 py-2 font-semibold text-center">Time</th>
+          <th class="px-4 py-2 font-semibold text-center">Result</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let row of tableData" class="bg-[#0A7E8D] text-white">
-          <td class="px-4 py-2 border-b">{{ row.time1 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.result1 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.time2 }}</td>
-          <td class="px-4 py-2 border-b">{{ row.result2 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.time1 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.result1 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.time2 }}</td>
+          <td class="px-4 py-2 border-b text-center">{{ row.result2 }}</td>
         </tr>
       </tbody>
     </table>

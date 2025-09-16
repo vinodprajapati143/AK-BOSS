@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { StorageService } from '../../../core/services/storage.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
 
 export interface User {
   name: string;
@@ -17,66 +18,133 @@ export interface User {
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './admin-sidebar.component.html',
-  styleUrl: './admin-sidebar.component.scss'
+  styleUrl: './admin-sidebar.component.scss',
 })
 export class AdminSidebarComponent {
+  constructor(
+    private router: Router,
+    private strorageservice: StorageService,
+    private toaster: ToastrService,
+    private backendservice: ApiService
+  ) {}
 
- constructor(private router: Router, private strorageservice: StorageService, private toaster: ToastrService, private backendservice: ApiService) {
+  links = [
+    { img: 'home', href: '/admin/dashboard', text: 'Home', active: true },
+    { img: 'gamepad', href: '/admin/all-game', text: 'Game', active: false },
+    { img: 'referral', href: '/admin/users', text: 'Members', active: false },
+    { img: 'report', href: '/admin/reports', text: 'Reports', active: false },
+    {
+      img: 'referral',
+      href: '/admin/referral',
+      text: 'Referral',
+      active: false,
+    },
+    { img: 'help', href: '/admin/help', text: 'Help', active: false },
+  ];
 
+  subLinksMap: any = {
+    Home: [
+      {
+        img: 'home',
+        text: 'Dashboard',
+        href: '/admin/dashboard',
+        active: true,
+      },
+    ],
+    Game: [
+      {
+        img: 'gamepad',
+        text: 'All Game',
+        href: '/admin/all-game',
+        active: false,
+      },
+      {
+        img: 'gamepad',
+        text: 'Add Games',
+        href: '/admin/add-game',
+        active: false,
+      },
+    ],
+    Members: [
+      {
+        img: 'referral',
+        text: 'Member',
+        href: '/admin/users',
+        active: false,
+      },
+       {
+        img: 'referral',
+        text: 'All Member',
+        href: '/admin/all-users',
+        active: false,
+      },
+    ],
+    Reports: [
+      {
+        img: 'report',
+        text: 'Daily Report',
+        href: '/admin/reports',
+        active: false,
+      },
+    ],
+    Referral: [
+      {
+        img: 'referral',
+        text: 'My Referrals',
+        href: '/admin/referral',
+        active: false,
+      },
+    ],
+    Help: [{ img: 'help', text: 'FAQ', href: '/admin/help', active: false }],
+  };
+
+  // by default current submenu (based on active link)
+  currentSubLinks: any[] =
+    this.subLinksMap[this.links.find((l) => l.active)?.text || 'Home'];
+
+  ngOnInit() {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.highlightMenu(event.urlAfterRedirects);
+      });
+
+    // first load ke liye bhi check
+    this.highlightMenu(this.router.url);
   }
 
-  links = [{
-    "img": "home",
-    "href": "/admin/users",
-    "text": "Home",
-    "active": true
-  },
-  {
-    "img": "gamepad",
-    "href": "/admin/all-game",
-    "text": "Game",
-    "active": false
-  },
-  {
-    "img": "referral",
-    "href": "/admin/users",
-    "text": "Members",
-    "active": false
-  },
-  {
-    "img": "report",
-    "href": "/admin/reports",
-    "text": "Reports",
-    "active": false
-  },
-  {
-    "img": "referral",
-    "href": "/admin/referral",
-    "text": "Referral",
-    "active": false
-  },
-  {
-    "img": "help",
-    "href": "/admin/help",
-    "text": "Help",
-    "active": false
-  } ]
+  setActiveMenu(menu: any) {
+    this.links.forEach((l) => (l.active = false));
+    menu.active = true;
+    this.currentSubLinks = this.subLinksMap[menu.text] || [];
+  }
 
-  subLinks = [{
-    "img": "gamepad",
-    "text": "All Game",
-    "href": "/admin/all-game",
-    "active": true
-  },
-  {
-    "img": "gamepad",
-    "text": "Add Games",
-    "href": "/admin/add-game",
-    "active": false
-  },
-  ]
+  highlightMenu(url: string) {
+    this.links.forEach((l) => (l.active = false));
+
+    for (let menu in this.subLinksMap) {
+      const found = this.subLinksMap[menu].find((s: any) =>
+        url.startsWith(s.href)
+      );
+
+      if (found) {
+        const left = this.links.find((l) => l.text === menu);
+        if (left) left.active = true;
+
+        this.currentSubLinks = this.subLinksMap[menu];
+
+        // subLinks ke andar bhi active flag set karo
+        this.currentSubLinks.forEach((s: any) => {
+          s.active = url.startsWith(s.href);
+        });
+
+        break;
+      }
+    }
+  }
+
   cardsData = [
     {
       title: 'Total users',
@@ -86,7 +154,7 @@ export class AdminSidebarComponent {
       color: '#00D457',
       bgColor: '#00D45730',
       compareText: 'Than last week',
-      icon: '/assets/images/dashboard/icons/triangle.svg'
+      icon: '/assets/images/dashboard/icons/triangle.svg',
     },
     {
       title: 'Active users',
@@ -96,7 +164,7 @@ export class AdminSidebarComponent {
       color: '#FFA726',
       bgColor: '#FF9F4330',
       compareText: 'Than last week',
-      icon: '/assets/images/dashboard/icons/triangle.svg'
+      icon: '/assets/images/dashboard/icons/triangle.svg',
     },
     {
       title: 'On way order',
@@ -106,7 +174,7 @@ export class AdminSidebarComponent {
       color: '#64B5F6',
       bgColor: '#8ECAE630',
       compareText: 'Than last week',
-      icon: '/assets/images/dashboard/icons/triangle-down.svg'
+      icon: '/assets/images/dashboard/icons/triangle-down.svg',
     },
     {
       title: 'Disabled user',
@@ -116,15 +184,15 @@ export class AdminSidebarComponent {
       color: '#EF5350',
       bgColor: '#F1656530',
       compareText: 'Than last week',
-      icon: '/assets/images/dashboard/icons/triangle-down.svg'
-    }
+      icon: '/assets/images/dashboard/icons/triangle-down.svg',
+    },
   ];
 
   getImageUrl(img: string, active: boolean | undefined) {
-    return `/assets/images/dashboard/icons/${img}${active ? '-white' : ''}.svg`
+    return `/assets/images/dashboard/icons/${img}${active ? '-white' : ''}.svg`;
   }
 
-   logout() {
+  logout() {
     this.backendservice.logout({}).subscribe({
       next: (res: any) => {
         this.toaster.success(res.message);
@@ -132,14 +200,13 @@ export class AdminSidebarComponent {
         this.strorageservice.clear();
         this.strorageservice.clearCookies();
 
-
         this.router.navigate(['/user/home']);
       },
-      error: err => {
+      error: (err) => {
         console.error('Logout failed:', err);
         this.strorageservice.removeItem('authToken');
         // this.router.navigate(['/home']);
-      }
+      },
     });
   }
 }

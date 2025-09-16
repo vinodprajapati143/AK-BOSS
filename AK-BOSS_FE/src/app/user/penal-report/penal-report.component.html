@@ -77,21 +77,23 @@
         </div>
 
         <!-- Table -->
+  
         <div class="overflow-x-auto">
-            <!-- Table -->
-           <div class="grid grid-cols-7 gap-x-1 mb-1">
+  <!-- Wrapper with fixed min-width for scroll -->
+  <div class="min-w-[700px]">
+    <!-- Fixed header row with days -->
+    <div class="grid grid-cols-7 gap-x-1 mb-1">
       <div *ngFor="let day of weekDays"
            class="bg-[#EDF0F5] text-center font-bold py-2 border border-black">
         {{ day }}
       </div>
     </div>
 
-            <!-- Data Row -->
-              <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-1">
-
+    <!-- Data rows -->
+        <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-1">
                 <!-- Repeat This Card for Each Column -->
                 <div *ngFor="let cell of row" class="border-black border-l border-r border-b p-2 bg-[#EDF0F5] flex flex-col items-center">
-                    <div class="border border-sky-500 rounded px-2 py-0.5 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold mb-1">{{cell.date}}</div>
+                    <div class="border border-sky-500 rounded px-2 py-0.5 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold mb-1">{{cell.date | date: 'dd-M-yy'}}</div>
                     <div *ngIf="cell" class="flex items-center">
                         <div *ngIf="cell?.panelLeft"
                             class="border border-orange-400 rounded-full px-1 py-2 text-xs 2xl:px-2 2xl:text-[14px] 2xl:font-semibold flex flex-col items-center leading-none mr-2">
@@ -104,14 +106,11 @@
 
                         </div>
                     </div>
-                </div>
-
-               
-
+                </div>             
                 <!-- Duplicate for Tue, Wed, etc... -->
             </div>
- 
-        </div>
+  </div>
+</div>
 
         <!-- Footer -->
         <div class="bg-[#0A7E8D] text-white text-center font-bold py-2 rounded-b-md">
