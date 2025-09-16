@@ -1,17 +1,24 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
+import { ApiService } from '../../core/services/api.service';
+import { Game, UserGame } from '../../core/module/models';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent],
+  imports: [FooterComponent, HeaderComponent,CommonModule],
   templateUrl: './user-dashboard.component.html',
   styleUrl: './user-dashboard.component.scss'
 })
-export class UserDashboardComponent {
+export class UserDashboardComponent implements OnInit{
   router = inject(Router);
+  gameService = inject(ApiService);
+
+    games: UserGame[] = [];
+  loading = true;
 
   openWhatsApp() {
     const phoneNumber = "918979108932";
@@ -27,5 +34,20 @@ export class UserDashboardComponent {
 
   openChart() {
     this.router.navigate(['/user/share-page']);
+  }
+
+    ngOnInit(): void {
+    this.gameService.getUserGames().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.games = res.data;
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('API error:', err);
+        this.loading = false;
+      }
+    });
   }
 }

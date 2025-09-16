@@ -67,3 +67,15 @@ export interface PanelResponse {
   latestResultString: string;   // Latest overall result string
   records: PanelRecord[];       // Array of PanelRecord objects
 }
+
+export interface UserGame {
+  id: number;
+  name: string;
+  date: string;
+  day: string;
+  timing: string;
+  result: string;
+  status: string;
+    open_time: string;
+  close_time: string;
+}

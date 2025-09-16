@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, timer } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 import { LoginResponse } from '../module/login-response.model';
-import { Game, gamebyid, JodiRecord, JodiResponse, PanelResponse } from '../module/models';
+import { Game, gamebyid, JodiRecord, JodiResponse, PanelResponse, UserGame } from '../module/models';
 
 @Injectable({
   providedIn: 'root'
@@ -67,6 +67,14 @@ getpublicGames(): Observable<any> {
     switchMap(() => this.http.get<any>(`${this.baseUrl}/api/games/public-game-list`))
   );
 }
+
+ 
+
+  getUserGames(): Observable<{ success: boolean; data: UserGame[] }> {
+    return timer(0, 30000).pipe(
+    switchMap(() => this.http.get<{ success: boolean; data: UserGame[] }>(`${this.baseUrl}/api/games/user-game-list`))
+  );
+  }
 
 getpublicGamesResult(): Observable<any> {
   return timer(0, 30000).pipe(
