@@ -1268,75 +1268,62 @@ exports.getUserBoardGames = async (req, res) => {
     const todayIST = `${year}-${month}-${day}`;
     const todayName = nowIST.toLocaleDateString("en-US", { weekday: "long" });
 
-   
-
-      const [games] = await db.query(
+    // ✅ get all games of this user
+    const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days, created_at
        FROM games WHERE created_by = ? ORDER BY id DESC`,
       [req.user.id]
     );
 
-    // Fetch latest input per game for today or yesterday whichever is latest
-    const gameIds = games.map(g => g.id);
+    // ✅ latest inputs per game
+    const gameIds = games.map((g) => g.id);
     let inputsMap = {};
     if (gameIds.length > 0) {
-    const [inputs] = await db.query(
+      const [inputs] = await db.query(
         `SELECT gi.* 
-        FROM game_inputs gi
-        INNER JOIN (
-          SELECT game_id, MAX(input_date) AS latest_date
-          FROM game_inputs
-          WHERE game_id IN (?)
-          GROUP BY game_id
-        ) t 
-        ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+         FROM game_inputs gi
+         INNER JOIN (
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?)
+           GROUP BY game_id
+         ) t 
+         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
         [gameIds]
       );
 
-      inputs.forEach(input => {
+      inputs.forEach((input) => {
         inputsMap[input.game_id] = input;
       });
     }
 
-    const responseData = [];
-
-    for (let game of games) {
+    // ✅ prepare response
+    const responseData = games.map((game) => {
       const input = inputsMap[game.id] || {};
 
-      // formatted date
       const formattedInputDate = input.input_date
         ? new Date(input.input_date).toISOString().split("T")[0]
         : null;
 
-      // ✅ safe result formatting
       const result = input.patte1
-        ? `${input.patte1 || "XXX"}-${input.patte1_open || "X"}${
-            input.patte2_close || "X"
-          }-${input.patte2 || "XXX"}`
+        ? `${input.patte1 || "XXX"}-${input.patte1_open || "X"}${input.patte2_close || "X"}-${input.patte2 || "XXX"}`
         : "XXX-XX-XXX";
 
-      // ✅ timings
-      const timing = `${convertTo12HourFormat(
-        game.open_time.slice(0, 5)
-      )} - ${convertTo12HourFormat(game.close_time.slice(0, 5))}`;
-
-      // ✅ IST based DateTime
       const openDateTime = new Date(`${todayIST}T${game.open_time}+05:30`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}+05:30`);
 
-      // ✅ Status logic
       let status = "Result"; // default
       const gameDays = JSON.parse(game.days || "[]");
 
       if (gameDays.length > 0 && !gameDays.includes(todayName)) {
         status = "Holiday";
       } else if (!input.patte1 && nowIST < openDateTime) {
-        status = "Play"; // open missing aur abhi open time se pehle
+        status = "Play";
       } else if (!input.patte2 && nowIST < closeDateTime) {
-        status = "Close"; // close missing aur abhi close time se pehle
+        status = "Close";
       }
 
-      responseData.push({
+      return {
         id: game.id,
         name: game.game_name,
         date: todayIST,
@@ -1345,8 +1332,8 @@ exports.getUserBoardGames = async (req, res) => {
         close_time: convertTo12HourFormat(game.close_time.slice(0, 5)),
         result,
         status,
-      });
-    }
+      };
+    });
 
     res.json({
       success: true,
@@ -1357,6 +1344,7 @@ exports.getUserBoardGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
  
 
 
