@@ -1268,7 +1268,7 @@ exports.getUserBoardGames = async (req, res) => {
     const todayIST = `${year}-${month}-${day}`;
     const todayName = nowIST.toLocaleDateString("en-US", { weekday: "long" });
 
-    // Get all active games
+    // 🎯 1. Fetch all active games
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days
        FROM games ORDER BY id ASC`
@@ -1276,42 +1276,27 @@ exports.getUserBoardGames = async (req, res) => {
 
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
-      let resultsMap = {};
 
     if (gameIds.length > 0) {
-        const [inputs] = await db.query(
+      const [inputs] = await db.query(
         `SELECT gi.* 
-        FROM game_inputs gi
-        INNER JOIN (
-          SELECT game_id, MAX(input_date) AS latest_date
-          FROM game_inputs
-          WHERE game_id IN (?)
-          GROUP BY game_id
-        ) t 
-        ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+         FROM game_inputs gi
+         INNER JOIN (
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?)
+           GROUP BY game_id
+         ) t 
+         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
         [gameIds]
       );
 
       inputs.forEach(input => {
         inputsMap[input.game_id] = input;
       });
-
-      if (inputs.length > 0) {
-        inputs.forEach(r => {
-         resultsMap[r.game_id] = (
-          (r.patte1 || "") + "-" +
-          (r.patte1_open || "") + (r.patte2_close || "") + "-" +
-          (r.patte2 || "")
-        )
-          .replace(/(^-+|-+$)/g, '')
-          .replace(/-+/g, '-')
-          .replace(/-+$/, '')
-          .trim();
-        });
-      }
     }
 
-    // ✅ prepare response
+    // 🎯 2. Prepare response with status logic
     const responseData = games.map((game) => {
       const input = inputsMap[game.id] || {};
 
@@ -1319,21 +1304,49 @@ exports.getUserBoardGames = async (req, res) => {
         ? new Date(input.input_date).toISOString().split("T")[0]
         : null;
 
-      const result = input.patte1
-        ? `${input.patte1 || "XXX"}-${input.patte1_open || "X"}${input.patte2_close || "X"}-${input.patte2 || "XXX"}`
-        : "XXX-XX-XXX";
+      const result =
+        input.patte1 && input.patte1_open && input.patte2_close && input.patte2
+          ? `${input.patte1}-${input.patte1_open}${input.patte2_close}-${input.patte2}`
+          : "XXX-XX-XXX";
 
       const openDateTime = new Date(`${todayIST}T${game.open_time}+05:30`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}+05:30`);
 
-      let status = "Result"; // default
+      // Default status
+      let status = "Result";
+
       const gameDays = JSON.parse(game.days || "[]");
 
+      // 1. Holiday check
       if (gameDays.length > 0 && !gameDays.includes(todayName)) {
         status = "Holiday";
-      } else if (!input.patte1 && nowIST < openDateTime) {
+      }
+      // 2. Before open window → Play
+      else if (!input.patte1 && nowIST < openDateTime) {
         status = "Play";
-      } else if (!input.patte2 && nowIST < closeDateTime) {
+      }
+      // 3. Between open & close window
+      else if (nowIST >= openDateTime && nowIST < closeDateTime) {
+        if (!input.patte1) {
+          status = "Play"; // Open input missing
+        } else if (!input.patte2) {
+          status = "Close"; // Open given but close missing
+        } else {
+          status = "Close"; // Both given → show Close
+        }
+      }
+      // 4. After close time
+      else if (nowIST >= closeDateTime) {
+        status = "Close"; // Always close after time passes
+      }
+      // 5. Full result available already
+      if (
+        input.patte1 &&
+        input.patte1_open &&
+        input.patte2_close &&
+        input.patte2 &&
+        formattedInputDate === todayIST
+      ) {
         status = "Close";
       }
 
@@ -1358,6 +1371,7 @@ exports.getUserBoardGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
  
 
