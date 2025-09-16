@@ -70,11 +70,11 @@ getpublicGames(): Observable<any> {
 
  
 
-  getUserGames(): Observable<{ success: boolean; data: UserGame[] }> {
+getUserGames(): Observable<{ success: boolean; data: UserGame[] }> {
     return timer(0, 30000).pipe(
     switchMap(() => this.http.get<{ success: boolean; data: UserGame[] }>(`${this.baseUrl}/api/games/user-game-list`))
   );
-  }
+}
 
 getpublicGamesResult(): Observable<any> {
   return timer(0, 30000).pipe(
