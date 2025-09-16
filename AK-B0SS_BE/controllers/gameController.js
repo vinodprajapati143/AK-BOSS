@@ -1104,7 +1104,9 @@ exports.getPublicGames = async (req, res) => {
         // holiday case
        console.log("holiday case",gameWithInputs.id)
 
-        allGames.push(...gameWithInputs, starsWithDashes ,result, timing);
+        allGames.push({
+        ...gameWithInputs, starsWithDashes ,result, timing
+        });
         return;
       }
       if (!gameDays.includes(todayName)) {
