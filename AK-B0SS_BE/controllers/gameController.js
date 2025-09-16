@@ -1304,42 +1304,42 @@ exports.getUserBoardGames = async (req, res) => {
         ? new Date(input.input_date).toISOString().split("T")[0]
         : null;
 
-      const result =
-        input.patte1 && input.patte1_open && input.patte2_close && input.patte2
-          ? `${input.patte1}-${input.patte1_open}${input.patte2_close}-${input.patte2}`
-          : "XXX-XX-XXX";
+      // ✅ Partial result formatting (jo available h wahi dikhayenge)
+      const result = [
+        input.patte1 || "XXX",
+        (input.patte1_open || "X") + (input.patte2_close || "X"),
+        input.patte2 || "XXX"
+      ].join("-");
 
       const openDateTime = new Date(`${todayIST}T${game.open_time}+05:30`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}+05:30`);
 
-      // Default status
+      // Default
       let status = "Result";
-
       const gameDays = JSON.parse(game.days || "[]");
 
       // 1. Holiday check
       if (gameDays.length > 0 && !gameDays.includes(todayName)) {
         status = "Holiday";
       }
-      // 2. Before open window → Play
-      else if (!input.patte1 && nowIST < openDateTime) {
+      // 2. Abhi open se pehle → Play
+      else if (nowIST < openDateTime) {
         status = "Play";
       }
-      // 3. Between open & close window
+      // 3. Open aur close ke beech → Play (agar close input missing h)
       else if (nowIST >= openDateTime && nowIST < closeDateTime) {
-        if (!input.patte1) {
-          status = "Play"; // Open input missing
-        } else if (!input.patte2) {
-          status = "Close"; // Open given but close missing
+        if (!input.patte2) {
+          status = "Play"; 
         } else {
-          status = "Close"; // Both given → show Close
+          status = "Close";
         }
       }
-      // 4. After close time
+      // 4. Close ke baad → Close
       else if (nowIST >= closeDateTime) {
-        status = "Close"; // Always close after time passes
+        status = "Close";
       }
-      // 5. Full result available already
+
+      // 5. Full result mil gaya toh → Close
       if (
         input.patte1 &&
         input.patte1_open &&
@@ -1371,6 +1371,7 @@ exports.getUserBoardGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
  
