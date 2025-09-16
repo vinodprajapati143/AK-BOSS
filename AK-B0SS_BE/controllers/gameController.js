@@ -1268,33 +1268,47 @@ exports.getUserBoardGames = async (req, res) => {
     const todayIST = `${year}-${month}-${day}`;
     const todayName = nowIST.toLocaleDateString("en-US", { weekday: "long" });
 
-    // ✅ get all games of this user
+    // Get all active games
     const [games] = await db.query(
-      `SELECT id, game_name, open_time, close_time, days, created_at
-       FROM games WHERE created_by = ? ORDER BY id DESC`,
-      [req.user.id]
+      `SELECT id, game_name, open_time, close_time, days
+       FROM games ORDER BY id ASC`
     );
 
-    // ✅ latest inputs per game
-    const gameIds = games.map((g) => g.id);
+    const gameIds = games.map(g => g.id);
     let inputsMap = {};
+      let resultsMap = {};
+
     if (gameIds.length > 0) {
-      const [inputs] = await db.query(
+        const [inputs] = await db.query(
         `SELECT gi.* 
-         FROM game_inputs gi
-         INNER JOIN (
-           SELECT game_id, MAX(input_date) AS latest_date
-           FROM game_inputs
-           WHERE game_id IN (?)
-           GROUP BY game_id
-         ) t 
-         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+        FROM game_inputs gi
+        INNER JOIN (
+          SELECT game_id, MAX(input_date) AS latest_date
+          FROM game_inputs
+          WHERE game_id IN (?)
+          GROUP BY game_id
+        ) t 
+        ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
         [gameIds]
       );
 
-      inputs.forEach((input) => {
+      inputs.forEach(input => {
         inputsMap[input.game_id] = input;
       });
+
+      if (inputs.length > 0) {
+        inputs.forEach(r => {
+         resultsMap[r.game_id] = (
+          (r.patte1 || "") + "-" +
+          (r.patte1_open || "") + (r.patte2_close || "") + "-" +
+          (r.patte2 || "")
+        )
+          .replace(/(^-+|-+$)/g, '')
+          .replace(/-+/g, '-')
+          .replace(/-+$/, '')
+          .trim();
+        });
+      }
     }
 
     // ✅ prepare response
