@@ -1035,23 +1035,7 @@ exports.getPublicGames = async (req, res) => {
         formattedInputDate
       };
 
-            const gameDays = gameWithInputs.days;
 
-          // 🔥 FILTERING LOGIC (holiday / off-day)
-      if (gameDays.length === 0) {
-        // holiday case
-       console.log("holiday case",gameWithInputs.id)
-
-        allGames.push(gameWithInputs);
-        return;
-      }
-      if (!gameDays.includes(todayName)) {
-       console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
-
-        // aaj ka din is game ka nahi hai
-        allGames.push(gameWithInputs);
-        return;
-      }
 
       
 
@@ -1112,6 +1096,24 @@ exports.getPublicGames = async (req, res) => {
 
       const result = resultsMap[game.id] || "";
       const timing = `${convertTo12HourFormat(game.open_time.slice(0, 5))} - ${convertTo12HourFormat(game.close_time.slice(0, 5))}`;
+
+                  const gameDays = gameWithInputs.days;
+
+          // 🔥 FILTERING LOGIC (holiday / off-day)
+      if (gameDays.length === 0) {
+        // holiday case
+       console.log("holiday case",gameWithInputs.id)
+
+        allGames.push(...gameWithInputs, starsWithDashes ,result, timing);
+        return;
+      }
+      if (!gameDays.includes(todayName)) {
+       console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
+
+        // aaj ka din is game ka nahi hai
+        allGames.push(...gameWithInputs, starsWithDashes ,result, timing);
+        return;
+      }
 
       // 🔹 Coming soon logic
       if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
