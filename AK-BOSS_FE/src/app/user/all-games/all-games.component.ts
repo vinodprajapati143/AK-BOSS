@@ -1,0 +1,26 @@
+import { Component } from '@angular/core';
+import { FooterComponent } from "../../shared/footer/footer.component";
+import { HeaderComponent } from "../../shared/header/header.component";
+import { NgFor } from '@angular/common';
+import { AdminRoutingModule } from "../../admin/admin-routing.module";
+
+@Component({
+  selector: 'app-all-games',
+  standalone: true,
+  imports: [FooterComponent, HeaderComponent, NgFor, AdminRoutingModule],
+  templateUrl: './all-games.component.html',
+  styleUrl: './all-games.component.scss'
+})
+export class AllGamesComponent {
+ 
+    menuItems = [
+    { title: 'Single Ank', icon: 'assets/images/dice.png', route: '/user/play' },
+    { title: 'Jodi', icon: 'assets/images/dice.png', route: '/user/jodi' },
+    { title: 'Single Panna', icon: 'assets/images/dice.png', route: '/user/single-panna' },
+    { title: 'Double Panna', icon: 'assets/images/dice.png', route: '/user/double-panna' },
+    { title: 'Triple Panna', icon: 'assets/images/dice.png', route: '/user/triple-panna' },
+    { title: 'Half Sangam A', icon: 'assets/images/dice.png', route: '/user/half-sangam-a' },
+    { title: 'Full Sangam', icon: 'assets/images/dice.png', route: '/user/full-sangam' }
+  ];
+
+}

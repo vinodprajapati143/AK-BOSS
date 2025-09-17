@@ -21,14 +21,14 @@ export class UserDashboardComponent implements OnInit{
   loading = true;
 
   openWhatsApp() {
-    const phoneNumber = "918979108932";
+    const phoneNumber = "919575259525";
     const message = "Hello, I need assistance!";
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   }
 
   closeWhatsApp() {
-    const url = `https://wa.me/918979108932?text=Goodbye`;
+    const url = `https://wa.me/919575259525?text=Goodbye`;
     window.open(url, "_blank");
   }
 
@@ -49,5 +49,8 @@ export class UserDashboardComponent implements OnInit{
         this.loading = false;
       }
     });
+  }
+  playGame() {
+    this.router.navigate(['/user/all-games']);
   }
 }

@@ -10,6 +10,8 @@ import { ChangesPwdComponent } from './changes-pwd/changes-pwd.component';
 import { ProfileEditComponent } from './profile-edit/profile-edit.component';
 import { AddAmountComponent } from './add-amount/add-amount.component';
 import { WithdrawalComponent } from './withdrawal/withdrawal.component';
+import { AllGamesComponent } from './all-games/all-games.component';
+import { PlayGameComponent } from './play-game/play-game.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -23,6 +25,8 @@ const routes: Routes = [
   { path: 'change-pwd', component: ChangesPwdComponent },
   { path: 'docs', component: ProfileEditComponent },
   { path: 'add-amount', component: AddAmountComponent },
+  { path: 'all-games', component: AllGamesComponent },
+  { path: 'play', component: PlayGameComponent },
   { path: 'withdrawal', component: WithdrawalComponent },
 ];
 

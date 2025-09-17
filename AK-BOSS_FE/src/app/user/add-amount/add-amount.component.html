@@ -1,67 +1,65 @@
 <app-header></app-header>
-<div class="min-h-[90vh] mt-12 bg-gray-100">
+
+<div class="min-h-[100vh] mt-12 bg-gray-50 flex flex-col items-center mb-12 px-4 py-6">
   <!-- Header -->
-  <div class="bg-pink-600 text-white text-lg font-bold p-4">
-    Add Amount
+  <div class="w-full max-w-md bg-gradient-to-r from-pink-600 to-pink-500 text-white rounded-xl shadow-lg p-4 flex justify-between items-center">
+    <h2 class="text-xl font-bold">Add Amount</h2>
+    <button (click)="navigateToWithdrawal()" class="bg-white text-black text-sm font-semibold px-4 py-1 rounded-full shadow hover:bg-gray-100">
+      Withdrawal
+    </button>
   </div>
 
   <!-- User Card -->
-  <div class="bg-white shadow rounded-lg mx-4 mt-4 overflow-hidden">
-    <div class="bg-black text-white text-center p-3">
-      <p class="font-semibold">Ajay</p>
-      <p class="text-sm">8319369590</p>
+  <div class="w-full max-w-md bg-white shadow-lg rounded-xl mt-6 overflow-hidden">
+    <div class="bg-black text-white text-center p-4">
+      <p class="font-semibold text-lg">Ajay</p>
+      <p class="text-sm opacity-80">+91 9575259525</p>
     </div>
-    <div class="flex items-center gap-3 p-4">
-      <img src="/assets/images/amount-wallet.svg" alt="wallet" class="w-10 h-10" />
+    <div class="flex items-center gap-4 p-5">
+      <img src="/assets/images/amount-wallet.svg" alt="wallet" class="w-12 h-12" />
       <div>
-        <p class="text-gray-800 font-semibold">₹ 5</p>
+        <p class="text-gray-800 text-lg font-bold">₹ 5</p>
         <p class="text-gray-500 text-sm">Current Balance</p>
       </div>
     </div>
   </div>
 
   <!-- Amount Input -->
-  <div class="mx-4 mt-5">
+  <div class="w-full max-w-md mt-6">
+    <label class="block text-gray-700 font-medium mb-2">Enter Amount</label>
     <input
       type="number"
-      placeholder="Enter Amount"
-      class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-500"
+      placeholder="e.g. 1000"
+      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
     />
   </div>
 
   <!-- Quick Amount Buttons -->
-  <div class="flex justify-between mx-4 mt-4 gap-2">
-    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
-      500
-    </button>
-    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
-      1000
-    </button>
-    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
-      2000
-    </button>
-    <button class="flex-1 bg-blue-500 text-white font-semibold py-2 rounded-lg">
-      5000
-    </button>
+  <div class="w-full max-w-md grid grid-cols-4 gap-3 mt-5">
+    <button class="bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600">500</button>
+    <button class="bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600">1000</button>
+    <button class="bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600">2000</button>
+    <button class="bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600">5000</button>
   </div>
 
   <!-- Submit Button -->
-  <div class="mx-4 mt-6">
+  <div class="w-full max-w-md mt-6">
     <button
-      class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow"
+      class="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-green-700 transition"
     >
       Submit
     </button>
   </div>
 
   <!-- WhatsApp Button -->
-  <div class="mx-4 mt-4">
+  <div class="w-full max-w-md mt-4">
     <button (click)="openWhatsApp()"
-      class="w-full flex items-center justify-center gap-2 bg-pink-600 text-white font-semibold py-3 rounded-lg shadow"
+      class="w-full flex items-center justify-center gap-2 bg-pink-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-pink-700 transition"
     >
       <img src="/assets/images/whatsapp.png" alt="whatsapp" class="w-5 h-5" />
       WhatsApp Us
     </button>
   </div>
 </div>
+
 <app-footer></app-footer>

@@ -1,27 +1,19 @@
 <app-header></app-header>
-<div class="min-h-[100vh] bg-gray-100 mb-[45px]">
+<div class="min-h-[100vh] mt-12 bg-gray-50 mb-16 px-4 py-6 ">
   <!-- Header -->
-  <div class="bg-pink-600 text-white mt-12 flex items-center p-4">
-    <button class="mr-2">
-      <!-- Back Arrow -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
+  
+  <div class="w-full max-w-md bg-gradient-to-r from-pink-600 to-pink-500 text-white rounded-xl shadow-lg p-4 flex justify-between items-center">
+    <h2 class="text-xl font-bold">Withdrawal</h2>
+    <button (click)="navigateToAddAmount()" class="bg-white text-black text-sm font-semibold px-4 py-1 rounded-full shadow hover:bg-gray-100">
+      Add Amount
     </button>
-    <h1 class="text-lg font-bold">Withdraw Amount</h1>
   </div>
 
   <!-- User Card -->
-  <div class="bg-white shadow rounded-lg mx-4 mt-4 overflow-hidden">
+  <div class="bg-white shadow rounded-lg mx-2 mt-4 overflow-hidden">
     <div class="bg-black text-white text-center p-3">
-      <p class="font-semibold">Ajay</p>
-      <p class="text-sm">8319369590</p>
+      <p class="font-semibold">Vinod</p>
+      <p class="text-sm">+91 9575259525</p>
     </div>
     <div class="flex items-center gap-3 p-4">
       <img src="/assets/images/amount-wallet.svg" alt="wallet" class="w-10 h-10" />
@@ -33,12 +25,12 @@
   </div>
 
   <!-- Support Section -->
-  <div class="bg-white shadow rounded-lg mx-4 mt-4 p-4">
+  <div class="bg-white shadow rounded-lg mx-2 mt-4 p-4">
     <p class="text-gray-600">Call or Whatsapp for Withdraw Related Queries</p>
     <div class="flex items-center gap-3 mt-2" (click)="openWhatsApp()">
       <img src="/assets/images/whatsapp.png" alt="whatsapp" class="w-6 h-6" />
       <div>
-        <p class="text-green-600 font-semibold">+91 918306198762</p>
+        <p class="text-green-600 font-semibold">+91 9575259525</p>
         <p class="text-gray-500 text-sm">07:00 To 11:05</p>
       </div>
     </div>
