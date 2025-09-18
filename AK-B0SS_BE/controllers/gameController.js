@@ -1360,7 +1360,7 @@ exports.getUserBoardGames = async (req, res) => {
         result = ["XXX", "XX", "XXX"].join("-");
       }
 
-        else if (isNewDay &&
+        else if ( 
        ( !missingOpenInput &&
         !missingCloseInput)
       ) {
