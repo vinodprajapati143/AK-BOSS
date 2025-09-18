@@ -3,6 +3,7 @@ import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile-edit',
@@ -15,7 +16,7 @@ export class ProfileEditComponent implements OnInit{
   profileForm!: FormGroup;
   user: any;
 
-  constructor(private fb: FormBuilder, private backendService: ApiService) {}
+  constructor(private fb: FormBuilder, private backendService: ApiService,private toastr:ToastrService) {}
 
     ngOnInit(): void {
     // form banaya
@@ -31,7 +32,7 @@ export class ProfileEditComponent implements OnInit{
             if (this.user) {
       this.profileForm.patchValue({
         username: this.user.username,
-        phone: `${this.user.countryCode}-${this.user.phone}`
+        phone: `${this.user.phone}`
       });
     }
       });
@@ -44,13 +45,16 @@ saveProfile() {
       id: this.user.id, // id tu user object se le sakta hai
       username: this.profileForm.value.username,
       phone: this.profileForm.value.phone,
-      countryCode: this.profileForm.value.countryCode
+      countryCode: this.user.countryCode
     };
 
     this.backendService.updateUserProfile(payload).subscribe({
       next: (res: any) => {
         if (res.success) {
           console.log('Profile updated:', res.message);
+          this.backendService.getUserProfile();
+            this.toastr.success(res.message);
+
           // optionally form ko patch/update kar sakte ho
         }
       },
