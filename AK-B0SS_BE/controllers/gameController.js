@@ -1378,11 +1378,11 @@ exports.getUserBoardGames = async (req, res) => {
       //   status = "close";
       //   result = ["XXX", "XX", "XXX"].join("-");
       // }
-       else if (openWindowStarted) {
+       else if (insideOpenWindow) {
         status = "Close";
         // result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
       }
-       else if (closeWindowStarted) {
+       else if (insideCloseWindow) {
         status = "Close";
         // result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
       }
