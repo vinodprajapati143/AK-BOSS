@@ -4,6 +4,7 @@ import { FooterComponent } from '../../shared/footer/footer.component';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-edit',
@@ -16,7 +17,7 @@ export class ProfileEditComponent implements OnInit{
   profileForm!: FormGroup;
   user: any;
 
-  constructor(private fb: FormBuilder, private backendService: ApiService,private toastr:ToastrService) {}
+  constructor(private router:Router, private fb: FormBuilder, private backendService: ApiService,private toastr:ToastrService) {}
 
     ngOnInit(): void {
     // form banaya
@@ -53,7 +54,8 @@ saveProfile() {
         if (res.success) {
           console.log('Profile updated:', res.message);
           this.backendService.getUserProfile();
-            this.toastr.success(res.message);
+          this.router.navigate(['/user/profile'])  
+          this.toastr.success(res.message);
 
           // optionally form ko patch/update kar sakte ho
         }
