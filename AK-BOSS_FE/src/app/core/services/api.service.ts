@@ -105,5 +105,9 @@ getReferralList() {
   return this.http.get(`${this.baseUrl}/api/users/referralList`,{ withCredentials: true });
 }
 
+getUserProfile() {
+  return this.http.get(`${this.baseUrl}/api/users/profile`,{ withCredentials: true });
+}
+
 
 }

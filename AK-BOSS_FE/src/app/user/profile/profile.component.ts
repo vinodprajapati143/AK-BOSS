@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ToastrService } from 'ngx-toastr';
@@ -13,7 +13,8 @@ import { Router } from '@angular/router';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit{
+  user: any;
 
  constructor(private router: Router, private strorageservice: StorageService, private toaster: ToastrService, private backendservice: ApiService) {
 
@@ -33,6 +34,24 @@ export class ProfileComponent {
         console.error('Logout failed:', err);
         this.strorageservice.removeItem('authToken');
         // this.router.navigate(['/home']);
+      }
+    });
+  }
+
+    ngOnInit(): void {
+    this.getUserDetails();
+  }
+
+  
+  getUserDetails() {
+    this.backendservice.getUserProfile().subscribe({
+      next: (res:any) => {
+        if (res.success) {
+          this.user = res.data; // 👈 yaha sari detail aayegi
+        }
+      },
+      error: (err) => {
+        console.error('Profile fetch error:', err);
       }
     });
   }
