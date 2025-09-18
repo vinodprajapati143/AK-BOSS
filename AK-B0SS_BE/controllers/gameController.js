@@ -1368,7 +1368,7 @@ exports.getUserBoardGames = async (req, res) => {
       result = [
       input.patte1 || "XXX",
       (input.patte1_open || "X") + (input.patte2_close || "X"),
-      input.patte2 || "XXX"]
+      input.patte2 || "XXX"].join("-");
       }
       
       // else if (
