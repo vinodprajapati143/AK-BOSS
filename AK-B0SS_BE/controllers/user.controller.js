@@ -100,27 +100,26 @@ exports.getReferralList = async (req, res) => {
 // User Profile Controller
 exports.getUserProfile = async (req, res) => {
   try {
-    // `req.user.id` aa raha hoga authMiddleware se
-    const userId = req.user.id;
+    const userId = req.user.id; // 👈 auth middleware se aayega
 
-    // DB se user fetch karo
-    const [user] = await db.query(
-      "SELECT username, registerType, phone, countryCode, joiningDate FROM users WHERE id = ?",
+    const [rows] = await db.query(
+      "SELECT id, username, registerType, phone, countryCode, joiningDate FROM users WHERE id = ?",
       [userId]
     );
 
-    if (!user) {
+    if (!rows || rows.length === 0) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
     res.json({
       success: true,
-      data: user
+      data: rows[0]   // 👈 ab id ke saath details aayengi
     });
   } catch (err) {
     console.error("Profile API Error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 

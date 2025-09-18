@@ -39,7 +39,9 @@ export class ProfileComponent implements OnInit{
   }
 
     ngOnInit(): void {
-    this.getUserDetails();
+      this.backendservice.user$.subscribe(user => {
+        this.user = user; 
+      });
   }
 
   gameRate() {
@@ -73,16 +75,5 @@ export class ProfileComponent implements OnInit{
   editUserName() {
     this.router.navigate(['/user/editUserName']);
   }
-  getUserDetails() {
-    this.backendservice.getUserProfile().subscribe({
-      next: (res:any) => {
-        if (res.success) {
-          this.user = res.data[0]; // 👈 yaha sari detail aayegi
-        }
-      },
-      error: (err) => {
-        console.error('Profile fetch error:', err);
-      }
-    });
-  }
+
 }

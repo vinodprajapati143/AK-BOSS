@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, timer } from 'rxjs';
 import { environment } from '../../../environments/environment.prod';
 import { LoginResponse } from '../module/login-response.model';
 import { Game, gamebyid, JodiRecord, JodiResponse, PanelResponse, UserGame } from '../module/models';
@@ -9,9 +9,23 @@ import { Game, gamebyid, JodiRecord, JodiResponse, PanelResponse, UserGame } fro
   providedIn: 'root'
 })
 export class ApiService {
-   private baseUrl = environment.apiUrl;
+ private baseUrl = environment.apiUrl;
+ userSignal = signal<any>(null);
+  userSubject = new BehaviorSubject<any>(null);
+  user$ = this.userSubject.asObservable();
+constructor(private http: HttpClient) {
 
-constructor(private http: HttpClient) {}
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      this.userSubject.next(JSON.parse(savedUser));
+    }
+}
+
+
+  setUser(user: any) {
+    this.userSubject.next(user);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
 
   register(data: any) {
    return this.http.post(`${this.baseUrl}/api/auth/register`, data,{ withCredentials: true });
