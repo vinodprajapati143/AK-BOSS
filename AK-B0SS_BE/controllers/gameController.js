@@ -1364,7 +1364,7 @@ exports.getUserBoardGames = async (req, res) => {
        ( !missingOpenInput &&
         !missingCloseInput)
       ) {
-        status = "close";
+        status = "Close";
       result = [
       input.patte1 || "XXX",
       (input.patte1_open || "X") + (input.patte2_close || "X"),
