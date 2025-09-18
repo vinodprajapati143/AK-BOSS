@@ -47,7 +47,7 @@ export class ProfileComponent implements OnInit{
     this.backendservice.getUserProfile().subscribe({
       next: (res:any) => {
         if (res.success) {
-          this.user = res.data; // 👈 yaha sari detail aayegi
+          this.user = res.data[0]; // 👈 yaha sari detail aayegi
         }
       },
       error: (err) => {
