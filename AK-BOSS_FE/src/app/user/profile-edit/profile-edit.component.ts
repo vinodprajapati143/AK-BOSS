@@ -32,7 +32,7 @@ export class ProfileEditComponent implements OnInit{
             if (this.user) {
       this.profileForm.patchValue({
         username: this.user.username,
-        phone: `${this.user.phone}`
+        phone: `${this.user.countryCode}-${this.user.phone}`
       });
     }
       });
@@ -44,7 +44,7 @@ saveProfile() {
     const payload = {
       id: this.user.id, // id tu user object se le sakta hai
       username: this.profileForm.value.username,
-      phone: this.profileForm.value.phone,
+      phone: this.profileForm.value.phone.split('-')[1],
       countryCode: this.user.countryCode
     };
 
