@@ -22,8 +22,8 @@ const routes: Routes = [
   
   { path: 'share', component: SharePageComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'change-pwd', component: ChangesPwdComponent },
-  { path: 'docs', component: ProfileEditComponent },
+  { path: 'change-password', component: ChangesPwdComponent },
+  { path: 'editUserName', component: ProfileEditComponent },
   { path: 'add-amount', component: AddAmountComponent },
   { path: 'all-games', component: AllGamesComponent },
   { path: 'play', component: PlayGameComponent },
