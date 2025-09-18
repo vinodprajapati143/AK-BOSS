@@ -73,7 +73,7 @@
 
           <!-- Play Button -->
         <button *ngIf="game.status === 'Play'" class="flex flex-col items-center text-white text-sm font-medium play-btn
-                   bg-gradient-to-b from-green-500 to-green-600 rounded-lg px-3 py-2 shadow-md" (click)="playGame()">
+                   bg-gradient-to-b from-green-500 to-green-600 rounded-lg px-3 py-2 shadow-md" (click)="playGame(game.id)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M14.274 6.23424C14.5942 6.40451 14.862 6.6587 15.0488 6.96956C15.2355 7.28042 15.3342 7.63625 15.3342 7.9989C15.3342 8.36156 15.2355 8.71738 15.0488 9.02824C14.862 9.33911 14.5942 9.59329 14.274 9.76357L5.73264 14.4082C4.3573 15.1569 2.66797 14.1836 2.66797 12.6442V3.35424C2.66797 1.81424 4.3573 0.84157 5.73264 1.5889L14.274 6.23424Z"

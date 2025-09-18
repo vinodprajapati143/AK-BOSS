@@ -65,7 +65,7 @@ export class UserDashboardComponent implements OnInit,OnDestroy{
       this.subscription.unsubscribe();
     }
   }
-  playGame() {
+  playGame(id:any) {
     this.router.navigate(['/user/all-games']);
   }
 }

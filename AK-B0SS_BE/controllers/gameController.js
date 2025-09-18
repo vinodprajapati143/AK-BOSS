@@ -1377,13 +1377,16 @@ exports.getUserBoardGames = async (req, res) => {
       // ) {
       //   status = "close";
       //   result = ["XXX", "XX", "XXX"].join("-");
-      // } else if (openWindowStarted && missingOpenInput) {
-      //   status = "close";
-      //   result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
-      // } else if (closeWindowStarted && missingCloseInput) {
-      //   status = "play";
-      //   result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
-      // } else if (missingOpenInput && nowIST > openDateTime) {
+      // }
+       else if (openWindowStarted) {
+        status = "close";
+        // result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
+      }
+       else if (closeWindowStarted) {
+        status = "close";
+        // result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
+      }
+      //  else if (missingOpenInput && nowIST > openDateTime) {
       //   status = "close";
       //   result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
 
