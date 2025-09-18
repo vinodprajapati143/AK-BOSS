@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgFor, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
@@ -14,10 +14,11 @@ import { interval, map, startWith, Subscription, timer } from 'rxjs';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit ,OnDestroy{
   games: any;
   gamesResult: any;
   interval: any;
+  private subscription!: Subscription;
 constructor(private router: Router, private gameService: ApiService ) {}
    
    chartData = [
@@ -214,7 +215,7 @@ chartReport(game: any) {
   }
 
   loadpubligames(){
-    this.gameService.getpublicGames().subscribe({
+    this.subscription = this.gameService.getpublicGames().subscribe({
     next: (res) => {
      const apiGames = res.data.comingSoonGames;
 
@@ -323,6 +324,13 @@ pad(num: number): string {
     }
   });
 
+  }
+
+    ngOnDestroy(): void {
+    // 👇 component destroy hote hi API calls band
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }
