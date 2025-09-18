@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { Game, UserGame } from '../../core/module/models';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent,CommonModule],
+  imports: [FooterComponent, HeaderComponent,CommonModule,FormsModule],
   templateUrl: './user-dashboard.component.html',
   styleUrl: './user-dashboard.component.scss'
 })

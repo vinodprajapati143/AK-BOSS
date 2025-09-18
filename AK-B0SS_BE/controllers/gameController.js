@@ -1351,32 +1351,41 @@ exports.getUserBoardGames = async (req, res) => {
       }
 
       // 🔹 Determine Play / Close
+
+        
       if (
-        isNewDay &&
-        (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)
+        isNewDay
       ) {
         status = "Play";
         result = ["XXX", "XX", "XXX"].join("-");
+      }
+      
+      else if (
+        isNewDay &&
+        (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)
+      ) {
+        status = "close";
+        result = ["XXX", "XX", "XXX"].join("-");
       } else if (openWindowStarted && missingOpenInput) {
-        status = "Play";
+        status = "close";
         result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
       } else if (closeWindowStarted && missingCloseInput) {
-        status = "Play";
+        status = "close";
         result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
       } else if (missingOpenInput && nowIST > openDateTime) {
-        status = "Play";
+        status = "close";
         result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
 
       } else if (missingCloseInput && nowIST > closeDateTime) {
-        status = "Play";
+        status = "close";
         result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
 
       } else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
-        status = "Play";
+        status = "close";
         result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
 
       } else {
-        status = "Close";
+        status = "Play";
       }
 
    

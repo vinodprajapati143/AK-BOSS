@@ -38,7 +38,9 @@
       <!-- Body -->
       <div class="bg-gradient-to-b from-[#0A7E8D] to-[#066874] text-center p-2 flex items-center justify-between ">
         <!-- Chart Button -->
-        <button (click)="openChart()" class="flex flex-col items-center text-white text-sm font-medium close-btn
+        <button (click)="openChart()"
+         [ngClass]="game.status === 'Close'?'close-btn':game.status === 'Play'?'play-btn':game.status === 'Holiday'?'holiday-btn':''"
+        class="flex flex-col items-center text-white text-sm font-medium 
                    bg-gradient-to-b from-green-500 to-green-600 rounded-lg px-3 py-2 shadow-md">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M5 9H9V10H5V9ZM5 6.5H11V7.5H5V6.5ZM5 11.5H7.5V12.5H5V11.5Z" fill="white" />
