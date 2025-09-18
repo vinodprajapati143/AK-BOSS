@@ -1330,8 +1330,15 @@ exports.getUserBoardGames = async (req, res) => {
         : null;
 
       let isNewDay = formattedInputDate !== todayIST;
+      console.log('isNewDay: ', isNewDay);
 
-      let status = "Result";
+      let status = "Play";
+
+      let result = [
+      input.patte1 || "XXX",
+      (input.patte1_open || "X") + (input.patte2_close || "X"),
+      input.patte2 || "XXX"
+    ].join("-");
 
       // 🔹 Holiday / off-day
       if (gameDays.length === 0 || !gameDays.includes(todayName)) {
@@ -1340,6 +1347,7 @@ exports.getUserBoardGames = async (req, res) => {
       // 🔹 Special yesterday case
       else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
         isNewDay = false;
+        console.log(isNewDay);
       }
 
       // 🔹 Determine Play / Close
@@ -1348,26 +1356,30 @@ exports.getUserBoardGames = async (req, res) => {
         (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)
       ) {
         status = "Play";
+        result = ["XXX", "XX", "XXX"].join("-");
       } else if (openWindowStarted && missingOpenInput) {
         status = "Play";
+        result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
       } else if (closeWindowStarted && missingCloseInput) {
         status = "Play";
+        result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
       } else if (missingOpenInput && nowIST > openDateTime) {
         status = "Play";
+        result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
+
       } else if (missingCloseInput && nowIST > closeDateTime) {
         status = "Play";
+        result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
+
       } else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
         status = "Play";
+        result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
+
       } else {
         status = "Close";
       }
 
-      // 🔹 Format result
-      const result = [
-        input.patte1 || "XXX",
-        (input.patte1_open || "X") + (input.patte2_close || "X"),
-        input.patte2 || "XXX"
-      ].join("-");
+   
 
       responseData.push({
         id: game.id,
