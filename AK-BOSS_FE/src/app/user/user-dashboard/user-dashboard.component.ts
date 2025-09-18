@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { ApiService } from '../../core/services/api.service';
 import { Game, UserGame } from '../../core/module/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -14,12 +15,14 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './user-dashboard.component.html',
   styleUrl: './user-dashboard.component.scss'
 })
-export class UserDashboardComponent implements OnInit{
+export class UserDashboardComponent implements OnInit,OnDestroy{
   router = inject(Router);
   gameService = inject(ApiService);
 
-    games: UserGame[] = [];
+  games: UserGame[] = [];
   loading = true;
+
+   private subscription!: Subscription;
 
   openWhatsApp() {
     const phoneNumber = "919575259525";
@@ -38,7 +41,11 @@ export class UserDashboardComponent implements OnInit{
   }
 
     ngOnInit(): void {
-    this.gameService.getUserGames().subscribe({
+   this.loadGames()
+  }
+
+  loadGames(){
+   this.subscription=  this.gameService.getUserGames().subscribe({
       next: (res) => {
         if (res.success) {
           this.games = res.data;
@@ -50,6 +57,13 @@ export class UserDashboardComponent implements OnInit{
         this.loading = false;
       }
     });
+  }
+
+    ngOnDestroy(): void {
+    // 👇 component destroy hote hi API calls band
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
   playGame() {
     this.router.navigate(['/user/all-games']);

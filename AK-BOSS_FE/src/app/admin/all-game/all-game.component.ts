@@ -22,10 +22,11 @@ export interface User {
   templateUrl: './all-game.component.html',
   styleUrl: './all-game.component.scss'
 })
-export class AllGameComponent implements OnInit  {
+export class AllGameComponent implements OnInit,OnDestroy  {
  private apiService = inject(ApiService); 
  private toastr = inject(ToastrService)
  private interval: any;
+ private subscription!: Subscription;
 
  comingSoonGames: any[] = [];
 allGames: any[] = [];
@@ -157,6 +158,13 @@ ngOnInit() {
  
 }
 
+  ngOnDestroy(): void {
+    // 👇 component destroy hote hi API calls band
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
  
 
 
@@ -246,7 +254,7 @@ setInputEnabledFlags() {
 
 
 loadGames() {
-  this.apiService.getNearestGames().subscribe((res: any) => {
+  this.subscription =this.apiService.getNearestGames().subscribe((res: any) => {
     const apiGames = res.data.comingSoonGames;
 
     apiGames.forEach((game: any) => {
