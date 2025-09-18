@@ -1323,7 +1323,9 @@ exports.getUserBoardGames = async (req, res) => {
       const missingCloseInput = !input.patte2_close && !input.patte2;
 
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
+      console.log('openWindowStarted: ', openWindowStarted);
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
+      console.log('closeWindowStarted: ', closeWindowStarted);
 
       const formattedInputDate = input.input_date
         ? new Date(input.input_date).toISOString().split('T')[0]
