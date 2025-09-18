@@ -122,6 +122,9 @@ getReferralList() {
 getUserProfile() {
   return this.http.get(`${this.baseUrl}/api/users/profile`,{ withCredentials: true });
 }
+updateUserProfile(data:any) {
+  return this.http.put(`${this.baseUrl}/api/users/update-profile`,data,{ withCredentials: true });
+}
 
 
 }

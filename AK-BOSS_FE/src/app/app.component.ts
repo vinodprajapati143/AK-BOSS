@@ -34,7 +34,7 @@ export class AppComponent implements OnInit{
       next: (res:any) => {
         if (res.success) {
           this.user = res.data[0]; // 👈 yaha sari detail aayegi
-          this.backendservice.userSubject.next(res.data[0]);
+          this.backendservice.userSubject.next(res.data);
         }
       },
       error: (err) => {

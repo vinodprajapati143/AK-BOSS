@@ -121,5 +121,35 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
+// User Profile Controller
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { id, username, phone, countryCode } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "User ID required" });
+    }
+
+    // Update query
+    const [result] = await db.query(
+      "UPDATE users SET username = ?, phone = ?, countryCode = ? WHERE id = ?",
+      [username, phone, countryCode, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "User not found or no changes" });
+    }
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully"
+    });
+  } catch (err) {
+    console.error("Update Profile API Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 
 

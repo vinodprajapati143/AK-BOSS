@@ -38,18 +38,27 @@ export class ProfileEditComponent implements OnInit{
 
   }
 
-    saveProfile() {
-    if (this.profileForm.valid) {
-      const payload ={
-      
-        id:this.user.id,
-        username: this.user.username,
-        phone:this.user.phone,
-        countryCode:this.user.countryCode
-      
-      
+saveProfile() {
+  if (this.profileForm.valid) {
+    const payload = {
+      id: this.user.id, // id tu user object se le sakta hai
+      username: this.profileForm.value.username,
+      phone: this.profileForm.value.phone,
+      countryCode: this.profileForm.value.countryCode
+    };
+
+    this.backendService.updateUserProfile(payload).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          console.log('Profile updated:', res.message);
+          // optionally form ko patch/update kar sakte ho
+        }
+      },
+      error: (err) => {
+        console.error('Update failed:', err);
       }
-      console.log(payload);
-    }
+    });
   }
+}
+
 }
