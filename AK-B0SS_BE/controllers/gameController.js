@@ -1336,11 +1336,7 @@ exports.getUserBoardGames = async (req, res) => {
 
       let status = "Play";
 
-      let result = [
-      input.patte1 || "XXX",
-      (input.patte1_open || "X") + (input.patte2_close || "X"),
-      input.patte2 || "XXX"
-    ].join("-");
+  
 
       // 🔹 Holiday / off-day
       if (gameDays.length === 0 || !gameDays.includes(todayName)) {
@@ -1359,7 +1355,6 @@ exports.getUserBoardGames = async (req, res) => {
         isNewDay
       ) {
         status = "Play";
-        result = ["XXX", "XX", "XXX"].join("-");
       }
 
         else if ( 
@@ -1367,10 +1362,7 @@ exports.getUserBoardGames = async (req, res) => {
         !missingCloseInput)
       ) {
         status = "Close";
-      result = [
-      input.patte1 || "XXX",
-      (input.patte1_open || "X") + (input.patte2_close || "X"),
-      input.patte2 || "XXX"].join("-");
+     
       }
       
       else if (
@@ -1378,7 +1370,6 @@ exports.getUserBoardGames = async (req, res) => {
         (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)
       ) {
         status = "Close";
-        result = ["XXX", "XX", "XXX"].join("-");
       }
       //  else if (insideOpenWindow) {
       //   status = "Close";
@@ -1390,11 +1381,9 @@ exports.getUserBoardGames = async (req, res) => {
       // }
        else if (missingOpenInput && nowIST > openDateTime) {
         status = "Close";
-        result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
 
       } else if (missingCloseInput && nowIST > closeDateTime) {
         status = "Close";
-        result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
 
       } 
       // else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
@@ -1405,6 +1394,12 @@ exports.getUserBoardGames = async (req, res) => {
        else {
         status = "Play";
       }
+
+          let result = [
+      input.patte1 || "XXX",
+      (input.patte1_open || "X") + (input.patte2_close || "X"),
+      input.patte2 || "XXX"
+    ].join("-");
 
    
 
