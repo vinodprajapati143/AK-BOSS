@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FooterComponent } from "../../shared/footer/footer.component";
-import { HeaderComponent } from "../../shared/header/header.component";
 import { NgFor } from '@angular/common';
 import { AdminRoutingModule } from "../../admin/admin-routing.module";
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-all-games',

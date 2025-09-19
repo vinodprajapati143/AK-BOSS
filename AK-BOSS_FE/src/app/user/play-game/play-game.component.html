@@ -1,11 +1,11 @@
 <app-header></app-header>
 <!-- half-sangam.component.html -->
-<div class="max-w-md min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow p-2 my-16">
+<div class="max-w-md min-h-[80vh] mx-auto bg-blue-50 rounded-lg shadow p-2 my-16">
   <!-- Title -->
-  <h2 class="text-lg font-semibold text-teal-700">Single Ank</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700">Single Ank</h2>
 
   <!-- Date -->
-  <div class="bg-gradient-to-r from-teal-500 to-indigo-600 text-white font-bold text-center py-2 rounded-md mt-2">
+  <div class="btn-bg-color from-teal-500 to-indigo-600 text-white font-bold text-center py-2 rounded-md mt-2">
     {{date | date:'dd-MM-yyyy'}}
   </div>
 
@@ -15,12 +15,15 @@
   <!-- Enter Digit -->
   <div class="flex flex-col items-center">
     <label class="text-gray-700 text-sm font-medium mb-1">Enter Digit</label>
-    <input
-      type="number" placeholder="Enter Digit" [maxlength]="1"
-      class="w-24 text-center px-3 py-2 rounded-md border outline-none 
-             border-teal-500 focus:ring-2 focus:ring-indigo-400"
-      [(ngModel)]="digit"
-    />
+<input
+  type="text"
+  placeholder="Enter Digit"
+  class="w-[140px] text-center px-3 py-2 rounded-md border outline-none 
+         border-teal-500 focus:ring-2 focus:ring-indigo-400"
+  [(ngModel)]="digit"
+  maxlength="1"
+  pattern="[0-9]"
+/>
   </div>
 
   <!-- Enter Amount -->
@@ -28,31 +31,16 @@
     <label class="text-gray-700 text-sm font-medium mb-1">Enter Amount</label>
     <input
       type="text" placeholder="Enter Amount"
-      class="w-28 text-center px-3 py-2 rounded-md border outline-none 
+      class="w-[150px] text-center px-3 py-2 rounded-md border outline-none 
              border-teal-500 focus:ring-2 focus:ring-indigo-400"
       [(ngModel)]="amount"
     />
   </div>
 </div>
 
-  <!-- <div class="grid grid-cols-2 gap-3 mt-4">
-    <input
-      type="number"
-      placeholder="Enter Digit" [maxlength]="1"
-      class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-      [(ngModel)]="digit"
-    />
-    <input
-      type="number"
-      placeholder="Enter Amount"
-      class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-      [(ngModel)]="amount"
-    />
-  </div> -->
-
   <!-- Add Button -->
   <button
-    class="w-full bg-gradient-to-r from-teal-500 to-indigo-600 text-white font-medium py-2 rounded-md mt-3 hover:opacity-90"
+    class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-medium py-2 rounded-md mt-3 hover:opacity-90"
     (click)="addNumber()"
   >
     Add Number
@@ -84,14 +72,14 @@
     <!-- Amount -->
     <input
       type="text"
-      class="border rounded-md px-3 py-2 text-center"
+      class="border rounded-md px-3 py-2 text-center min-w-[100px] flex-1"
       [value]="item.amount"
       readonly
     />
 
     <!-- Delete Button -->
     <button
-      class="bg-gradient-to-r max-w-[60px] px-4 from-teal-500 to-indigo-500 text-white rounded-md h-10 flex items-center justify-center"
+      class="btn-bg-color max-w-[60px] px-4 from-teal-500 to-indigo-500 text-white rounded-md h-10 flex items-center justify-center"
       (click)="removeNumber(i)"
     >
       ✕
@@ -106,14 +94,14 @@
     <input
       type="text"
       class="w-full border rounded-md px-3 py-2 font-semibold text-gray-800"
-      [value]="'₹' + totalAmount"
+       [value]="totalAmount | currency:'INR':'symbol':'1.0-0'"
       readonly
     />
   </div>
 
   <!-- Submit -->
   <button
-    class="w-full bg-gradient-to-r from-teal-500 to-indigo-600 text-white font-semibold py-2 rounded-md mt-4 hover:opacity-90"
+    class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
   >
     SUBMIT
   </button>

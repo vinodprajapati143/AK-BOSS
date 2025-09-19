@@ -19,20 +19,20 @@ export class PlayGameComponent {
   totalAmount = 0;
 
   addNumber() {
-    if (this.digit && this.amount) {
-      this.numbers.push({ digit: this.digit, amount: this.amount });
-      this.calculateTotal();
-      this.digit = null;
-      this.amount = null;
-    }
+     if (this.digit !== null && this.amount !== null) {
+    this.numbers.push({ digit: this.digit, amount: this.amount });
+    this.calculateTotal();
+    this.digit = null;
+    this.amount = null;
+  }
   }
 
+  
+  calculateTotal() {
+    this.totalAmount = this.numbers.reduce((sum, item) => sum + item.amount, 0);
+  }
   removeNumber(index: number) {
     this.numbers.splice(index, 1);
     this.calculateTotal();
-  }
-
-  calculateTotal() {
-    this.totalAmount = this.numbers.reduce((sum, item) => sum + item.amount, 0);
   }
 }

@@ -2,7 +2,7 @@
 
 <div class="min-h-[100vh] mt-12 bg-gray-50 flex flex-col items-center mb-12 px-4 py-6">
   <!-- Header -->
-  <div class="w-full max-w-md bg-gradient-to-r from-pink-600 to-pink-500 text-white rounded-xl shadow-lg p-4 flex justify-between items-center">
+  <div class="w-full max-w-md btn-bg-color from-pink-600 to-pink-500 text-white rounded-xl shadow-lg p-4 flex justify-between items-center">
     <h2 class="text-xl font-bold">Add Amount</h2>
     <button (click)="navigateToWithdrawal()" class="bg-white text-black text-sm font-semibold px-4 py-1 rounded-full shadow hover:bg-gray-100">
       Withdrawal
@@ -30,7 +30,7 @@
     <input
       type="number"
       placeholder="e.g. 1000"
-      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-100"
     />
   </div>
 
@@ -54,7 +54,7 @@
   <!-- WhatsApp Button -->
   <div class="w-full max-w-md mt-4">
     <button (click)="openWhatsApp()"
-      class="w-full flex items-center justify-center gap-2 bg-pink-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-pink-700 transition"
+      class="w-full flex items-center justify-center gap-2 btn-bg-color text-white font-semibold py-3 rounded-lg shadow hover:bg-pink-700 transition"
     >
       <img src="/assets/images/whatsapp.png" alt="whatsapp" class="w-5 h-5" />
       WhatsApp Us
