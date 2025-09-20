@@ -447,48 +447,22 @@ exports.getNearestGames = async (req, res) => {
     // Fetch latest input per game for today or yesterday whichever is latest
     const gameIds = games.map(g => g.id);
     let inputsMap = {};
-    if (gameIds.length > 0) {
-    // const [inputs] = await db.query(
-    //     `SELECT gi.* 
-    //     FROM game_inputs gi
-    //     INNER JOIN (
-    //       SELECT game_id, MAX(input_date) AS latest_date
-    //       FROM game_inputs
-    //       WHERE game_id IN (?)
-    //       GROUP BY game_id
-    //     ) t 
-    //     ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-    //     [gameIds]
-    //   );
-
-          const [inputs] = await db.query(
-        `SELECT gi.* 
-        FROM game_inputs gi
-        WHERE gi.game_id IN (?)
-          AND (gi.input_date = CURDATE()
-                OR gi.input_date = (
-                    SELECT MAX(input_date) 
-                    FROM game_inputs gi2 
-                    WHERE gi2.game_id = gi.game_id
-                ))`,
-        [gameIds]
+   if (gameIds.length > 0) {
+      const [inputs] = await db.query(
+        `SELECT gi.*
+         FROM game_inputs gi
+         INNER JOIN (
+           SELECT game_id, MAX(input_date) AS latest_date
+           FROM game_inputs
+           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+           GROUP BY game_id
+         ) t
+         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+        [gameIds, todayIST, yesterdayDate]
       );
 
       inputs.forEach(input => {
-        // inputsMap[input.game_id] = input;
-          const formattedDate = input.input_date
-          ? input.input_date.toISOString().split("T")[0]
-          : null;
-
-        if (!inputsMap[input.game_id]) {
-          inputsMap[input.game_id] = input;
-        } else {
-          // Overwrite if today's input
-          if (formattedDate === todayIST) {
-            inputsMap[input.game_id] = input;
-          }
-        }
-      
+        inputsMap[input.game_id] = input;
       });
     }
 
