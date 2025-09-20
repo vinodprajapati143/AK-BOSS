@@ -1291,10 +1291,6 @@ exports.getUserBoardGames = async (req, res) => {
     const todayIST = nowIST.toISOString().split('T')[0];
     const todayName = nowIST.toLocaleDateString("en-US", { weekday: "long" });
 
-    const yesterdayIST = new Date(nowIST);
-    yesterdayIST.setDate(yesterdayIST.getDate() - 1);
-    const yesterdayDate = yesterdayIST.toISOString().split('T')[0];
-
     // Fetch all active games
     const [games] = await db.query(
       `SELECT id, game_name, open_time, close_time, days
@@ -1323,7 +1319,6 @@ exports.getUserBoardGames = async (req, res) => {
       });
     }
 
-    const gracePeriodMinutes = 90;
     const responseData = [];
 
     games.forEach(game => {
@@ -1333,102 +1328,28 @@ exports.getUserBoardGames = async (req, res) => {
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
 
-      const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-      const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-
-      const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-      const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
-
-      const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
-      const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
-
-      const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
-      const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
-
-      const missingOpenInput = !input.patte1 && !input.patte1_open;
-      const missingCloseInput = !input.patte2_close && !input.patte2;
-
-      const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
-      console.log('openWindowStarted: ', openWindowStarted);
-      const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
-      console.log('closeWindowStarted: ', closeWindowStarted);
+      // 👇 Close time se 10 min pehle hi close karna hai
+      const closeEarlyTime = new Date(closeDateTime.getTime() - 10 * 60000);
 
       const formattedInputDate = input.input_date
         ? new Date(input.input_date).toISOString().split('T')[0]
         : null;
 
-      let isNewDay = formattedInputDate !== todayIST;
-      console.log('isNewDay: ', isNewDay);
-
       let status = "Play";
 
-  
-
-      // 🔹 Holiday / off-day
-      if (gameDays.length === 0 || !gameDays.includes(todayName)) {
-        console.log("holiday", game.id,game.name);
+      if (!gameDays.includes(todayName)) {
         status = "Holiday";
-      }
-      // 🔹 Special yesterday case
-      else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
-        isNewDay = false;
-        console.log(isNewDay);
-      }
-
-      // 🔹 Determine Play / Close
-
-        
-      if (
-        isNewDay
-      ) {
+      } else if (nowIST >= closeEarlyTime) {
+        status = "Closed";
+      } else {
         status = "Play";
       }
 
-        else if ( 
-       ( !missingOpenInput &&
-        !missingCloseInput)
-      ) {
-        status = "Close";
-     
-      }
-      
-      else if (
-        isNewDay &&
-        (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)
-      ) {
-        status = "Close";
-      }
-      //  else if (insideOpenWindow) {
-      //   status = "Close";
-      //   // result = ["XXX", "X" + (input.patte2_close || "X"), input.patte2 || "XXX"].join("-");
-      // }
-      //  else if (insideCloseWindow) {
-      //   status = "Close";
-      //   // result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
-      // }
-       else if (missingOpenInput && nowIST > openDateTime) {
-        status = "Close";
-
-      } else if (missingCloseInput && nowIST > closeDateTime) {
-        status = "Close";
-
-      } 
-      // else if (formattedInputDate === yesterdayDate && !missingOpenInput && missingCloseInput) {
-      //   status = "Close";
-      //   result = [input.patte1 || "XXX", (input.patte1_open || "X") + "X", "XXX"].join("-");
-
-      // }
-       else {
-        status = "Play";
-      }
-
-          let result = [
-      input.patte1 || "XXX",
-      (input.patte1_open || "X") + (input.patte2_close || "X"),
-      input.patte2 || "XXX"
-    ].join("-");
-
-   
+      let result = [
+        input.patte1 || "XXX",
+        (input.patte1_open || "X") + (input.patte2_close || "X"),
+        input.patte2 || "XXX"
+      ].join("-");
 
       responseData.push({
         id: game.id,
@@ -1440,7 +1361,6 @@ exports.getUserBoardGames = async (req, res) => {
         result,
         status,
         formattedInputDate,
-     
       });
     });
 
@@ -1453,6 +1373,7 @@ exports.getUserBoardGames = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 
