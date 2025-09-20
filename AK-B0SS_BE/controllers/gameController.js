@@ -1340,7 +1340,7 @@ exports.getUserBoardGames = async (req, res) => {
       if (!gameDays.includes(todayName)) {
         status = "Holiday";
       } else if (nowIST >= closeEarlyTime) {
-        status = "Closed";
+        status = "Close";
       } else {
         status = "Play";
       }
