@@ -1366,6 +1366,7 @@ exports.getUserBoardGames = async (req, res) => {
 
       // 🔹 Holiday / off-day
       if (gameDays.length === 0 || !gameDays.includes(todayName)) {
+        console.log("holiday", game.id,game.name);
         status = "Holiday";
       }
       // 🔹 Special yesterday case
