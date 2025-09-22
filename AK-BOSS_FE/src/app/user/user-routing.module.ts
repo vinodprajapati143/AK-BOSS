@@ -12,6 +12,7 @@ import { AddAmountComponent } from './add-amount/add-amount.component';
 import { WithdrawalComponent } from './withdrawal/withdrawal.component';
 import { AllGamesComponent } from './all-games/all-games.component';
 import { PlayGameComponent } from './play-game/play-game.component';
+import { ReportsComponent } from './report/report.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -19,7 +20,7 @@ const routes: Routes = [
   { path: 'dashboard', component: UserDashboardComponent },
   { path: 'chart-report', component: ChartReportComponent },
   { path: 'today-report', component: PenalReportComponent },
-  
+  { path: 'report', component: ReportsComponent },
   { path: 'share', component: SharePageComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'change-password', component: ChangesPwdComponent },

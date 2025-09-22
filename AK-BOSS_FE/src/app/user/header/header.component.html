@@ -10,9 +10,11 @@
 
     <!-- Right -->
     <div class="flex items-center gap-2 bg-teal-500 header">
-      <button class="profile-header">
+      <button (click)="openWallet()" class="profile-header">
         ₹ 500
       </button>
-      <img src="/assets/images/user-profile.svg" alt="profile" class="w-7 h-7 rounded-full bg-white">
+      <div>
+        <img (click)="openProfile()" src="/assets/images/user-profile.svg" alt="profile" class="w-7 h-7 rounded-full bg-white">
+      </div>
     </div>
   </div>

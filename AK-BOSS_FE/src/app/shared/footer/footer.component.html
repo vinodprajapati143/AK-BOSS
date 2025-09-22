@@ -1,10 +1,10 @@
 <div class="footer">
   <!-- Home -->
-  <button (click)="setActive('dashboard')" 
-          [ngClass]="{'active': active === 'dashboard'}"
+ <button (click)="setActive('report')" 
+          [ngClass]="{'active': active === 'report'}"
           class="footer-item">
-    <img src="/assets/images/icons/home-mobile.svg" alt="home" />
-    <span>Home</span>
+    <img src="/assets/images/icons/report-mobile.svg" alt="docs" />
+    <span>Report</span>
     <div class="circle-indicator"></div>
   </button>
 
@@ -18,11 +18,12 @@
   </button>
 
   <!-- Docs -->
-  <button (click)="setActive('profile')" 
-          [ngClass]="{'active': active === 'profile'}"
+ 
+    <button (click)="setActive('dashboard')" 
+          [ngClass]="{'active': active === 'dashboard'}"
           class="footer-item">
-    <img src="/assets/images/icons/report-mobile.svg" alt="docs" />
-    <span>Docs</span>
+    <img src="/assets/images/icons/home-mobile.svg" alt="home" />
+    <span>Home</span>
     <div class="circle-indicator"></div>
   </button>
 
