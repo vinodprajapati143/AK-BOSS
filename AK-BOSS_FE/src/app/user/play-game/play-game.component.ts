@@ -4,6 +4,7 @@ import { HeaderComponent } from '../header/header.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { GamedataService } from '../../core/services/gamedata.service';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-play-game',
@@ -19,6 +20,8 @@ export class PlayGameComponent implements OnInit {
   numbers: { digit: number; amount: number }[] = [];
   totalAmount = 0;
   gameDataService = inject(GamedataService);
+  apiservice = inject(ApiService);
+
   game: any;
   
 
@@ -68,6 +71,17 @@ calculateTotal() {
     };
 
     console.log("Payload for submission:", payload);
+
+    this.apiservice.saveEntries(payload).subscribe({
+      next: (response) => {
+        console.log('Entries saved successfully', response);
+        // Yahan pe success ka UI feedback ya navigation kar sakte ho
+      },
+      error: (err) => {
+        console.error('Error saving entries', err);
+        // Yahan pe error message show karwana
+      }
+    });
 
     // yahan aap HTTP call karke payload backend ko send kar sakte hain
   }
