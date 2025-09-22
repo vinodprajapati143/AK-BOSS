@@ -446,66 +446,70 @@ exports.getNearestGames = async (req, res) => {
 
     // Fetch latest input per game for today or yesterday whichever is latest
     const gameIds = games.map(g => g.id);
-    let inputsMap = {};
+  //   let inputsMap = {};
 
-//     if (gameIds.length > 0) {
-//   let inputs;
+ 
+  //  if (gameIds.length > 0) {
+  //     const [inputs] = await db.query(
+  //       `SELECT gi.*
+  //        FROM game_inputs gi
+  //        INNER JOIN (
+  //          SELECT game_id, MAX(input_date) AS latest_date
+  //          FROM game_inputs
+  //          WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+  //          GROUP BY game_id
+  //        ) t
+  //        ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+  //       [gameIds, todayIST, yesterdayDate]
+  //     );
 
-//   if (games.some(g => {
-//     const gameDays = JSON.parse(g.days || "[]");
-//     return gameDays.length === 0 || !gameDays.includes(todayName);
-//   })) {
-//     // 🟢 Holiday case → purana latest input le aao
-//       [inputs] = await db.query(
-//         `SELECT gi.* 
-//         FROM game_inputs gi
-//         INNER JOIN (
-//           SELECT game_id, MAX(input_date) AS latest_date
-//           FROM game_inputs
-//           WHERE game_id IN (?)
-//           GROUP BY game_id
-//         ) t 
-//         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-//         [gameIds])
-//   } else {
-//     // 🟢 Normal case → sirf aaj & kal ka input check
-//     [inputs] = await db.query(
-//       `SELECT gi.*
-//        FROM game_inputs gi
-//        INNER JOIN (
-//          SELECT game_id, MAX(input_date) AS latest_date
-//          FROM game_inputs
-//          WHERE game_id IN (?) 
-//            AND (input_date = ? OR input_date = ?)
-//          GROUP BY game_id
-//        ) t
-//        ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-//       [gameIds, todayIST, yesterdayDate]
-//     );
-//   }
+  //     inputs.forEach(input => {
+  //       inputsMap[input.game_id] = input;
+  //     });
+  //   }
 
-//   inputs.forEach(input => {
-//     inputsMap[input.game_id] = input;
-//   });
-// }
-   if (gameIds.length > 0) {
-      const [inputs] = await db.query(
-        `SELECT gi.*
-         FROM game_inputs gi
-         INNER JOIN (
-           SELECT game_id, MAX(input_date) AS latest_date
-           FROM game_inputs
-           WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
-           GROUP BY game_id
-         ) t
-         ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-        [gameIds, todayIST, yesterdayDate]
-      );
+  // ================= COMING SOON INPUTS (today + yesterday) =================
+let comingSoonInputsMap = {};
+if (gameIds.length > 0) {
+  const [comingSoonInputs] = await db.query(
+    `SELECT gi.* 
+     FROM game_inputs gi
+     INNER JOIN (
+       SELECT game_id, MAX(input_date) AS latest_date
+       FROM game_inputs
+       WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+       GROUP BY game_id
+     ) t 
+     ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+    [gameIds, todayIST, yesterdayDate]
+  );
 
-      inputs.forEach(input => {
-        inputsMap[input.game_id] = input;
-      });
-    }
+  comingSoonInputs.forEach(input => {
+    comingSoonInputsMap[input.game_id] = input;
+  });
+}
+
+// ================= ALL GAMES INPUTS (latest only) =================
+let allGamesInputsMap = {};
+if (gameIds.length > 0) {
+  const [allGamesInputs] = await db.query(
+    `SELECT gi.* 
+     FROM game_inputs gi
+     INNER JOIN (
+       SELECT game_id, MAX(input_date) AS latest_date
+       FROM game_inputs
+       WHERE game_id IN (?)
+       GROUP BY game_id
+     ) t 
+     ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+    [gameIds]
+  );
+
+  allGamesInputs.forEach(input => {
+    allGamesInputsMap[input.game_id] = input;
+  });
+}
+
 
     // Set grace time duration in minutes (change as needed)
     const gracePeriodMinutes = 90;
@@ -514,8 +518,9 @@ exports.getNearestGames = async (req, res) => {
     const futureGames = [];
 
     games.forEach(game => {
-      const input = inputsMap[game.id] || {};
-      console.log('input: ', input);
+      const comingSoonInputs = comingSoonInputsMap[game.id] || {};
+      const allGamesInputs = allGamesInputsMap[game.id] || {};
+
 
       const formatDateToYMD = (date) => {
         const d = new Date(date);
@@ -525,8 +530,7 @@ exports.getNearestGames = async (req, res) => {
         return `${year}-${month}-${day}`;
       };
 
-      const formattedInputDate = input.input_date ? formatDateToYMD(input.input_date) : null;
-      console.log('formattedInputDate: ', formattedInputDate);
+      const formattedInputDate = comingSoonInputs.input_date ? formatDateToYMD(comingSoonInputs.input_date) : null;
 
       const yesterdayDate = (() => {
         const d = new Date(todayIST);
@@ -536,70 +540,64 @@ exports.getNearestGames = async (req, res) => {
       let isNewDay = formattedInputDate !== todayIST;
        
 
-      let gameWithInputs = {
+      let gameWithcomingSoonInputs = {
         ...game,
-        patte1: input.patte1 || "",
-        patte1_open: input.patte1_open || "",
-        patte2_close: input.patte2_close || "",
-        patte2: input.patte2 || "",
+        patte1: comingSoonInputs.patte1 || "",
+        patte1_open: comingSoonInputs.patte1_open || "",
+        patte2_close: comingSoonInputs.patte2_close || "",
+        patte2: comingSoonInputs.patte2 || "",
         days: JSON.parse(game.days || '[]'),
 
       };
 
-      const gameDays = gameWithInputs.days;
+        let gameWithallGamesInputs = {
+        ...game,
+        patte1: allGamesInputs.patte1 || "",
+        patte1_open: allGamesInputs.patte1_open || "",
+        patte2_close: allGamesInputs.patte2_close || "",
+        patte2: allGamesInputs.patte2 || "",
+        days: JSON.parse(game.days || '[]'),
+
+      };
+
+      const gameDays = gameWithallGamesInputs.days;
 
           // 🔥 FILTERING LOGIC (holiday / off-day)
       if (gameDays.length === 0) {
         // holiday case
-       console.log("holiday case",gameWithInputs.id)
 
-        allGames.push(gameWithInputs);
+        allGames.push(gameWithallGamesInputs);
         return;
       }
       if (!gameDays.includes(todayName)) {
-       console.log("aaj ka din is game ka nahi hai",gameWithInputs.id)
 
         // aaj ka din is game ka nahi hai
-        allGames.push(gameWithInputs);
+        allGames.push(gameWithallGamesInputs);
         return;
       }
 
       const openDateTime = new Date(`${todayIST}T${game.open_time}`);
-      console.log('openDateTime: ', openDateTime);
       const closeDateTime = new Date(`${todayIST}T${game.close_time}`);
-      console.log('closeDateTime: ', closeDateTime);
 
       const openWindowStart = new Date(openDateTime.getTime() - 30 * 60000);
-      console.log('openWindowStart: ', openWindowStart);
       const closeWindowStart = new Date(closeDateTime.getTime() - 30 * 60000);
-      console.log('closeWindowStart: ', closeWindowStart);
 
       const insideOpenWindow = nowIST >= openWindowStart && nowIST < openDateTime;
-      console.log('insideOpenWindow: ', insideOpenWindow);
       const insideCloseWindow = nowIST >= closeWindowStart && nowIST < closeDateTime;
-      console.log('insideCloseWindow: ', insideCloseWindow);
 
       // Grace period end times
       const openWindowEndWithGrace = new Date(openDateTime.getTime() + gracePeriodMinutes * 60000);
-      console.log('openWindowEndWithGrace: ', openWindowEndWithGrace);
       const closeWindowEndWithGrace = new Date(closeDateTime.getTime() + gracePeriodMinutes * 60000);
-      console.log('closeWindowEndWithGrace: ', closeWindowEndWithGrace);
 
       // Check if still in grace period after close time
       const insideOpenGracePeriod = nowIST >= openDateTime && nowIST < openWindowEndWithGrace;
-      console.log('insideOpenGracePeriod: ', insideOpenGracePeriod);
       const insideCloseGracePeriod = nowIST >= closeDateTime && nowIST < closeWindowEndWithGrace;
-      console.log('insideCloseGracePeriod: ', insideCloseGracePeriod);
 
-      const missingOpenInput = !gameWithInputs.patte1 && !gameWithInputs.patte1_open;
-      console.log('missingOpenInput: ', missingOpenInput);
-      const missingCloseInput = !gameWithInputs.patte2_close && !gameWithInputs.patte2;
-      console.log('missingCloseInput: ', missingCloseInput);
+      const missingOpenInput = !gameWithcomingSoonInputs.patte1 && !gameWithcomingSoonInputs.patte1_open;
+      const missingCloseInput = !gameWithcomingSoonInputs.patte2_close && !gameWithcomingSoonInputs.patte2;
 
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
-      console.log('openWindowStarted: ', openWindowStarted);
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
-      console.log('closeWindowStarted: ', closeWindowStarted);
 
  if (
   formattedInputDate === yesterdayDate &&
@@ -613,7 +611,7 @@ exports.getNearestGames = async (req, res) => {
    if (isNewDay && (insideOpenWindow || insideCloseWindow || insideOpenGracePeriod || insideCloseGracePeriod)) {
   // NEW DAY, input nhi hai, value blank hi dikhao (only then!)
   futureGames.push({
-    ...gameWithInputs,
+    ...gameWithcomingSoonInputs,
     patte1: "",
     patte1_open: "",
     patte2_close: "",
@@ -625,7 +623,7 @@ exports.getNearestGames = async (req, res) => {
 else if (openWindowStarted && missingOpenInput) {
   // Sirf open input missing hai, to sirf open wale blank
   futureGames.push({
-    ...gameWithInputs,
+    ...gameWithcomingSoonInputs,
     patte1: "",
     patte1_open: "",
     formattedInputDate:formattedInputDate
@@ -635,7 +633,7 @@ else if (openWindowStarted && missingOpenInput) {
 } else if (closeWindowStarted && missingCloseInput) {
   // Sirf close input missing hai, to sirf close wale blank
   futureGames.push({
-    ...gameWithInputs,
+    ...gameWithcomingSoonInputs,
     patte2_close: "",
     patte2: "",
     formattedInputDate:formattedInputDate
@@ -647,7 +645,7 @@ else if (openWindowStarted && missingOpenInput) {
 } else if (missingOpenInput && nowIST > openDateTime) {
   // open window khatam, still missing, to bhi sirf open blank karo
   futureGames.push({
-    ...gameWithInputs,
+    ...gameWithcomingSoonInputs,
     patte1: "",
     patte1_open: "",
     formattedInputDate:formattedInputDate
@@ -659,7 +657,7 @@ else if (openWindowStarted && missingOpenInput) {
 } else if (missingCloseInput && nowIST > closeDateTime) {
   // close window khatam, still missing, to bhi sirf close blank karo
   futureGames.push({
-    ...gameWithInputs,
+    ...gameWithcomingSoonInputs,
     patte2_close: "",
     patte2: "",
     formattedInputDate:formattedInputDate
@@ -675,7 +673,7 @@ else if (
   missingCloseInput
 ) {
   futureGames.push({
-    ...gameWithInputs,
+    ...gameWithcomingSoonInputs,
     patte2_close: "",
     patte2: "",
     formattedInputDate:formattedInputDate
@@ -687,7 +685,7 @@ else if (
 else {
   console.log("all Games")
 
-  allGames.push(gameWithInputs);
+  allGames.push(gameWithallGamesInputs);
 }
 
     });
