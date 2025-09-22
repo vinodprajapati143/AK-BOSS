@@ -7,6 +7,7 @@ import { Game, UserGame } from '../../core/module/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { GamedataService } from '../../core/services/gamedata.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -18,6 +19,8 @@ import { Subscription } from 'rxjs';
 export class UserDashboardComponent implements OnInit,OnDestroy{
   router = inject(Router);
   gameService = inject(ApiService);
+  gameDataService = inject(GamedataService);
+
 
   games: UserGame[] = [];
   loading = true;
@@ -65,7 +68,9 @@ export class UserDashboardComponent implements OnInit,OnDestroy{
       this.subscription.unsubscribe();
     }
   }
-  playGame(id:any) {
+  playGame(game:any) {
+    console.log('game: ', game);
+    this.gameDataService.setGameData(game);
     this.router.navigate(['/user/all-games']);
   }
 }

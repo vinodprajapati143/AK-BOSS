@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
+import { GamedataService } from '../../core/services/gamedata.service';
 
 @Component({
   selector: 'app-play-game',
@@ -11,12 +12,28 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './play-game.component.html',
   styleUrl: './play-game.component.scss'
 })
-export class PlayGameComponent {
+export class PlayGameComponent implements OnInit {
   date: Date = new Date();
    digit: number | null = null;
   amount: number | null = null;
   numbers: { digit: number; amount: number }[] = [];
   totalAmount = 0;
+  gameDataService = inject(GamedataService);
+  game: any;
+  
+
+  ngOnInit() {
+  this.gameDataService.getGameData().subscribe(game => {
+    if (game) {
+      this.game = game;
+      console.log('this.game: ', this.game);
+      // Setup UI accordingly
+    } else {
+      // Redirect or show message
+      // this.router.navigate(['/user/all-games']);
+    }
+  });
+}
 
   addNumber() {
      if (this.digit !== null && this.amount !== null) {
@@ -28,11 +45,30 @@ export class PlayGameComponent {
   }
 
   
-  calculateTotal() {
-    this.totalAmount = this.numbers.reduce((sum, item) => sum + item.amount, 0);
-  }
+calculateTotal() {
+  this.totalAmount = this.numbers.reduce((sum, item) => sum + Number(item.amount), 0);
+}
+
   removeNumber(index: number) {
     this.numbers.splice(index, 1);
     this.calculateTotal();
+  }
+
+    submit() {
+    const payload = {
+      game_id: this.game.id,
+      input_date: this.game.formattedInputDate,
+      name:this.game.name,
+      total_amount: this.totalAmount,
+      entrytype: this.game.entrytype,
+      entries: this.numbers.map(item => ({
+        digit: Number(item.digit),
+        amount: item.amount
+      }))
+    };
+
+    console.log("Payload for submission:", payload);
+
+    // yahan aap HTTP call karke payload backend ko send kar sakte hain
   }
 }
