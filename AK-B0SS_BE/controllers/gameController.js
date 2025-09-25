@@ -1390,36 +1390,55 @@ exports.getUserBoardGames = async (req, res) => {
 
 exports.addSingleAnk = async (req, res) => {
   try {
-    const userId = req.user.id; // verifyToken middleware se user id mil jayegi
+    const userId = req.user.id;
     const { game_id, input_date, name, total_amount, entrytype, entries } = req.body;
 
-    if (!game_id || !input_date || !entries || entries.length === 0) {
+    if (!game_id || !input_date || !entries?.length) {
       return res.status(400).json({ message: 'Invalid input data' });
     }
 
-    // Total amount validation
+    // Sum validation
     const sumAmounts = entries.reduce((sum, e) => sum + Number(e.amount), 0);
     if (sumAmounts !== total_amount) {
       return res.status(400).json({ message: 'Total amount mismatch' });
     }
 
-    // Insert entries in DB - multiple insert queries or batch insert
-    const insertPromises = entries.map(e => {
-      const sql = `INSERT INTO single_ank_entries 
-        (user_id, game_id, name, input_date, digit, amount, total_amount) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)`;
-      const params = [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount];
-      return db.query(sql, params);
-    });
+    // Fetch user wallet balance
+    const [walletRows] = await db.query(
+      "SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1",
+      [userId]
+    );
+    const currentBalance = walletRows.length ? walletRows[0].balance_after : 0;
 
-    await Promise.all(insertPromises);
+    if (currentBalance < total_amount) {
+      return res.status(400).json({ message: 'Insufficient balance' });
+    }
 
-    return res.status(201).json({ message: 'Entries saved successfully' });
+    // Insert game entries
+    const insertEntries = entries.map(e =>
+      db.query(
+        `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount]
+      )
+    );
+    await Promise.all(insertEntries);
+
+    // Insert wallet debit transaction
+    const newBalance = currentBalance - total_amount;
+    await db.query(
+      `INSERT INTO user_wallet (user_id, transaction_type, amount, balance_after, description, related_game_id)
+       VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
+      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
+    );
+
+    return res.status(201).json({ message: 'Entries saved and wallet updated', balance: newBalance });
   } catch (error) {
     console.error('Error in addSingleAnk:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
