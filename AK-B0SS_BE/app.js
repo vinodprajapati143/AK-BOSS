@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const userRoutes = require('./routes/user.routes');
+const walletRoutes = require('./routes/walletRoutes');
+
 
 
 
@@ -42,6 +44,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/wallet", walletRoutes);
+
 
  // 🔁 Ping Pong route
 app.get('/ping', (req, res) => {

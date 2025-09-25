@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { WalletService } from '../../core/services/wallet.service';
 
 @Component({
   selector: 'app-header',
@@ -8,9 +9,16 @@ import { Router } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+  userWalletBalance: number | undefined;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,private walletService:WalletService) {}
+
+  ngOnInit() {
+  this.walletService.walletBalance$.subscribe(balance => {
+    this.userWalletBalance = balance;
+  });
+}
 
  openWallet() {
      this.router.navigate(['/user/add-amount']);

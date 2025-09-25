@@ -58,9 +58,14 @@ calculateTotal() {
   }
 
     submit() {
+
+    const todayDate = new Date().toISOString().split('T')[0];
+    console.log('todayDate: ', todayDate);
+
+ 
     const payload = {
       game_id: this.game.id,
-      input_date: this.game.formattedInputDate,
+      input_date: todayDate,
       name:this.game.name,
       total_amount: this.totalAmount,
       entrytype: this.game.entrytype,
