@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { GamedataService } from '../../core/services/gamedata.service';
 import { ApiService } from '../../core/services/api.service';
+import { WalletService } from '../../core/services/wallet.service';
 
 @Component({
   selector: 'app-play-game',
@@ -21,6 +22,8 @@ export class PlayGameComponent implements OnInit {
   totalAmount = 0;
   gameDataService = inject(GamedataService);
   apiservice = inject(ApiService);
+  walletService = inject(WalletService);
+
 
   game: any;
   
@@ -80,6 +83,7 @@ calculateTotal() {
     this.apiservice.saveEntries(payload).subscribe({
       next: (response) => {
         console.log('Entries saved successfully', response);
+        this.walletService.refreshWallet();
         // Yahan pe success ka UI feedback ya navigation kar sakte ho
       },
       error: (err) => {
