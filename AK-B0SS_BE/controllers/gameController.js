@@ -654,9 +654,7 @@ else if (openWindowStarted && missingOpenInput) {
   });
   console.log("open window khatam, still missing, to bhi sirf open blank karo")
 
-}
-
-else if (missingCloseInput && nowIST > closeDateTime) {
+} else if (missingCloseInput && nowIST > closeDateTime) {
   // close window khatam, still missing, to bhi sirf close blank karo
   futureGames.push({
     ...gameWithcomingSoonInputs,
