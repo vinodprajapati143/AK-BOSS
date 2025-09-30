@@ -601,6 +601,24 @@ if (gameIds.length > 0) {
 
       const openCloseWindowFinished = nowIST > closeDateTime;
       const bothInputsMissing = missingOpenInput && missingCloseInput;
+      const inputIsNotToday = formattedInputDate !== todayIST;
+
+      if (
+    openCloseWindowFinished
+    && bothInputsMissing
+    && (inputIsNotToday || !formattedInputDate)
+) {
+    // गेम का समय पास हो गया, आज का input missing है, दोनों इनपुट खाली हैं
+    futureGames.push({
+        ...gameWithcomingSoonInputs,
+        patte1: "",
+        patte1_open: "",
+        patte2_close: "",
+        patte2: "",
+        formattedInputDate: formattedInputDate,
+    });
+    return;
+}
 
  if (
   formattedInputDate === yesterdayDate &&
