@@ -666,6 +666,17 @@ else if (openWindowStarted && missingOpenInput) {
   console.log("close window khatam, still missing, to bhi sirf close blank karo")
 
 }
+if (openCloseWindowFinished && bothInputsMissing) {
+  // गेम का समय खत्म हो चुका है और इनपुट नहीं मिले, futureGames में रखें
+  futureGames.push({
+    ...gameWithcomingSoonInputs,
+    patte1: "",
+    patte1_open: "",
+    patte2_close: "",
+    patte2: "",
+    formattedInputDate: formattedInputDate,
+  });
+}
 // 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
 else if (
   formattedInputDate === yesterdayDate &&
@@ -683,28 +694,9 @@ else if (
 }
 
 else {
-const allInputValuesEmpty =
-  !gameWithallGamesInputs.patte1 &&
-  !gameWithallGamesInputs.patte1_open &&
-  !gameWithallGamesInputs.patte2 &&
-  !gameWithallGamesInputs.patte2_close;
+  console.log("all Games")
 
-// Only move to allGames if input_date is today and at least one value is filled
-if (
-  gameWithallGamesInputs.input_date === todayIST &&
-  !allInputValuesEmpty
-) {
   allGames.push(gameWithallGamesInputs);
-} else {
-  futureGames.push({
-    ...gameWithcomingSoonInputs,
-    patte1: "",
-    patte1_open: "",
-    patte2_close: "",
-    patte2: "",
-    formattedInputDate: formattedInputDate,
-  });
-}
 }
 
     });
