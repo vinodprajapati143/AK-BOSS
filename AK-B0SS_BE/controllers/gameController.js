@@ -472,10 +472,16 @@ exports.getNearestGames = async (req, res) => {
 let comingSoonInputsMap = {};
 if (gameIds.length > 0) {
   const [comingSoonInputs] = await db.query(
-   `SELECT gi.* 
-   FROM game_inputs gi 
-   WHERE gi.game_id IN (?) AND gi.input_date = ?`,
-  [gameIds, todayIST]
+    `SELECT gi.* 
+     FROM game_inputs gi
+     INNER JOIN (
+       SELECT game_id, MAX(input_date) AS latest_date
+       FROM game_inputs
+       WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
+       GROUP BY game_id
+     ) t 
+     ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
+    [gameIds, todayIST, yesterdayDate]
   );
 
   comingSoonInputs.forEach(input => {
@@ -593,12 +599,6 @@ if (gameIds.length > 0) {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
-      const openCloseWindowFinished = nowIST > closeDateTime;
-      const bothInputsMissing = missingOpenInput && missingCloseInput;
-      const inputIsNotToday = formattedInputDate !== todayIST;
-
-
-
  if (
   formattedInputDate === yesterdayDate &&
   !missingOpenInput &&
@@ -665,22 +665,6 @@ else if (openWindowStarted && missingOpenInput) {
   });
   console.log("close window khatam, still missing, to bhi sirf close blank karo")
 
-}
-     else if (
-    openCloseWindowFinished
-    && bothInputsMissing
-    && (inputIsNotToday || !formattedInputDate)
-) {
-    // गेम का समय पास हो गया, आज का input missing है, दोनों इनपुट खाली हैं
-    console.log('गेम का समय पास हो गया, आज का input missing है, दोनों इनपुट खाली हैं: ' );
-    futureGames.push({
-        ...gameWithcomingSoonInputs,
-        patte1: "",
-        patte1_open: "",
-        patte2_close: "",
-        patte2: "",
-        formattedInputDate: formattedInputDate,
-    });
 }
 // 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
 else if (
