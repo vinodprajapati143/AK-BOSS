@@ -620,7 +620,7 @@ if (gameIds.length > 0) {
   });
   console.log("NEW DAY, input nhi hai, value blank hi dikhao (only then!)");
 }
-else if (openWindowStarted && missingOpenInput) {
+else if (isNewDay &&(openWindowStarted && missingOpenInput)) {
   // Sirf open input missing hai, to sirf open wale blank
   futureGames.push({
     ...gameWithcomingSoonInputs,
@@ -630,7 +630,7 @@ else if (openWindowStarted && missingOpenInput) {
    
   });
   console.log(" // Sirf open input missing hai, to sirf open wale blank")
-} else if (closeWindowStarted && missingCloseInput) {
+} else if (isNewDay && (closeWindowStarted && missingCloseInput)) {
   // Sirf close input missing hai, to sirf close wale blank
   futureGames.push({
     ...gameWithcomingSoonInputs,
@@ -642,7 +642,7 @@ else if (openWindowStarted && missingOpenInput) {
   });
   console.log("Sirf close input missing hai, to sirf close wale blank")
 
-} else if (missingOpenInput && nowIST > openDateTime) {
+} else if (isNewDay &&(missingOpenInput && nowIST > openDateTime)) {
   // open window khatam, still missing, to bhi sirf open blank karo
   futureGames.push({
     ...gameWithcomingSoonInputs,
@@ -668,7 +668,7 @@ else if (openWindowStarted && missingOpenInput) {
 //   console.log("close window khatam, still missing, to bhi sirf close blank karo")
 
 // }
-else if (isNewDay && missingCloseInput && nowIST > closeDateTime) {
+else if (isNewDay && (missingCloseInput && nowIST > closeDateTime)) {
   // Aaj ka input nahi mila, close bhi missing hai
   futureGames.push({
     ...gameWithcomingSoonInputs,
