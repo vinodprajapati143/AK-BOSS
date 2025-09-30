@@ -560,19 +560,19 @@ if (gameIds.length > 0) {
 
       };
 
-      const gameDays = gameWithallGamesInputs.days;
+      const gameDays = gameWithcomingSoonInputs.days;
 
           // 🔥 FILTERING LOGIC (holiday / off-day)
       if (gameDays.length === 0) {
         // holiday case
 
-        allGames.push(gameWithallGamesInputs);
+        allGames.push(gameWithcomingSoonInputs);
         return;
       }
       if (!gameDays.includes(todayName)) {
 
         // aaj ka din is game ka nahi hai
-        allGames.push(gameWithallGamesInputs);
+        allGames.push(gameWithcomingSoonInputs);
         return;
       }
 
@@ -685,7 +685,7 @@ else if (
 else {
   console.log("all Games")
 
-  allGames.push(gameWithallGamesInputs);
+  allGames.push(gameWithcomingSoonInputs);
 }
 
     });
