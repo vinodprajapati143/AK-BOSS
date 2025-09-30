@@ -683,9 +683,28 @@ else if (
 }
 
 else {
-  console.log("all Games")
+const allInputValuesEmpty =
+  !gameWithallGamesInputs.patte1 &&
+  !gameWithallGamesInputs.patte1_open &&
+  !gameWithallGamesInputs.patte2 &&
+  !gameWithallGamesInputs.patte2_close;
 
+// Only move to allGames if input_date is today and at least one value is filled
+if (
+  gameWithallGamesInputs.input_date === todayIST &&
+  !allInputValuesEmpty
+) {
   allGames.push(gameWithallGamesInputs);
+} else {
+  futureGames.push({
+    ...gameWithcomingSoonInputs,
+    patte1: "",
+    patte1_open: "",
+    patte2_close: "",
+    patte2: "",
+    formattedInputDate: formattedInputDate,
+  });
+}
 }
 
     });
