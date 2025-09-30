@@ -472,16 +472,10 @@ exports.getNearestGames = async (req, res) => {
 let comingSoonInputsMap = {};
 if (gameIds.length > 0) {
   const [comingSoonInputs] = await db.query(
-    `SELECT gi.* 
-     FROM game_inputs gi
-     INNER JOIN (
-       SELECT game_id, MAX(input_date) AS latest_date
-       FROM game_inputs
-       WHERE game_id IN (?) AND (input_date = ? OR input_date = ?)
-       GROUP BY game_id
-     ) t 
-     ON gi.game_id = t.game_id AND gi.input_date = t.latest_date`,
-    [gameIds, todayIST, yesterdayDate]
+   `SELECT gi.* 
+   FROM game_inputs gi 
+   WHERE gi.game_id IN (?) AND gi.input_date = ?`,
+  [gameIds, todayIST]
   );
 
   comingSoonInputs.forEach(input => {
