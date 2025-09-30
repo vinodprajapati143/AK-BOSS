@@ -709,9 +709,8 @@ else if (
   console.log("Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya")
 }
 
-else {
+else if (!isNewDay) {
   console.log("all Games")
-
   allGames.push(gameWithallGamesInputs);
 }
 
