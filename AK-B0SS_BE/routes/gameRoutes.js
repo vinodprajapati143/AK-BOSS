@@ -14,6 +14,7 @@ router.post("/add-game",  gameController.addGame);
 router.get("/game-list", gameController.getGameList);
 router.get("/nearest-game-list", gameController.getNearestGames);
 router.get("/user-game-list", gameController.getUserBoardGames);
+
 router.post("/save-game-input", gameController.saveGameInput);
 router.get('/:id', gameController.getGameById);
 router.put('/:id', gameController.updateGameById);

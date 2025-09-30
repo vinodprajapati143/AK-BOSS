@@ -654,18 +654,42 @@ else if (openWindowStarted && missingOpenInput) {
   });
   console.log("open window khatam, still missing, to bhi sirf open blank karo")
 
-} else if (missingCloseInput && nowIST > closeDateTime) {
-  // close window khatam, still missing, to bhi sirf close blank karo
+}
+
+// else if (missingCloseInput && nowIST > closeDateTime) {
+//   // close window khatam, still missing, to bhi sirf close blank karo
+//   futureGames.push({
+//     ...gameWithcomingSoonInputs,
+//     patte2_close: "",
+//     patte2: "",
+//     formattedInputDate:formattedInputDate
+
+//   });
+//   console.log("close window khatam, still missing, to bhi sirf close blank karo")
+
+// }
+else if (isNewDay && missingCloseInput && nowIST > closeDateTime) {
+  // Aaj ka input nahi mila, close bhi missing hai
   futureGames.push({
     ...gameWithcomingSoonInputs,
     patte2_close: "",
     patte2: "",
-    formattedInputDate:formattedInputDate
-
+    formattedInputDate: formattedInputDate
   });
-  console.log("close window khatam, still missing, to bhi sirf close blank karo")
-
+  console.log("isNewDay + close window khatam, still missing -> futureGames");
 }
+else if (!isNewDay && missingCloseInput && nowIST > closeDateTime) {
+  // Kal ka data tha, close missing tha, ab grace ke baad bhi missing hai
+  futureGames.push({
+    ...gameWithcomingSoonInputs,
+    patte2_close: "",
+    patte2: "",
+    formattedInputDate: formattedInputDate
+  });
+  console.log("yesterday input tha, close missing tha -> futureGames");
+}
+ 
+
 // 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
 else if (
   formattedInputDate === yesterdayDate &&
