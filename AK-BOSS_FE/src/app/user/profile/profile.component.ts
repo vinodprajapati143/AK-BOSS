@@ -5,6 +5,9 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../../core/services/api.service';
 import { StorageService } from '../../core/services/storage.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ChangepwdModalComponent } from '../changepwd-modal/changepwd-modal.component';
+import { ProfileEditComponent } from '../profile-edit/profile-edit.component';
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +19,7 @@ import { Router } from '@angular/router';
 export class ProfileComponent implements OnInit{
   user: any;
 
- constructor(private router: Router, private strorageservice: StorageService, private toaster: ToastrService, private backendservice: ApiService) {
+ constructor(private router: Router, private dialog: MatDialog, private strorageservice: StorageService, private toaster: ToastrService, private backendservice: ApiService) {
 
   }
      logout() {
@@ -86,11 +89,17 @@ export class ProfileComponent implements OnInit{
   }
 
   changePassword() {
-    this.router.navigate(['/user/change-password']);
+    this.dialog.open(ChangepwdModalComponent, {
+      width: '400px',
+      panelClass: 'custom-dialog'
+    });
   }
 
   editUserName() {
-    this.router.navigate(['/user/editUserName']);
+       this.dialog.open(ProfileEditComponent, {
+      width: '400px',
+      panelClass: 'custom-dialog'
+    });
   }
 
 }

@@ -5,19 +5,21 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-profile-edit',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent,ReactiveFormsModule,FormsModule],
+  imports: [ReactiveFormsModule,FormsModule],
   templateUrl: './profile-edit.component.html',
   styleUrl: './profile-edit.component.scss'
 })
 export class ProfileEditComponent implements OnInit{
   profileForm!: FormGroup;
   user: any;
+dialog: any;
 
-  constructor(private router:Router, private fb: FormBuilder, private backendService: ApiService,private toastr:ToastrService) {}
+  constructor(private router:Router, private dialogRef: MatDialogRef<ProfileEditComponent>, private fb: FormBuilder, private backendService: ApiService,private toastr:ToastrService) {}
 
     ngOnInit(): void {
     // form banaya
@@ -39,6 +41,10 @@ export class ProfileEditComponent implements OnInit{
       });
 
   }
+
+  closeModal() {
+  this.dialogRef.close();
+}
 
 saveProfile() {
   if (this.profileForm.valid) {

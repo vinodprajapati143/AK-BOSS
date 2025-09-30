@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ChangesPwdComponent } from './changes-pwd.component';
+import { ChangepwdModalComponent } from './changepwd-modal.component';
 
-describe('ChangesPwdComponent', () => {
-  let component: ChangesPwdComponent;
-  let fixture: ComponentFixture<ChangesPwdComponent>;
+describe('ChangepwdModalComponent', () => {
+  let component: ChangepwdModalComponent;
+  let fixture: ComponentFixture<ChangepwdModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChangesPwdComponent]
+      imports: [ChangepwdModalComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ChangesPwdComponent);
+    fixture = TestBed.createComponent(ChangepwdModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

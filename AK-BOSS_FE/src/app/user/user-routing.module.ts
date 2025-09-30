@@ -6,7 +6,6 @@ import { PenalReportComponent } from './penal-report/penal-report.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { SharePageComponent } from './share-page/share-page.component';
 import { ProfileComponent } from './profile/profile.component';
-import { ChangesPwdComponent } from './changes-pwd/changes-pwd.component';
 import { ProfileEditComponent } from './profile-edit/profile-edit.component';
 import { AddAmountComponent } from './add-amount/add-amount.component';
 import { WithdrawalComponent } from './withdrawal/withdrawal.component';
@@ -23,8 +22,6 @@ const routes: Routes = [
   { path: 'report', component: ReportsComponent },
   { path: 'share', component: SharePageComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'change-password', component: ChangesPwdComponent },
-  { path: 'editUserName', component: ProfileEditComponent },
   { path: 'add-amount', component: AddAmountComponent },
   { path: 'all-games', component: AllGamesComponent },
   { path: 'play', component: PlayGameComponent },
