@@ -530,14 +530,17 @@ if (gameIds.length > 0) {
         return `${year}-${month}-${day}`;
       };
 
-      const formattedInputDate = comingSoonInputs.input_date ? formatDateToYMD(comingSoonInputs.input_date) : null;
-
+      // const formattedInputDate = comingSoonInputs.input_date ? formatDateToYMD(comingSoonInputs.input_date) : null;
+        const formattedInputDate = comingSoonInputs.input_date 
+          ? formatDateToYMD(comingSoonInputs.input_date) 
+          : null;
       const yesterdayDate = (() => {
         const d = new Date(todayIST);
         d.setDate(d.getDate() - 1);
         return formatDateToYMD(d);
       })();
-      let isNewDay = formattedInputDate !== todayIST;
+      const isNewDay = !formattedInputDate || formattedInputDate !== todayIST;
+      console.log('isNewDay: ', isNewDay);
        
 
       let gameWithcomingSoonInputs = {
