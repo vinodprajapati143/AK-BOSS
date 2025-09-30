@@ -414,7 +414,7 @@ submitGame(game: any) {
     // Implement edit functionality here
     // alert(`Edit game with ID: ${game.id}`);
            this.dialog.open(EditgameModuleComponent, {
-          width: '400px',
+          width: '100%',
           panelClass: 'custom-dialog'
         });
   }

@@ -32,7 +32,7 @@ export class BalTransferComponent {
     // Logic to view user details
     // console.log('Viewing user with ID:', id);
        this.dialog.open(BalanceModalComponent, {
-              width: '400px',
+              width: '100%',
               panelClass: 'custom-dialog'
             });
   }

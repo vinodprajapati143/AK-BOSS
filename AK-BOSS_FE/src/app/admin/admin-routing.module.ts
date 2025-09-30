@@ -4,6 +4,7 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { AddGameComponent } from './add-game/add-game.component';
 import { AllGameComponent } from './all-game/all-game.component';
 import { BalTransferComponent } from './bal-transfer/bal-transfer.component';
+import { BalanceReturnComponent } from './balance-return/balance-return.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'users', pathMatch: 'full' },
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'add-game', component: AddGameComponent },
   { path: 'all-game', component: AllGameComponent },
   { path: 'bal-transfer', component: BalTransferComponent },
+  { path: 'balance-return', component: BalanceReturnComponent }
 ];
 
 

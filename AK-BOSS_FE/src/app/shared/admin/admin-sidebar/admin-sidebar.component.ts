@@ -92,7 +92,7 @@ export class AdminSidebarComponent {
       {
         img: 'report',
         text: 'Balance Return',
-        href: '/admin/bal-return',
+        href: '/admin/balance-return',
         active: false,
       },
         {
