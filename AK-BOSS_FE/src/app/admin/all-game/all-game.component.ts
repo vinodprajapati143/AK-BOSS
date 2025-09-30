@@ -6,6 +6,8 @@ import { Game } from '../../core/module/models';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { interval, Subscription } from 'rxjs';
+import { EditgameModuleComponent } from '../editgame-module/editgame-module.component';
+import { MatDialog } from '@angular/material/dialog';
 export interface User {
   name: string;
   enabled: boolean;
@@ -24,7 +26,8 @@ export interface User {
 })
 export class AllGameComponent implements OnInit,OnDestroy  {
  private apiService = inject(ApiService); 
- private toastr = inject(ToastrService)
+ private toastr = inject(ToastrService);
+ private dialog = inject(MatDialog);
  private interval: any;
  private subscription!: Subscription;
 
@@ -407,7 +410,14 @@ submitGame(game: any) {
   });
 }
 
- 
+ editGame(game: any) {
+    // Implement edit functionality here
+    // alert(`Edit game with ID: ${game.id}`);
+           this.dialog.open(EditgameModuleComponent, {
+          width: '400px',
+          panelClass: 'custom-dialog'
+        });
+  }
  
 
  

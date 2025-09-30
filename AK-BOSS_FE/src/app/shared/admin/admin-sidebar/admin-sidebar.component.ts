@@ -34,7 +34,8 @@ export class AdminSidebarComponent {
     { img: 'home', href: '/admin/dashboard', text: 'Home', active: true },
     { img: 'gamepad', href: '/admin/all-game', text: 'Game', active: false },
     { img: 'referral', href: '/admin/users', text: 'Members', active: false },
-    { img: 'report', href: '/admin/reports', text: 'Reports', active: false },
+    { img: 'report', href: '/admin/bal-transfer', text: 'Payment', active: false },
+
     {
       img: 'referral',
       href: '/admin/referral',
@@ -81,11 +82,35 @@ export class AdminSidebarComponent {
         active: false,
       },
     ],
-    Reports: [
+       Payment: [
       {
         img: 'report',
-        text: 'Daily Report',
-        href: '/admin/reports',
+        text: 'Balance Transfer',
+        href: '/admin/bal-transfer',
+        active: false,
+      },
+      {
+        img: 'report',
+        text: 'Balance Return',
+        href: '/admin/bal-return',
+        active: false,
+      },
+        {
+        img: 'report',
+        text: 'Bal Return Request',
+        href: '/admin/bal-return-request',
+        active: false,
+      },
+        {
+        img: 'report',
+        text: 'Payment Request view',
+        href: '/admin/payment-request-view',
+        active: false,
+      },
+        {
+        img: 'report',
+        text: 'Purchase Balance',
+        href: '/admin/purchase-balance',
         active: false,
       },
     ],

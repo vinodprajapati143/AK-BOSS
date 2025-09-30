@@ -30,7 +30,7 @@
         <ul>
             <li *ngFor="let sub of currentSubLinks">
             <a [routerLink]="sub.href"
-                routerLinkActive="active"
+                routerLinkActive="active" class="text-xs"
                 [routerLinkActiveOptions]="{ exact: true }">
                 <img [src]="getImageUrl(sub.img, false)" alt="">
                 {{ sub.text }}
