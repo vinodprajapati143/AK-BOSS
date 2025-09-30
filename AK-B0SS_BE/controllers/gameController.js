@@ -599,6 +599,9 @@ if (gameIds.length > 0) {
       const openWindowStarted = nowIST >= openWindowStart && nowIST < openDateTime;
       const closeWindowStarted = nowIST >= closeWindowStart && nowIST < closeDateTime;
 
+      const openCloseWindowFinished = nowIST > closeDateTime;
+      const bothInputsMissing = missingOpenInput && missingCloseInput;
+
  if (
   formattedInputDate === yesterdayDate &&
   !missingOpenInput &&
