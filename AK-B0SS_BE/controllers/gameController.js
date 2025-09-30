@@ -603,22 +603,7 @@ if (gameIds.length > 0) {
       const bothInputsMissing = missingOpenInput && missingCloseInput;
       const inputIsNotToday = formattedInputDate !== todayIST;
 
-      if (
-    openCloseWindowFinished
-    && bothInputsMissing
-    && (inputIsNotToday || !formattedInputDate)
-) {
-    // गेम का समय पास हो गया, आज का input missing है, दोनों इनपुट खाली हैं
-    futureGames.push({
-        ...gameWithcomingSoonInputs,
-        patte1: "",
-        patte1_open: "",
-        patte2_close: "",
-        patte2: "",
-        formattedInputDate: formattedInputDate,
-    });
-    return;
-}
+
 
  if (
   formattedInputDate === yesterdayDate &&
@@ -687,16 +672,21 @@ else if (openWindowStarted && missingOpenInput) {
   console.log("close window khatam, still missing, to bhi sirf close blank karo")
 
 }
-if (openCloseWindowFinished && bothInputsMissing) {
-  // गेम का समय खत्म हो चुका है और इनपुट नहीं मिले, futureGames में रखें
-  futureGames.push({
-    ...gameWithcomingSoonInputs,
-    patte1: "",
-    patte1_open: "",
-    patte2_close: "",
-    patte2: "",
-    formattedInputDate: formattedInputDate,
-  });
+     else if (
+    openCloseWindowFinished
+    && bothInputsMissing
+    && (inputIsNotToday || !formattedInputDate)
+) {
+    // गेम का समय पास हो गया, आज का input missing है, दोनों इनपुट खाली हैं
+    console.log('गेम का समय पास हो गया, आज का input missing है, दोनों इनपुट खाली हैं: ' );
+    futureGames.push({
+        ...gameWithcomingSoonInputs,
+        patte1: "",
+        patte1_open: "",
+        patte2_close: "",
+        patte2: "",
+        formattedInputDate: formattedInputDate,
+    });
 }
 // 🔹 Special Case: Input yesterday ka hai, open mila hai, close missing hai, aur day change ho gaya
 else if (
