@@ -512,7 +512,7 @@ if (gameIds.length > 0) {
 
 
     // Set grace time duration in minutes (change as needed)
-    const gracePeriodMinutes = 90;
+    const gracePeriodMinutes = 270;
 
     const allGames = [];
     const futureGames = [];
@@ -605,6 +605,7 @@ if (gameIds.length > 0) {
   missingCloseInput
 ) {
   isNewDay =false
+  console.log('check');
 }
 
 
