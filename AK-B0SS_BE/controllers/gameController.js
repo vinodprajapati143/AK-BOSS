@@ -686,7 +686,7 @@ else if (
 else {
   console.log("all Games")
 
-  allGames.push(gameWithcomingSoonInputs);
+  allGames.push(gameWithallGamesInputs);
 }
 
     });
