@@ -1,152 +1,151 @@
- <app-header></app-header>
+<app-header></app-header>
 <div class="dashboard-body">
-    <div class="main">
+    <div class="main mt-16">
         <div
-            class="bg-[#D9D9D91A] font-[500] mt-5 text-[18px] md:text-left text-center md:border-2 md:border-b-0 border-y-2  border-[#20A2A0A1] md:rounded-t-[20px] p-[16px] lg:mx-8">
-            All Transaction Report</div>
-
-        <div class="table-view block hidden sm:block overflow-x-scroll  mx-auto lg:px-8 mb-4">
-            <table class="min-w-full bg-[#D9D9D91A] border-collapse border-2 border-[#20A2A0A1] rounded-b-[20px]">
-                <!-- Table Head -->
-                <thead>
-                    <tr class="text-center text-sm font-bold">
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">ORDER DATE</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">OPENING BALANCE</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">PURCHASE AMOUNT</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">QUANTITY</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">AMOUNT AFTER TAX</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">TAX</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">RESULT</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">SELECT</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">STATUS</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">WIN/LOSS</th>
-                        <th class="border-1 border-[#20A2A0A1] px-4 py-2">CLOSING BALANCE</th>
-                    </tr>
-                </thead>
-
-                <!-- Table Body -->
-                <tbody>
-                    <tr *ngFor="let transaction of transactions" class="text-sm">
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-center">{{ transaction.date }}</td>
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-green-500 font-bold text-center">₹{{
-                            transaction.openingBalance.toFixed(2)
-                            }}</td>
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-green-500 font-bold text-center">₹{{
-                            transaction.purchaseAmount.toFixed(2)
-                            }}</td>
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-center">{{ transaction.quantity }}</td>
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-center">₹{{ transaction.amountAfterTax }}
-                        </td>
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-center">₹{{ transaction.tax }}</td>
-
-                        <!-- Result -->
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 gap-1">
-                            <div class="flex flex-col gap-y-2 items-center">
-                                <span class="bg-red-500 text-white px-4 py-1 rounded-full text-center">{{
-                                    transaction.result.number
-                                    }}</span>
-                                <span class="bg-[#FF9900] text-white px-4 py-1 rounded-full text-center">{{
-                                    transaction.result.type1
-                                    }}</span>
-                                <span class="bg-pink-500 text-white px-4 py-1 rounded-full text-center">{{
-                                    transaction.result.type2
-                                    }}</span>
-                            </div>
-                        </td>
-
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2">
-                            <span class="bg-[#FF9900] rounded-full text-white px-2 py-1">{{ transaction.select }}</span>
-                        </td>
-
-                        <!-- Status -->
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2">
-                            <span class="bg-green-500 rounded-full text-white px-2 py-1">{{ transaction.status }}</span>
-                        </td>
-
-                        <!-- Win/Loss -->
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-red-500 font-bold"><span
-                                class="bg-danger rounded-full text-green-500 px-2 py-1">₹{{ transaction.winLoss.toFixed(2)
-                                }}</span></td>
-
-                        <!-- Closing Balance -->
-                        <td class="border-1 border-[#20A2A0A1] px-4 py-2 text-red-500 font-bold text-center">₹{{
-                            transaction.closingBalance.toFixed(2) }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            class="bg-[#D9D9D91A] font-[500] mt-5 text-[18px] text-center border-y-2  border-[#20A2A0A1] p-[16px] lg:mx-8">
+            All Transaction Report
         </div>
+        <div class="flex justify-center gap-x-2 mb-4">
+            <input type="date" value="2025-12-02"
+                style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                class="mt-2 w-[110px] border-[#219EBC] lg:text-md border-2 py-2 font-semibold rounded-md lg:px-4 px-2 text-xs"
+                name="" id="">
+            <button class="mt-2 border-[#219EBC] lg:text-md border-2 py-2 font-semibold rounded-md px-4 text-xs"
+                style="box-shadow: 0px 4px 4px 0px #00000040; background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);">
+                <div class="flex items-center gap-x-2">Search </div>
+            </button>
+            <input type="date" value="2025-12-02"
+                style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                class="mt-2 w-[110px] border-[#219EBC] lg:text-md border-2 py-2 font-semibold rounded-md lg:px-4 px-2 text-xs"
+                name="" id="">
+
+        </div>
+
         <div *ngFor="let transaction of transactions"
-            class="bg-white shadow-md p-4 space-y-3 border-b-2  border-[#00a89d50] md:hidden block">
-            <!-- Header: Type + Period + Time -->
-            <div class="flex justify-between items-start" (click)="transaction.active=!transaction.active">
-                <div class="bg-[#FEAA57] text-white font-bold px-4 py-1 rounded-md text-sm">{{transaction.select}}</div>
-                <div class="text-right text-sm">
-                    <p class="font-medium text-gray-800">20250406100052318</p>
-                    <p class="text-gray-500 text-xs">{{transaction.date}}</p>
+            class="bg-white shadow-md p-4 space-y-3 border-b-2 border-[#20A2A0] block">
+
+            <!-- HEADER -->
+            <div class="flex justify-between items-start" (click)="transaction.active = !transaction.active">
+                <div class="flex items-center gap-x-4">
+                    <div class="text-white font-bold px-[14px] py-[12px] rounded-md text-sm"
+                        [ngStyle]="{ 'background-color': transaction.color }">
+                        {{ transaction.type }}
+                    </div>
+                    <div class="text-left text-sm">
+                        <p class="font-medium text-gray-800">20250406100052318</p>
+                        <p class="text-gray-500 text-xs">{{ transaction.date }}</p>
+                    </div>
                 </div>
-                <div class="text-green-500 text-right text-[10px] font-semibold">
-                    <span class="border-1 border-green-500 px-2 rounded-full py-[2px]">{{transaction.status}}</span>
-                    <div class="mt-1 text-[12px]">₹{{transaction.purchaseAmount}}</div>
+                <div class="text-right text-[10px] font-semibold" [style.color]="transaction.color">
+                    <span class="px-2 border-2 font-bold rounded-full py-[2px]"
+                        [style.border-color]="transaction.color">{{ transaction.status }}</span>
+                    <div class="mt-1 text-[12px]">₹{{ transaction.winLoss }}</div>
                 </div>
             </div>
 
-            <!-- Info Rows -->
-            <div *ngIf="transaction.active" class="divide-y divide-[#00a89d50] rounded-md overflow-hidden">
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Order Date</span>
-                    <span class="text-gray-600">{{transaction.date}}</span>
+            <!-- DETAILS -->
+            <div *ngIf="transaction.active" class="rounded-md overflow-hidden">
+
+                <!-- Opening Balance -->
+                <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Opening Balance</span>
+                    <span class="text-[#00D457]">₹{{ transaction.openingBalance }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Opening Balance</span>
-                    <span class="text-green-600">₹{{transaction.openingBalance}}</span>
+
+                <!-- Win Amount -->
+                <div *ngIf="transaction.type === 'Win'"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Win Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.winAmount }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Purchase Amount</span>
-                    <span class="text-green-600">₹{{transaction.purchaseAmount}}</span>
+
+                <!-- Purchase Amount -->
+                <div *ngIf="transaction.type === 'Add Money'"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Purchase Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.purchaseAmount }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Quantity</span>
-                    <span class="font-bold">{{transaction.quantity}}</span>
+
+                <!-- Playing Amount -->
+                <div *ngIf="transaction.type === 'Playing'"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Playing Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.playingAmount }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Amount After Tax</span>
-                    <span class="font-bold">{{transaction.amountAfterTax}}</span>
+
+                <!-- Quantity -->
+                <div *ngIf="transaction.quantity"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Quantity</span>
+                    <span class="font-bold">{{ transaction.quantity }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Tax</span>
-                    <span class="font-bold">₹{{transaction.tax}}</span>
+
+                <!-- Amount After Tax -->
+                <div *ngIf="transaction.amountAfterTax"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Amount After Tax</span>
+                    <span class="font-bold">₹{{ transaction.amountAfterTax }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Result</span>
+
+                <!-- Tax -->
+                <div *ngIf="transaction.tax"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Tax</span>
+                    <span class="font-bold">₹{{ transaction.tax }}</span>
+                </div>
+
+                <!-- Open Select -->
+                <div *ngIf="transaction.openSelect?.length"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Open Select</span>
+                    <div class="flex gap-x-4">
+                        <span *ngFor="let sel of transaction.openSelect"
+                            style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                            class="border-2 px-2 py-1 rounded-md bg-[#D9D9D94D] border-[#20A2A0] text-sm font-semibold">
+                            {{ sel }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div *ngIf="transaction.result"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Result</span>
                     <span class="flex gap-x-2">
-                        <span class="font-bold font-medium">{{transaction.result.number}}</span>
-                        <span class="text-red-500 font-semibold">{{transaction.result.type1}}</span>
-                        <span class="font-bold font-semibold">{{transaction.result.type2}}</span>
+                        <span
+                            style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                            class="px-2 border-[#219EBC] border-2 font-bold">{{ transaction.result.number }}</span>
+                        <span
+                            style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                            class="px-2 border-[#219EBC] border-2 font-bold">{{ transaction.result.type1 }}</span>
+                        <span
+                            style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                            class="px-2 border-[#219EBC] border-2 font-bold">{{ transaction.result.type2 }}</span>
                     </span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Select</span>
-                    <span class="text-orange-400 font-bold">{{transaction.select}}</span>
+
+                <!-- Status -->
+                <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Status</span>
+                    <span class="rounded-full text-[#00D457] font-bold px-2 py-1">{{ transaction.status }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Status</span>
-                    <span class="bg-green-500 rounded-full text-white px-2 py-1">{{ transaction.status }}</span>
+
+                <!-- Win/Loss -->
+                <div *ngIf="transaction.winLoss !== undefined"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Win/Loss</span>
+                    <span class="text-[#00D457] font-bold">₹{{ transaction.winLoss.toFixed(2) }}</span>
                 </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">WinLoss</span>
-                    <span class="text-orange-400 font-bold">
-                        <span class="bg-danger rounded-full text-green-500 px-2 py-1">₹{{ transaction.winLoss.toFixed(2)
-                            }}</span>
-                    </span>
-                </div>
-                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#00a89d50]">
-                    <span class="font-medium font-bold">Closing Balance</span>
-                    <span class="font-bold">₹{{transaction.closingBalance}}</span>
+
+                <!-- Closing Balance -->
+                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Closing Balance</span>
+                    <span class="font-semibold">₹{{ transaction.closingBalance }}</span>
                 </div>
             </div>
         </div>
+
 
     </div>
 </div>
-<app-footer></app-footer>   
+<app-footer></app-footer>

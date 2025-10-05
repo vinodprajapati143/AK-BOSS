@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
+import { CommonModule, Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { GamedataService } from '../../core/services/gamedata.service';
 import { ApiService } from '../../core/services/api.service';
 import { WalletService } from '../../core/services/wallet.service';
@@ -16,60 +16,60 @@ import { WalletService } from '../../core/services/wallet.service';
 })
 export class PlayGameComponent implements OnInit {
   date: Date = new Date();
-   digit: number | null = null;
+  digit: number | null = null;
   amount: number | null = null;
   numbers: { digit: number; amount: number }[] = [];
   totalAmount = 0;
   gameDataService = inject(GamedataService);
   apiservice = inject(ApiService);
   walletService = inject(WalletService);
-
+  location = inject(Location);
 
   game: any;
-  
+
 
   ngOnInit() {
-  this.gameDataService.getGameData().subscribe(game => {
-    if (game) {
-      this.game = game;
-      console.log('this.game: ', this.game);
-      // Setup UI accordingly
-    } else {
-      // Redirect or show message
-      // this.router.navigate(['/user/all-games']);
-    }
-  });
-}
+    this.gameDataService.getGameData().subscribe(game => {
+      if (game) {
+        this.game = game;
+        console.log('this.game: ', this.game);
+        // Setup UI accordingly
+      } else {
+        // Redirect or show message
+        // this.router.navigate(['/user/all-games']);
+      }
+    });
+  }
 
   addNumber() {
-     if (this.digit !== null && this.amount !== null) {
-    this.numbers.push({ digit: this.digit, amount: this.amount });
-    this.calculateTotal();
-    this.digit = null;
-    this.amount = null;
-  }
+    if (this.digit !== null && this.amount !== null) {
+      this.numbers.push({ digit: this.digit, amount: this.amount });
+      this.calculateTotal();
+      this.digit = null;
+      this.amount = null;
+    }
   }
 
-  
-calculateTotal() {
-  this.totalAmount = this.numbers.reduce((sum, item) => sum + Number(item.amount), 0);
-}
+
+  calculateTotal() {
+    this.totalAmount = this.numbers.reduce((sum, item) => sum + Number(item.amount), 0);
+  }
 
   removeNumber(index: number) {
     this.numbers.splice(index, 1);
     this.calculateTotal();
   }
 
-    submit() {
+  submit() {
 
     const todayDate = new Date().toISOString().split('T')[0];
     console.log('todayDate: ', todayDate);
 
- 
+
     const payload = {
       game_id: this.game.id,
       input_date: todayDate,
-      name:this.game.name,
+      name: this.game.name,
       total_amount: this.totalAmount,
       entrytype: this.game.entrytype,
       entries: this.numbers.map(item => ({
@@ -93,5 +93,8 @@ calculateTotal() {
     });
 
     // yahan aap HTTP call karke payload backend ko send kar sakte hain
+  }
+  back() {
+    this.location.back();
   }
 }

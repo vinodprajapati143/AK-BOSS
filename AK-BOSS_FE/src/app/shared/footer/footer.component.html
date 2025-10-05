@@ -1,45 +1,35 @@
 <div class="footer">
   <!-- Home -->
- <button (click)="setActive('report')" 
-          [ngClass]="{'active': active === 'report'}"
-          class="footer-item">
+  <button (click)="setActive('report')" [ngClass]="{'active': this.getCurrentTab() === 'report'}" class="footer-item">
     <img src="/assets/images/icons/report-mobile.svg" alt="docs" />
     <span>Report</span>
     <div class="circle-indicator"></div>
   </button>
 
   <!-- Wallet -->
-  <button (click)="setActive('add-amount')"
-          [ngClass]="{'active': active === 'add-amount'}"
-          class="footer-item">
+  <button (click)="setActive('add-amount')" [ngClass]="{'active': this.getCurrentTab() === 'add-amount'}" class="footer-item">
     <img src="/assets/images/wallet.svg" alt="wallet" />
     <span>Wallet</span>
     <div class="circle-indicator"></div>
   </button>
 
   <!-- Docs -->
- 
-    <button (click)="setActive('dashboard')" 
-          [ngClass]="{'active': active === 'dashboard'}"
-          class="footer-item">
+
+  <button (click)="setActive('dashboard')" [ngClass]="{'active': this.getCurrentTab() === 'dashboard'}" class="footer-item">
     <img src="/assets/images/icons/home-mobile.svg" alt="home" />
     <span>Home</span>
     <div class="circle-indicator"></div>
   </button>
 
   <!-- Profile -->
-  <button (click)="setActive('profile')" 
-          [ngClass]="{'active': active === 'profile'}"
-          class="footer-item">
+  <button (click)="setActive('profile')" [ngClass]="{'active': this.getCurrentTab() === 'profile'}" class="footer-item">
     <img src="/assets/images/icons/profile-mobile.svg" alt="profile" />
     <span>Profile</span>
     <div class="circle-indicator"></div>
   </button>
 
   <!-- Share -->
-  <button (click)="setActive('share')"
-          [ngClass]="{'active': active === 'share'}"
-          class="footer-item">
+  <button (click)="setActive('share')" [ngClass]="{'active': this.getCurrentTab() === 'share'}" class="footer-item">
     <img src="/assets/images/share.svg" alt="share" />
     <span>Share</span>
     <div class="circle-indicator"></div>

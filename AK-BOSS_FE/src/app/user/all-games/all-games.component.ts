@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FooterComponent } from "../../shared/footer/footer.component";
-import { NgFor } from '@angular/common';
+import { NgFor, Location } from '@angular/common';
 import { AdminRoutingModule } from "../../admin/admin-routing.module";
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
@@ -14,12 +14,12 @@ import { GamedataService } from '../../core/services/gamedata.service';
   styleUrl: './all-games.component.scss'
 })
 export class AllGamesComponent {
-    router = inject(Router);
-    gameDataService = inject(GamedataService);
+  router = inject(Router);
+  gameDataService = inject(GamedataService);
+  location = inject(Location);
 
-  
- 
-    menuItems = [
+
+  menuItems = [
     { title: 'Single Ank', icon: 'assets/images/dice.png', route: '/user/play' },
     { title: 'Jodi', icon: 'assets/images/dice.png', route: '/user/jodi' },
     { title: 'Single Panna', icon: 'assets/images/dice.png', route: '/user/single-panna' },
@@ -29,20 +29,23 @@ export class AllGamesComponent {
     { title: 'Full Sangam', icon: 'assets/images/dice.png', route: '/user/full-sangam' }
   ];
 
-  routeEntryTypeMap:any = {
-  '/user/play': 'singleank',
-  '/user/jodi': 'jodi',
-  '/user/single-panna': 'singlepanna',
-  '/user/double-panna': 'doublepanna',
-  '/user/triple-panna': 'triplepanna',
-  '/user/half-sangam-a': 'halfsangama',
-  '/user/full-sangam': 'fullsangam'
-};
+  routeEntryTypeMap: any = {
+    '/user/play': 'singleank',
+    '/user/jodi': 'jodi',
+    '/user/single-panna': 'singlepanna',
+    '/user/double-panna': 'doublepanna',
+    '/user/triple-panna': 'triplepanna',
+    '/user/half-sangam-a': 'halfsangama',
+    '/user/full-sangam': 'fullsangam'
+  };
 
-onGameClick(item: any) {
-  const entrytype = this.routeEntryTypeMap[item.route];
-  this.gameDataService.updateEntryType(entrytype);
-  this.router.navigate([item.route]);
-}
+  onGameClick(item: any) {
+    const entrytype = this.routeEntryTypeMap[item.route];
+    this.gameDataService.updateEntryType(entrytype);
+    this.router.navigate([item.route]);
+  }
 
+  back() {
+    this.location.back();
+  }
 }
