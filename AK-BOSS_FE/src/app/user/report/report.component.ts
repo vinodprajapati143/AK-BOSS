@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { NgFor, NgIf, NgStyle, CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reports',
@@ -11,9 +12,13 @@ import { HeaderComponent } from '../header/header.component';
   styleUrl: './report.component.scss'
 })
 export class ReportsComponent {
+
+  router = inject(Router)
+
   transactions = [
     {
       type: 'Win',
+      route: '/add-amount',
       date: '2025-03-31 18:03:14',
       status: 'SUCCEED',
       color: '#00D457',
@@ -30,6 +35,7 @@ export class ReportsComponent {
     },
     {
       type: 'Add Money',
+      route: '/add-amount',
       date: '2025-03-31 18:03:14',
       status: 'SUCCEED',
       color: '#FEAA57',
@@ -43,6 +49,7 @@ export class ReportsComponent {
     },
     {
       type: 'Playing',
+      route: '/add-amount',
       date: '2025-03-31 18:03:14',
       status: 'SUCCEED',
       color: '#57A6FE',
@@ -56,4 +63,8 @@ export class ReportsComponent {
       active: false,
     },
   ];
+
+  addAmount(){
+    this.router.navigate(['/user/add-amount'])
+  }
 }

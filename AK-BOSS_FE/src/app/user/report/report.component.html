@@ -27,10 +27,10 @@
             <!-- HEADER -->
             <div class="flex justify-between items-start" (click)="transaction.active = !transaction.active">
                 <div class="flex items-center gap-x-4">
-                    <div class="text-white font-bold px-[14px] py-[12px] rounded-md text-sm"
+                    <button (click)="addAmount()" class="text-white font-bold px-[14px] py-[12px] rounded-md text-sm"
                         [ngStyle]="{ 'background-color': transaction.color }">
                         {{ transaction.type }}
-                    </div>
+                    </button>
                     <div class="text-left text-sm">
                         <p class="font-medium text-gray-800">20250406100052318</p>
                         <p class="text-gray-500 text-xs">{{ transaction.date }}</p>

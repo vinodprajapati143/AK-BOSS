@@ -20,11 +20,15 @@ export class HeaderComponent implements OnInit {
   });
 }
 
- openWallet() {
+  openWallet() {
      this.router.navigate(['/user/add-amount']);
   }
 
    openProfile() {
      this.router.navigate(['/user/profile']);
+  }
+
+  openDashboard() {
+     this.router.navigate(['/user/dashboard']);
   }
 }
