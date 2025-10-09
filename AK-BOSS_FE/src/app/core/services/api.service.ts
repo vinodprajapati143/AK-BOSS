@@ -130,5 +130,9 @@ updateUserProfile(data:any) {
     return this.http.post(`${this.baseUrl}/api/games/single-ank/entry`, payload,{ withCredentials: true });
   }
 
+ getUserswithbalnce() {
+   return this.http.get(`${this.baseUrl}/api/users//user-list-with-bal`,{ withCredentials: true });
+  }
+
 
 }

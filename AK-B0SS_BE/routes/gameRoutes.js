@@ -4,21 +4,22 @@ const gameController = require("../controllers/gameController");
 const { verifyToken } = require("../middlewares/authMiddleware");
 
 // Public routes (no token required)
-router.get("/public-game-list", gameController.getPublicGames);
-router.get("/public-game-result", gameController.getPublicGameResults);
-router.get('/:gameId/jodi-records', gameController.getJodiRecords);
-router.get('/:gameId/panel-records', gameController.getPanelRecords);
+router.get("/public-game-list", gameController.getPublicGames); // 10/08/2025 -----> Paid
+router.get("/public-game-result", gameController.getPublicGameResults);// 10/08/2025 -----> Paid
+router.get('/:gameId/jodi-records', gameController.getJodiRecords);// 10/08/2025 -----> Paid
+router.get('/:gameId/panel-records', gameController.getPanelRecords);// 10/08/2025 -----> Paid
 // Protected routes (token required)
 router.use(verifyToken); // middleware lagao yahan se
-router.post("/add-game",  gameController.addGame);
-router.get("/game-list", gameController.getGameList);
-router.get("/nearest-game-list", gameController.getNearestGames);
-router.get("/user-game-list", gameController.getUserBoardGames);
+router.post("/add-game",  gameController.addGame);// 10/08/2025 -----> Paid
+router.get("/game-list", gameController.getGameList);// 10/08/2025 -----> Paid
+router.get("/nearest-game-list", gameController.getNearestGames);// 10/08/2025 -----> Paid
+router.get("/user-game-list", gameController.getUserBoardGames);// 10/08/2025 -----> Paid
+router.post("/save-game-input", gameController.saveGameInput);// 10/08/2025 -----> Paid
+router.get('/:id', gameController.getGameById);// 10/08/2025 -----> Paid
+router.put('/:id', gameController.updateGameById);// 10/08/2025 -----> Paid
+router.post('/single-ank/entry', gameController.addSingleAnk);// 10/08/2025 -----> Paid
 
-router.post("/save-game-input", gameController.saveGameInput);
-router.get('/:id', gameController.getGameById);
-router.put('/:id', gameController.updateGameById);
-router.post('/single-ank/entry', gameController.addSingleAnk);
+
 
 
 

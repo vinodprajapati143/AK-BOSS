@@ -150,6 +150,28 @@ exports.updateUserProfile = async (req, res) => {
   }
 };
 
+exports.getAllUsersWithWallet = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        u.id AS user_id,
+        u.username,
+        u.registerType,
+        COALESCE(
+          (SELECT balance_after 
+           FROM user_wallet uw 
+           WHERE uw.user_id = u.id 
+           ORDER BY uw.id DESC LIMIT 1), 0
+        ) AS normal_balance
+      FROM users u
+    `);
+    res.json({ users: rows });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching users with wallet balances.' });
+  }
+};
+
+
 
 
 

@@ -4,6 +4,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { EditgameModuleComponent } from '../editgame-module/editgame-module.component';
 import { MatDialog } from '@angular/material/dialog';
 import { BalanceModalComponent } from '../balance-modal/balance-modal.component';
+import { ApiService } from '../../core/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-bal-transfer',
@@ -14,19 +16,37 @@ import { BalanceModalComponent } from '../balance-modal/balance-modal.component'
 })
 export class BalTransferComponent {
 
-  constructor(private dialog: MatDialog) {}
-    users = [
-    { id: 2, name: 'laxman singh', mobile: '9460516066', memberType: 'Retailer', normalBalance: 575.10 },
-    { id: 3, name: 'Ankit chourey', mobile: '9098250249', memberType: 'Guest', normalBalance: 0.00 },
-    { id: 4, name: 'SUSHMA CHOUREY', mobile: '0000000000', memberType: 'Advertisement', normalBalance: 49.57 },
-    { id: 5, name: 'MADHAV PRASAD CHOUREY', mobile: '9074149788', memberType: 'Branch', normalBalance: 34.87 },
-    { id: 6, name: 'AJAY CHOUREY', mobile: '9575259525', memberType: 'Agent', normalBalance: 2009.01 },
-    { id: 7, name: 'Sanjay chourey', mobile: '8120518485', memberType: 'Retailer', normalBalance: 225.78 },
-    { id: 8, name: 'Ajay Chourey', mobile: '9770477020', memberType: 'Retailer', normalBalance: 186.19 },
-    { id: 9, name: 'Rajendra Chourey', mobile: '9340870107', memberType: 'Retailer', normalBalance: 7.66 },
-    { id: 10, name: 'DEEPENDRA CHOUREY', mobile: '9329559693', memberType: 'Retailer', normalBalance: 109.94 },
-    { id: 11, name: 'dileep jaiswani', mobile: '7000108643', memberType: 'Retailer', normalBalance: 1.06 },
-  ];
+  constructor(private dialog: MatDialog,private userService: ApiService,private toastr:ToastrService) {}
+  usersWithBalance: any[] = [];
+ isLoading = false;
+  errorMsg = '';
+
+  fetchUsersWithBalance() {
+    this.isLoading = true;
+    this.errorMsg = '';
+    this.userService.getUserswithbalnce().subscribe({
+      next: (res: any) => {
+        this.usersWithBalance = res.users || [];
+        this.isLoading = false;
+      },
+      error: err => {
+        this.isLoading = false;
+        if (err.status === 0) {
+          this.errorMsg = 'Network error, please check your connection.';
+          this.toastr.error(this.errorMsg)
+        } else if (err.error?.message) {
+          this.errorMsg = err.error.message;
+          this.toastr.error(this.errorMsg)
+
+        } else {
+          this.errorMsg = 'Something went wrong. Please try again.';
+          this.toastr.error(this.errorMsg)
+
+        }
+      }
+    });
+  }
+
 
   viewUser() {
     // Logic to view user details
