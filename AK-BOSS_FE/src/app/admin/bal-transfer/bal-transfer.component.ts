@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import { NgFor, NgIf } from '@angular/common';
 import { EditgameModuleComponent } from '../editgame-module/editgame-module.component';
@@ -14,19 +14,23 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './bal-transfer.component.html',
   styleUrl: './bal-transfer.component.scss'
 })
-export class BalTransferComponent {
+export class BalTransferComponent implements OnInit {
 
   constructor(private dialog: MatDialog,private userService: ApiService,private toastr:ToastrService) {}
   usersWithBalance: any[] = [];
  isLoading = false;
   errorMsg = '';
-
+  ngOnInit() {
+    this.fetchUsersWithBalance();
+  }
   fetchUsersWithBalance() {
     this.isLoading = true;
     this.errorMsg = '';
     this.userService.getUserswithbalnce().subscribe({
       next: (res: any) => {
+        console.log('res: ', res);
         this.usersWithBalance = res.users || [];
+        console.log(' this.usersWithBalance: ',  this.usersWithBalance);
         this.isLoading = false;
       },
       error: err => {

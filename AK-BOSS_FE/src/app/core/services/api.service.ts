@@ -131,7 +131,7 @@ updateUserProfile(data:any) {
   }
 
  getUserswithbalnce() {
-   return this.http.get(`${this.baseUrl}/api/users//user-list-with-bal`,{ withCredentials: true });
+   return this.http.get(`${this.baseUrl}/api/users/user-list-with-bal`,{ withCredentials: true });
   }
 
 

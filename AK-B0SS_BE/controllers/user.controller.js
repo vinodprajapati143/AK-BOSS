@@ -157,6 +157,8 @@ exports.getAllUsersWithWallet = async (req, res) => {
         u.id AS user_id,
         u.username,
         u.registerType,
+        u.phone,
+
         COALESCE(
           (SELECT balance_after 
            FROM user_wallet uw 
