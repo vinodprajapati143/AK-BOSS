@@ -52,12 +52,16 @@ export class BalTransferComponent implements OnInit {
   }
 
 
-  viewUser() {
-    // Logic to view user details
-    // console.log('Viewing user with ID:', id);
-       this.dialog.open(BalanceModalComponent, {
-              width: '100%',
-              panelClass: 'custom-dialog'
-            });
-  }
+viewUser(user: any) {
+  this.dialog.open(BalanceModalComponent, {
+    width: '400px',
+    panelClass: 'custom-dialog',
+    data: {
+      name: user.username, // ya user.name
+      phone: user.phone,
+      balance: user.normal_balance,
+      userId: user.user_id // id bhi bhejna zaroori
+    }
+  });
+}
 }

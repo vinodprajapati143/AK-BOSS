@@ -1,7 +1,8 @@
 import { NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, inject } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-balance-modal',
@@ -11,38 +12,57 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
   styleUrl: './balance-modal.component.scss'
 })
 export class BalanceModalComponent {
-  dialogRef = inject(MatDialogRef<BalanceModalComponent>);
+   transferForm!: FormGroup;
+  errorMsg = '';
+  isSubmitting = false;
 
-    showModal = false;
+  constructor(
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<BalanceModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private walletService: ApiService
+  ) {}
 
-  // Mock data
-  userName = 'laxman singh';
-  mobileNumber = '9460516066';
-  currentBalance = 575.10;
-
-  // Form fields
-  remark = '';
-  amount: number | null = null;
-  confirmAmount: number | null = null;
-  password = '';
-
-  openModal() {
-    this.showModal = true;
+  ngOnInit(): void {
+    this.transferForm = this.fb.group({
+      name: [{ value: this.data.name, disabled: true }],
+      phone: [{ value: this.data.phone, disabled: true }],
+      balance: [{ value: this.data.balance, disabled: true }],
+      amount: ['', [Validators.required, Validators.min(1)]],
+      confirmAmount: ['', [Validators.required]],
+      remark: [''],
+      password: ['', [Validators.required, Validators.minLength(4)]]
+    }, { validators: this.amountsMatch });
   }
 
- closeModal() {
+  amountsMatch(group: FormGroup) {
+    return group.get('amount')?.value === group.get('confirmAmount')?.value ? null : { notMatched: true };
+  }
+
+   closeModal() {
   this.dialogRef.close();
 }
 
-  submitForm(event: Event) {
-    event.preventDefault();
-    if (this.amount !== this.confirmAmount) {
-      alert('Amounts do not match!');
-      return;
-    }
-
-    // Handle transfer logic here
-    alert(`Transferring ₹${this.amount} to ${this.userName}`);
-    this.closeModal();
+  submitForm() {
+    if (this.transferForm.invalid) return;
+    this.isSubmitting = true;
+    this.errorMsg = '';
+    const payload = {
+      userId: this.data.userId,
+      amount: this.transferForm.get('amount')?.value,
+      remark: this.transferForm.get('remark')?.value,
+      password: this.transferForm.get('password')?.value
+    };
+    console.log('payload: ', payload);
+    this.walletService.transferToUser(payload).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.dialogRef.close('success');
+      },
+      error: (err: { error: { message: string; }; }) => {
+        this.isSubmitting = false;
+        this.errorMsg = err.error?.message || 'Transaction failed, try again.';
+      }
+    });
   }
 }

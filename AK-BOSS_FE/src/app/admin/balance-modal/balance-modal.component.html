@@ -17,7 +17,7 @@
     <h2 class="text-2xl font-semibold mb-4">Balance Transfer</h2>
 
     <!-- Form -->
-    <form (submit)="submitForm($event)" class="space-y-4">
+    <form [formGroup]="transferForm" (ngSubmit)="submitForm()" class="space-y-4">
       <!-- Row 1 -->
       <div class="grid grid-cols-2 gap-4">
         <div>
@@ -25,7 +25,7 @@
           <input
             type="text"
             class="w-full border rounded px-3 py-2 bg-gray-100"
-            [value]="userName"
+           formControlName="name"
             readonly
           />
         </div>
@@ -34,7 +34,7 @@
           <input
             type="text"
             class="w-full border rounded px-3 py-2 bg-gray-100"
-            [value]="mobileNumber"
+       formControlName="phone"
             readonly
           />
         </div>
@@ -47,7 +47,7 @@
           <input
             type="text"
             class="w-full border rounded px-3 py-2 bg-gray-100"
-            [value]="currentBalance"
+         formControlName="balance"
             readonly
           />
         </div>
@@ -56,7 +56,7 @@
           <input
             type="text"
             class="w-full border rounded px-3 py-2"
-            [(ngModel)]="remark"
+             formControlName="remark"
             name="remark"
           />
         </div>
@@ -69,7 +69,7 @@
           <input
             type="number"
             class="w-full border rounded px-3 py-2"
-            [(ngModel)]="amount" maxlength="6"
+            formControlName="amount" maxlength="6"
             name="amount"
           />
         </div>
@@ -78,7 +78,7 @@
           <input
             type="number"
             class="w-full border rounded px-3 py-2"
-            [(ngModel)]="confirmAmount"
+           formControlName="confirmAmount"
             name="confirmAmount"
           />
         </div>
@@ -90,7 +90,7 @@
         <input
           type="password"
           class="w-full border rounded px-3 py-2"
-          [(ngModel)]="password"
+          formControlName="password"
           name="password"
         />
       </div>

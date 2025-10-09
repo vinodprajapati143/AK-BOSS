@@ -1,5 +1,6 @@
 // controllers/users.controller.js
 const db = require("../config/db");
+const bcrypt = require('bcrypt');
 
 
 exports.listUsers = async (req, res) => {
@@ -170,6 +171,55 @@ exports.getAllUsersWithWallet = async (req, res) => {
     res.json({ users: rows });
   } catch (err) {
     res.status(500).json({ message: 'Error fetching users with wallet balances.' });
+  }
+};
+
+exports.transferBalance = async (req, res) => {
+  try {
+    const operatorId = req.user.id;
+    const { userId, amount, remark, password } = req.body;
+
+     // Input validation
+    if (!userId || !amount || !password) {
+      return res.status(400).json({ message: 'Required fields missing.' });
+    }
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ message: 'Amount must be a positive number.' });
+    }
+    if (userId === operatorId) {
+      return res.status(400).json({ message: 'Cannot transfer to own account.' });
+    }
+
+    // 1. Fetch operator ka hashed password
+    const [userRows] = await db.query('SELECT pwd FROM users WHERE id = ?', [operatorId]);
+    if (!userRows.length) {
+      return res.status(400).json({ message: 'Operator not found.' });
+    }
+
+    // 2. Compare input password with hash (exactly like login)
+    const validPass = await bcrypt.compare(password, userRows[0].pwd);
+    if (!validPass) {
+      return res.status(400).json({ message: 'Incorrect login password.' });
+    }
+
+    // 3. Further balance transfer logic...
+  // Fetch receiver's last balance
+    const [walletRows] = await db.query(
+      'SELECT balance_after FROM user_wallet WHERE user_id = ? ORDER BY id DESC LIMIT 1',
+      [userId]
+    );
+    const currentBalance = walletRows.length ? Number(walletRows[0].balance_after) : 0;
+    const newBalance = currentBalance + Number(amount);
+
+    // Insert new wallet transaction
+    await db.query(
+      'INSERT INTO user_wallet (user_id, transaction_type, amount, balance_after, description, reference_id, created_at) VALUES (?, ?, ?, ?, ?, NULL, NOW())',
+      [userId, 'CREDIT', amount, newBalance, remark || 'Balance transfer']
+    );
+
+    return res.json({ message: 'Balance transferred successfully.', balance: newBalance });
+  } catch (err) {
+    return res.status(500).json({ message: 'Something went wrong.', error: err.message });
   }
 };
 

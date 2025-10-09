@@ -134,5 +134,9 @@ updateUserProfile(data:any) {
    return this.http.get(`${this.baseUrl}/api/users/user-list-with-bal`,{ withCredentials: true });
   }
 
+   transferToUser(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/users/transferBalance`, payload,{ withCredentials: true });
+  }
+
 
 }

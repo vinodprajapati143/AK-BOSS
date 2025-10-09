@@ -11,6 +11,7 @@ router.put("/update-profile", verifyToken, userController.updateUserProfile);// 
 
 
 router.get('/user-list-with-bal', verifyToken, userController.getAllUsersWithWallet);
+router.post("/transferBalance", verifyToken, userController.transferBalance);
 
 
 
