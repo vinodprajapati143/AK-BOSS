@@ -10,7 +10,7 @@ router.get("/profile", verifyToken, userController.getUserProfile);// 10/08/2025
 router.put("/update-profile", verifyToken, userController.updateUserProfile);// 10/08/2025 -----> Paid
 
 
-router.get('/user-list-with-bal', verifyToken, userController.getAllUsersWithBalance);
+router.get('/user-list-with-bal', verifyToken, userController.getAllUsersWithWallet);
 
 
 
