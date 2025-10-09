@@ -3,6 +3,7 @@ import { Component, Inject, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-balance-modal',
@@ -20,7 +21,8 @@ export class BalanceModalComponent {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<BalanceModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private walletService: ApiService
+    private walletService: ApiService,
+    private toastr:ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -57,11 +59,16 @@ export class BalanceModalComponent {
     this.walletService.transferToUser(payload).subscribe({
       next: () => {
         this.isSubmitting = false;
+        // this.toastr.error(this.errorMsg)
+
         this.dialogRef.close('success');
+        window.location.reload()
       },
-      error: (err: { error: { message: string; }; }) => {
+      error: (err: any) => {
+        console.log('err: ', err);
         this.isSubmitting = false;
-        this.errorMsg = err.error?.message || 'Transaction failed, try again.';
+        this.errorMsg = err.data.message || 'Transaction failed, try again.';
+        this.toastr.error(this.errorMsg)
       }
     });
   }
