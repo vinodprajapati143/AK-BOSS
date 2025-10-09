@@ -28,9 +28,7 @@ export class BalTransferComponent implements OnInit {
     this.errorMsg = '';
     this.userService.getUserswithbalnce().subscribe({
       next: (res: any) => {
-        console.log('res: ', res);
         this.usersWithBalance = res.users || [];
-        console.log(' this.usersWithBalance: ',  this.usersWithBalance);
         this.isLoading = false;
       },
       error: err => {
