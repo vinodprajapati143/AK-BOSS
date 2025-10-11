@@ -10,6 +10,8 @@ router.get('/:gameId/jodi-records', gameController.getJodiRecords);// 10/08/2025
 router.get('/:gameId/panel-records', gameController.getPanelRecords);// 10/08/2025 -----> Paid
 // Protected routes (token required)
 router.use(verifyToken); // middleware lagao yahan se
+router.get("/getAllPlayingRecords", gameController.getAllPlayingRecords);
+
 router.post("/add-game",  gameController.addGame);// 10/08/2025 -----> Paid
 router.get("/game-list", gameController.getGameList);// 10/08/2025 -----> Paid
 router.get("/nearest-game-list", gameController.getNearestGames);// 10/08/2025 -----> Paid
@@ -18,7 +20,6 @@ router.post("/save-game-input", gameController.saveGameInput);// 10/08/2025 ----
 router.get('/:id', gameController.getGameById);// 10/08/2025 -----> Paid
 router.put('/:id', gameController.updateGameById);// 10/08/2025 -----> Paid
 router.post('/single-ank/entry', gameController.addSingleAnk);// 10/08/2025 -----> Paid
-router.get("/getAllPlayingRecords", gameController.getAllPlayingRecords);
 
 
 

@@ -139,7 +139,7 @@ updateUserProfile(data:any) {
   }
 
  getAllPlayingRecords() {
-   return this.http.get(`${this.baseUrl}/api/game/getAllPlayingRecords`,{ withCredentials: true });
+   return this.http.get(`${this.baseUrl}/api/games/getAllPlayingRecords`,{ withCredentials: true });
   }
 
 
