@@ -1508,17 +1508,11 @@ exports.getAllPlayingRecords = async (req, res) => {
           `SELECT * FROM user_wallet WHERE user_id=? AND related_game_id=? ORDER BY id DESC`,
           [user_id, batch.game_id]
         );
-        const txn = walletTxns.find((t)=>{
-
-          console.log('t: ', t.amount),
-          console.log('t: ',batch.total_amount),
-          console.log('batch: ', batch),
-
-          
-          Number(t.amount) === Number(batch.total_amount) &&
-          t.transaction_type === 'DEBIT'
-        }
-        );
+          const txn = walletTxns.find(t =>
+              Number(t.amount) === Number(batch.total_amount) &&
+              t.transaction_type === 'DEBIT'
+            );
+       
 
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
         const closing_balance = txn ? Number(txn.balance_after) : null;
