@@ -1415,12 +1415,22 @@ exports.addSingleAnk = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    // Insert game entries
+    // Generate unique batch_id for this submission
+    const now = new Date();
+    const pad = n => (n < 10 ? '0' + n : n);
+    const hh = pad(now.getHours());
+    const mm = pad(now.getMinutes());
+    const ampm = (now.getHours() >= 12 ? 'PM' : 'AM');
+    const dateStr = `${pad(now.getDate())}_${pad(now.getMonth() + 1)}_${String(now.getFullYear()).slice(-2)}`;
+    const timeStr = `${hh}:${mm}${ampm}`;
+    const batchId = `single_ank_${dateStr}_${timeStr}`;
+
+    // Insert game entries with batch_id
     const insertEntries = entries.map(e =>
       db.query(
-        `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount]
+        `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId]
       )
     );
     await Promise.all(insertEntries);
@@ -1433,12 +1443,13 @@ exports.addSingleAnk = async (req, res) => {
       [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
     );
 
-    return res.status(201).json({ message: 'Entries saved and wallet updated', balance: newBalance });
+    return res.status(201).json({ message: 'Entries saved and wallet updated', balance: newBalance, batchId });
   } catch (error) {
     console.error('Error in addSingleAnk:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
