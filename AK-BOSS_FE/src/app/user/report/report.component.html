@@ -24,7 +24,6 @@
         <div *ngFor="let transaction of transactions"
             class="bg-white shadow-md p-4 space-y-3 border-b-2 border-[#20A2A0] block">
 
-            <!-- HEADER -->
             <div class="flex justify-between items-start" (click)="transaction.active = !transaction.active">
                 <div class="flex items-center gap-x-4">
                     <button (click)="addAmount()" class="text-white font-bold px-[14px] py-[12px] rounded-md text-sm"
@@ -43,58 +42,49 @@
                 </div>
             </div>
 
-            <!-- DETAILS -->
             <div *ngIf="transaction.active" class="rounded-md overflow-hidden">
 
-                <!-- Opening Balance -->
                 <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Opening Balance</span>
                     <span class="text-[#00D457]">₹{{ transaction.openingBalance }}</span>
                 </div>
 
-                <!-- Win Amount -->
                 <div *ngIf="transaction.type === 'Win'"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Win Amount</span>
                     <span class="text-[#00D457]">₹{{ transaction.winAmount }}</span>
                 </div>
 
-                <!-- Purchase Amount -->
                 <div *ngIf="transaction.type === 'Add Money'"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Purchase Amount</span>
                     <span class="text-[#00D457]">₹{{ transaction.purchaseAmount }}</span>
                 </div>
 
-                <!-- Playing Amount -->
-                <div *ngIf="transaction.type === 'Playing'"
+                <!-- <div *ngIf="transaction.type === 'Playing'"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Playing Amount</span>
                     <span class="text-[#00D457]">₹{{ transaction.playingAmount }}</span>
-                </div>
+                </div> -->
 
-                <!-- Quantity -->
                 <div *ngIf="transaction.quantity"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Quantity</span>
                     <span class="font-bold">{{ transaction.quantity }}</span>
                 </div>
 
-                <!-- Amount After Tax -->
                 <div *ngIf="transaction.amountAfterTax"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Amount After Tax</span>
                     <span class="font-bold">₹{{ transaction.amountAfterTax }}</span>
                 </div>
 
-                <!-- Tax -->
                 <div *ngIf="transaction.tax"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Tax</span>
                     <span class="font-bold">₹{{ transaction.tax }}</span>
                 </div>
 
-                <!-- Open Select -->
                 <div *ngIf="transaction.openSelect?.length"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Open Select</span>
@@ -107,7 +97,6 @@
                     </div>
                 </div>
 
-                <!-- Result -->
                 <div *ngIf="transaction.result"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Result</span>
@@ -124,23 +113,99 @@
                     </span>
                 </div>
 
-                <!-- Status -->
                 <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-semibold">Status</span>
                     <span class="rounded-full text-[#00D457] font-bold px-2 py-1">{{ transaction.status }}</span>
                 </div>
 
-                <!-- Win/Loss -->
-                <!-- <div *ngIf="transaction.winLoss !== undefined"
-                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
-                    <span class="font-semibold">Closing</span>
-                    <span class="text-[#00D457] font-bold">₹{{ transaction.winLoss.toFixed(2) }}</span>
-                </div> -->
+              
 
-                <!-- Closing Balance -->
                 <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
                     <span class="font-semibold">Closing Balance</span>
                     <span class="font-semibold">₹{{ transaction.closingBalance }}</span>
+                </div>
+            </div>
+        </div>
+         <div *ngFor="let transaction of playingrecords"
+            class="bg-white shadow-md p-4 space-y-3 border-b-2 border-[#20A2A0] block">
+
+            <div class="flex justify-between items-start" (click)="transaction.active = !transaction.active">
+                <div class="flex items-center gap-x-4">
+                    <button  class="text-white font-bold px-[14px] py-[12px] rounded-md text-sm"
+                        [ngStyle]="{ 'background-color': '#57A6FE' }">
+                        Playing
+                    </button>
+                    <div class="text-left text-sm">
+                        <p class="font-medium text-gray-800">{{transaction.batch_id}}</p>
+                        <p class="text-gray-500 text-xs">{{ transaction.created_at | date:'yyyy-mm-dd hh:mm:ss' }}</p>
+                    </div>
+                </div>
+                <div class="text-right text-[10px] font-semibold" [style.color]="'#57A6FE'">
+                    <span class="px-2 border-2 font-bold rounded-full py-[2px]"
+                        [style.border-color]="'#57A6FE'">{{ transaction.status }}</span>
+                    <div class="mt-1 text-[12px]">₹{{ transaction.amount_after_tax }}</div>
+                </div>
+            </div>
+
+            <div *ngIf="transaction.active" class="rounded-md overflow-hidden">
+
+                <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Opening Balance</span>
+                    <span class="text-[#00D457]">₹{{ transaction.opening_balance }}</span>
+                </div>
+
+               
+
+             
+
+                <div  
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Playing Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.playing_amount }}</span>
+                </div>
+
+                <!-- <div *ngIf="transaction.quantity"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Quantity</span>
+                    <span class="font-bold">{{ transaction.quantity }}</span>
+                </div> -->
+
+                <div *ngIf="transaction.amount_after_tax"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Amount After Tax</span>
+                    <span class="font-bold">₹{{ transaction.amount_after_tax }}</span>
+                </div>
+
+                <div *ngIf="transaction.tax"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Tax</span>
+                    <span class="font-bold">₹{{ transaction.tax }}</span>
+                </div>
+
+                <div *ngIf="transaction.openSelect?.length"
+                    class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Open Select</span>
+                    <div class="flex gap-x-4">
+                        <span *ngFor="let sel of transaction.open_select"
+                            style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
+                            class="border-2 px-2 py-1 rounded-md bg-[#D9D9D94D] border-[#20A2A0] text-sm font-semibold">
+                            {{ sel }}
+                        </span>
+                    </div>
+                </div>
+
+          
+
+                <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Status</span>
+                    <span class="rounded-full text-[#00D457] font-bold px-2 py-1">{{ transaction.status }}</span>
+                </div>
+
+              
+
+                <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Closing Balance</span>
+                    <span class="font-semibold">₹{{ transaction.closing_balance }}</span>
                 </div>
             </div>
         </div>

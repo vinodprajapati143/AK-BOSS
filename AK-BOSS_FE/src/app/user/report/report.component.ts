@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
-import { NgFor, NgIf, NgStyle, CommonModule } from '@angular/common';
+import { NgFor, NgIf, NgStyle, CommonModule, DatePipe } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
@@ -8,7 +8,7 @@ import { ApiService } from '../../core/services/api.service';
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle],
+  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle,DatePipe],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })
@@ -50,30 +50,15 @@ export class ReportsComponent {
       winLoss: 500,
       active: false,
     },
-    {
-      type: 'Playing',
-      route: '/add-amount',
-      date: '2025-03-31 18:03:14',
-      status: 'SUCCEED',
-      color: '#57A6FE',
-      openingBalance: 500,
-      playingAmount: 500,
-      amountAfterTax: 2000,
-      tax: 10000,
-      openSelect: ['1X50', '4X150', '9X200'],
-      closingBalance: 10000,
-      winLoss: 500,
-      active: false,
-    },
+  
   ];
-  records: Object | undefined;
+  playingrecords: any;
 
     ngOnInit() {
     this.isLoading = true;
     this.reportservice.getAllPlayingRecords().subscribe({
       next: (data) => {
-        this.records = data;
-        console.log(' this.records: ',  this.records);
+        this.playingrecords = data;
         this.isLoading = false;
       },
       error: () => {

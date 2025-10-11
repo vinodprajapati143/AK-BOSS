@@ -1459,6 +1459,91 @@ exports.addSingleAnk = async (req, res) => {
 };
 
 
+// exports.getAllPlayingRecords = async (req, res) => {
+//   const user_id = req.user.id;
+//   try {
+//     // Get all tables ending with '_entries'
+//     const [tables] = await db.query(`
+//       SELECT table_name FROM information_schema.tables 
+//       WHERE table_schema = DATABASE() AND table_name LIKE '%_entries'
+//     `);
+
+//     const result = [];
+//     // Helper: Safely extract date
+//     function getDateOnly(val) {
+//       if (!val) return '';
+//       if (val instanceof Date) return val.toISOString().slice(0,10);
+//       return String(val).split(' ')[0];
+//     }
+
+//     for (const tableRow of tables) {
+//       const tableName = tableRow.table_name;
+//       // Query batch-wise data
+//         const [batches] = await db.query(
+//         `SELECT batch_id, MIN(created_at) as created_at, SUM(amount) as playing_amount, MAX(total_amount) as total_amount, game_id
+//         FROM ${tableName}
+//         WHERE user_id=?
+//         GROUP BY batch_id
+//         ORDER BY created_at DESC`,
+//         [user_id]
+//       );
+
+//       for (const batch of batches) {
+//         // Get all entries for this batch
+//         const [entries] = await db.query(
+//           `SELECT * FROM ${tableName} WHERE user_id=? AND batch_id=?`,
+//           [user_id, batch.batch_id]
+//         );
+
+//         // open_select formatting by game type
+//         let open_select = [];
+//         if (tableName === 'single_ank_entries')
+//           open_select = entries.map(x => `${x.digit} X ${x.amount}`);
+//         else if (tableName === 'jodi_entries')
+//           open_select = entries.map(x => `${x.jodi} X ${x.amount}`);
+//         // Extend for other tables...
+
+//         // Wallet matching: Only by batch.total_amount + game_id (no date filter)
+//         const [walletTxns] = await db.query(
+//           `SELECT * FROM user_wallet WHERE user_id=? AND related_game_id=? ORDER BY id DESC`,
+//           [user_id, batch.game_id]
+//         );
+//           const txn = walletTxns.find(t =>
+//               Number(t.amount) === Number(batch.total_amount) &&
+//               t.transaction_type === 'DEBIT'
+//             );
+       
+
+//         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
+//         const closing_balance = txn ? Number(txn.balance_after) : null;
+//         const tax = 0;
+//         const amount_after_tax = batch.playing_amount - tax;
+
+//         result.push({
+//           game_type: tableName.replace('_entries', ''),
+//           batch_id: batch.batch_id,
+//           game_id: batch.game_id,
+//           created_at: batch.created_at,
+//           opening_balance,
+//           closing_balance,
+//           playing_amount: batch.playing_amount,
+//           amount_after_tax,
+//           tax,
+//           open_select,
+//           status: txn ? "SUCCEED" : "UNKNOWN",
+         
+//         });
+//       }
+//     }
+//     res.json(result);
+//   } catch (error) {
+//     console.error('GetAllGameRecords error:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
+
+
+
 exports.getAllPlayingRecords = async (req, res) => {
   const user_id = req.user.id;
   try {
@@ -1468,57 +1553,60 @@ exports.getAllPlayingRecords = async (req, res) => {
       WHERE table_schema = DATABASE() AND table_name LIKE '%_entries'
     `);
 
-    const result = [];
-    // Helper: Safely extract date
-    function getDateOnly(val) {
-      if (!val) return '';
-      if (val instanceof Date) return val.toISOString().slice(0,10);
-      return String(val).split(' ')[0];
+    // Fetch all user wallet DEBITs at once
+    const [allWalletTxns] = await db.query(
+      `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='DEBIT' ORDER BY id DESC`,
+      [user_id]
+    );
+
+    // Prepare wallet lookup map: "amount|game_id" = txn
+    const walletMap = new Map();
+    for (const txn of allWalletTxns) {
+      walletMap.set(`${Number(txn.amount)}|${txn.related_game_id}`, txn);
     }
 
+    const result = [];
     for (const tableRow of tables) {
       const tableName = tableRow.table_name;
-      // Query batch-wise data
-        const [batches] = await db.query(
-        `SELECT batch_id, MIN(created_at) as created_at, SUM(amount) as playing_amount, MAX(total_amount) as total_amount, game_id
-        FROM ${tableName}
-        WHERE user_id=?
-        GROUP BY batch_id
-        ORDER BY created_at DESC`,
+      // Fetch all entries once, for grouping
+      const [entries] = await db.query(
+        `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
         [user_id]
       );
-
-      for (const batch of batches) {
-        // Get all entries for this batch
-        const [entries] = await db.query(
-          `SELECT * FROM ${tableName} WHERE user_id=? AND batch_id=?`,
-          [user_id, batch.batch_id]
-        );
-
-        // open_select formatting by game type
-        let open_select = [];
+      // Group entries by batch_id
+      const batches = {};
+      for (const entry of entries) {
+        if (!batches[entry.batch_id]) {
+          // Initialize new batch group
+          batches[entry.batch_id] = {
+            batch_id: entry.batch_id,
+            created_at: entry.created_at,
+            game_id: entry.game_id,
+            playing_amount: 0,
+            total_amount: entry.total_amount, // Will be same for whole batch
+            entries: [],
+            open_select: []
+          };
+        }
+        batches[entry.batch_id].playing_amount += Number(entry.amount);
+        batches[entry.batch_id].entries.push(entry);
+        // For open_select formatting
         if (tableName === 'single_ank_entries')
-          open_select = entries.map(x => `${x.digit} X ${x.amount}`);
+          batches[entry.batch_id].open_select.push(`${entry.digit} X ${entry.amount}`);
         else if (tableName === 'jodi_entries')
-          open_select = entries.map(x => `${x.jodi} X ${x.amount}`);
-        // Extend for other tables...
-
-        // Wallet matching: Only by batch.total_amount + game_id (no date filter)
-        const [walletTxns] = await db.query(
-          `SELECT * FROM user_wallet WHERE user_id=? AND related_game_id=? ORDER BY id DESC`,
-          [user_id, batch.game_id]
-        );
-          const txn = walletTxns.find(t =>
-              Number(t.amount) === Number(batch.total_amount) &&
-              t.transaction_type === 'DEBIT'
-            );
-       
+          batches[entry.batch_id].open_select.push(`${entry.jodi} X ${entry.amount}`);
+        // Add more game tables as needed here
+      }
+      // Prepare the final batch records
+      for (const batch of Object.values(batches)) {
+        // Wallet match: Use prebuilt map
+        const walletKey = `${Number(batch.total_amount)}|${batch.game_id}`;
+        const txn = walletMap.get(walletKey);
 
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
         const closing_balance = txn ? Number(txn.balance_after) : null;
         const tax = 0;
         const amount_after_tax = batch.playing_amount - tax;
-
         result.push({
           game_type: tableName.replace('_entries', ''),
           batch_id: batch.batch_id,
@@ -1526,15 +1614,18 @@ exports.getAllPlayingRecords = async (req, res) => {
           created_at: batch.created_at,
           opening_balance,
           closing_balance,
-          playing_amount: batch.playing_amount,
+          playing_amount: String(batch.playing_amount),
           amount_after_tax,
           tax,
-          open_select,
+          open_select: batch.open_select,
           status: txn ? "SUCCEED" : "UNKNOWN",
-         
+          entries: batch.entries
         });
       }
     }
+
+    // Optionally, order by created_at descending for all records
+    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json(result);
   } catch (error) {
     console.error('GetAllGameRecords error:', error);
