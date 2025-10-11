@@ -1511,9 +1511,9 @@ exports.getAllPlayingRecords = async (req, res) => {
           [user_id, batch.game_id]
         );
         // Match wallet txn by amount and batch date safely
-        const txn = walletTxns.find(t =>
-          Number(t.amount) === Number(batch.total_amount) &&
-          getDateOnly(t.created_at) === getDateOnly(batch.created_at)
+          const txn = walletTxns.find(
+          t => Number(t.amount) === Number(batch.total_amount) &&
+              t.related_game_id == batch.game_id
         );
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
         const closing_balance = txn ? Number(txn.balance_after) : null;
@@ -1532,7 +1532,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           tax,
           open_select,
           status: txn ? "SUCCEED" : "UNKNOWN",
-          entries
+         
         });
       }
     }
