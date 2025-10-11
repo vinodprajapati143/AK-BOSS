@@ -1479,12 +1479,12 @@ exports.getAllPlayingRecords = async (req, res) => {
     for (const tableRow of tables) {
       const tableName = tableRow.table_name;
       // Query batch-wise data
-      const [batches] = await db.query(
-        `SELECT batch_id, MIN(created_at) as created_at, SUM(amount) as playing_amount, SUM(total_amount) as total_amount, game_id
-         FROM ${tableName}
-         WHERE user_id=?
-         GROUP BY batch_id
-         ORDER BY created_at DESC`,
+        const [batches] = await db.query(
+        `SELECT batch_id, MIN(created_at) as created_at, SUM(amount) as playing_amount, MAX(total_amount) as total_amount, game_id
+        FROM ${tableName}
+        WHERE user_id=?
+        GROUP BY batch_id
+        ORDER BY created_at DESC`,
         [user_id]
       );
 
