@@ -19,6 +19,8 @@ router.get('/:id', gameController.getGameById);// 10/08/2025 -----> Paid
 router.put('/:id', gameController.updateGameById);// 10/08/2025 -----> Paid
 router.post('/single-ank/entry', gameController.addSingleAnk);// 10/08/2025 -----> Paid
 
+router.get('/getAllPlayingRecords', gameController.getAllPlayingRecords);
+
 
 
 

@@ -138,5 +138,9 @@ updateUserProfile(data:any) {
     return this.http.post(`${this.baseUrl}/api/users/transferBalance`, payload,{ withCredentials: true });
   }
 
+ getAllPlayingRecords() {
+   return this.http.get(`${this.baseUrl}/api/game/getAllPlayingRecords`,{ withCredentials: true });
+  }
+
 
 }

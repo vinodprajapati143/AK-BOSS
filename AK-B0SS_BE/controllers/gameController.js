@@ -1458,6 +1458,84 @@ exports.addSingleAnk = async (req, res) => {
   }
 };
 
+// GET /api/user/all-game-records?user_id=...
+
+exports.getAllPlayingRecords = async (req, res) => {
+   const user_id = req.user.id;
+  try {
+    // Get all tables ending with '_entries'
+    const [tables] = await db.query(`
+      SELECT table_name FROM information_schema.tables 
+      WHERE table_schema = DATABASE() AND table_name LIKE '%_entries'
+    `);
+
+    const result = [];
+
+    for (const tableRow of tables) {
+      const tableName = tableRow.table_name;
+      // Check if table has expected columns. Adjust field usage per table as needed.
+      const [batches] = await db.query(
+        `SELECT batch_id, MIN(created_at) as created_at, SUM(amount) as playing_amount, SUM(total_amount) as total_amount, game_id
+         FROM ${tableName}
+         WHERE user_id=?
+         GROUP BY batch_id
+         ORDER BY created_at DESC`,
+        [user_id]
+      );
+      for (const batch of batches) {
+        // Get entries for this batch
+        const [entries] = await db.query(
+          `SELECT * FROM ${tableName} WHERE user_id=? AND batch_id=?`,
+          [user_id, batch.batch_id]
+        );
+        // Example open_select logic for single_ank, update for other games:
+        let open_select;
+        if (tableName === 'single_ank_entries')
+          open_select = entries.map(x => `${x.digit} X ${x.amount}`);
+        else if (tableName === 'jodi_entries')
+          open_select = entries.map(x => `${x.jodi} X ${x.amount}`);
+        // ...customize for other tables
+
+        // Fetch wallet info for balances
+        const [walletTxns] = await db.query(
+          `SELECT * FROM user_wallet WHERE user_id=? AND related_game_id=? ORDER BY id ASC`,
+          [user_id, batch.game_id]
+        );
+        const txn = walletTxns.find(
+          t => Number(t.amount) === Number(batch.total_amount) &&
+               t.created_at.startsWith(batch.created_at.split(' ')[0])
+        );
+        const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
+        const closing_balance = txn ? Number(txn.balance_after) : null;
+        // Tax logic if needed
+        const tax = 0;
+        const amount_after_tax = batch.playing_amount - tax;
+
+        result.push({
+          game_type: tableName.replace('_entries', ''),
+          batch_id: batch.batch_id,
+          game_id: batch.game_id,
+          created_at: batch.created_at,
+          opening_balance,
+          closing_balance,
+          playing_amount: batch.playing_amount,
+          amount_after_tax,
+          tax,
+          open_select,
+          status: txn ? "SUCCEED" : "UNKNOWN",
+          entries
+        });
+      }
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error('GetAllGameRecords error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 
 

@@ -3,6 +3,7 @@ import { FooterComponent } from '../../shared/footer/footer.component';
 import { NgFor, NgIf, NgStyle, CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-reports',
@@ -14,7 +15,9 @@ import { Router } from '@angular/router';
 export class ReportsComponent {
 
   router = inject(Router)
-
+  reportservice = inject(ApiService)
+  isLoading = false;
+  error: string | null = null;
   transactions = [
     {
       type: 'Win',
@@ -63,6 +66,22 @@ export class ReportsComponent {
       active: false,
     },
   ];
+  records: Object | undefined;
+
+    ngOnInit() {
+    this.isLoading = true;
+    this.reportservice.getAllPlayingRecords().subscribe({
+      next: (data) => {
+        this.records = data;
+        console.log(' this.records: ',  this.records);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load data';
+        this.isLoading = false;
+      }
+    });
+  }
 
   addAmount(){
     this.router.navigate(['/user/add-amount'])
