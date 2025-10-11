@@ -1416,14 +1416,22 @@ exports.addSingleAnk = async (req, res) => {
     }
 
     // Generate unique batch_id for this submission
-    const now = new Date();
-    const pad = n => (n < 10 ? '0' + n : n);
-    const hh = pad(now.getHours());
-    const mm = pad(now.getMinutes());
-    const ampm = (now.getHours() >= 12 ? 'PM' : 'AM');
-    const dateStr = `${pad(now.getDate())}_${pad(now.getMonth() + 1)}_${String(now.getFullYear()).slice(-2)}`;
-    const timeStr = `${hh}:${mm}${ampm}`;
-    const batchId = `single_ank_${dateStr}_${timeStr}`;
+      const now = new Date();
+      // IST = UTC+5:30
+      const istNow = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+
+      const pad = n => (n < 10 ? '0' + n : n);
+      let hours = istNow.getHours();
+      const minutes = pad(istNow.getMinutes());
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 should be 12
+
+      const dateStr = `${pad(istNow.getDate())}_${pad(istNow.getMonth() + 1)}_${String(istNow.getFullYear()).slice(-2)}`;
+      const timeStr = `${pad(hours)}:${minutes}${ampm}`;
+
+      const batchId = `single_ank_${dateStr}_${timeStr}`;
 
     // Insert game entries with batch_id
     const insertEntries = entries.map(e =>

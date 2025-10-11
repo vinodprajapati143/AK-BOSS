@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { GamedataService } from '../../core/services/gamedata.service';
 import { ApiService } from '../../core/services/api.service';
 import { WalletService } from '../../core/services/wallet.service';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-play-game',
@@ -24,6 +26,10 @@ export class PlayGameComponent implements OnInit {
   apiservice = inject(ApiService);
   walletService = inject(WalletService);
   location = inject(Location);
+  toastr = inject(ToastrService);
+  router = inject(Router);
+
+
 
   game: any;
 
@@ -83,11 +89,16 @@ export class PlayGameComponent implements OnInit {
     this.apiservice.saveEntries(payload).subscribe({
       next: (response) => {
         console.log('Entries saved successfully', response);
+        this.toastr.success(response.message)
         this.walletService.refreshWallet();
+        this.router.navigate(['/user/report'])
+
         // Yahan pe success ka UI feedback ya navigation kar sakte ho
       },
       error: (err) => {
         console.error('Error saving entries', err);
+        this.toastr.success(err.message)
+
         // Yahan pe error message show karwana
       }
     });
