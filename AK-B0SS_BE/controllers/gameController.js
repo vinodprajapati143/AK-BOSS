@@ -1458,7 +1458,6 @@ exports.addSingleAnk = async (req, res) => {
   }
 };
 
-// GET /api/user/all-game-records?user_id=...
 
 exports.getAllPlayingRecords = async (req, res) => {
    const user_id = req.user.id;
