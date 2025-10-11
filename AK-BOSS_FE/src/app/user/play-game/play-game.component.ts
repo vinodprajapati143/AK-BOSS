@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
 import { CommonModule, Location } from '@angular/common';
@@ -17,6 +17,8 @@ import { Router } from '@angular/router';
   styleUrl: './play-game.component.scss'
 })
 export class PlayGameComponent implements OnInit {
+  @Input() game: any;
+  @Output() backClicked = new EventEmitter<void>();
   date: Date = new Date();
   digit: number | null = null;
   amount: number | null = null;
@@ -30,8 +32,6 @@ export class PlayGameComponent implements OnInit {
   router = inject(Router);
 
 
-
-  game: any;
 
 
   ngOnInit() {

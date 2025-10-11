@@ -41,7 +41,7 @@ export class ReportsComponent {
       route: '/add-amount',
       date: '2025-03-31 18:03:14',
       status: 'SUCCEED',
-      color: '#FEAA57',
+      color: '#D76B00',
       openingBalance: 500,
       purchaseAmount: 500,
       amountAfterTax: 2000,
@@ -51,6 +51,53 @@ export class ReportsComponent {
       active: false,
     },
   
+    {
+      type: 'Playing',
+      route: '/add-amount',
+      date: '2025-03-31 18:03:14',
+      status: 'SUCCEED',
+      color: '#57A6FE',
+      openingBalance: 500,
+      playingAmount: 500,
+      amountAfterTax: 2000,
+      tax: 10000,
+      openSelect: ['1X50', '4X150', '9X200'],
+      closingBalance: 10000,
+      winLoss: 500,
+      active: false,
+    },
+        {
+      type: 'Withdrawal',
+      route: '/add-amount',
+      date: '2025-03-31 18:03:14',
+      status: 'SUCCEED',
+      color: '#0A7E8D',
+      openingBalance: 500,
+      withdrawalAmount: 500,
+      amountAfterTax: 2000,
+      tax: 10000,
+      openSelect: ['1X50', '4X150', '9X200'],
+      closingBalance: 10000,
+      winLoss: 500,
+      paymentmode: 'UPI Transfer',
+      remark: 'UTR NUMBER 123456789 DONE',
+      active: false,
+    },
+        {
+      type: 'Balance Transfer',
+      route: '/add-amount',
+      date: '2025-03-31 18:03:14',
+      status: 'SUCCEED',
+      color: '#9E161C',
+      openingBalance: 500,
+      purchaseAmount: 500,
+      amountAfterTax: 2000,
+      tax: 10000,
+      openSelect: ['1X50', '4X150', '9X200'],
+      closingBalance: 10000,
+      winLoss: 500,
+      active: false,
+    },
   ];
   playingrecords: any;
 
@@ -68,7 +115,4 @@ export class ReportsComponent {
     });
   }
 
-  addAmount(){
-    this.router.navigate(['/user/add-amount'])
-  }
 }
