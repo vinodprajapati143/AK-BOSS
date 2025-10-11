@@ -1469,17 +1469,15 @@ exports.getAllPlayingRecords = async (req, res) => {
     `);
 
     const result = [];
-    // Helper to safely get 'YYYY-MM-DD' from any date type
+    // Helper: Safely extract date
     function getDateOnly(val) {
       if (!val) return '';
-      if (typeof val === 'string') return val.split(' ')[0];
       if (val instanceof Date) return val.toISOString().slice(0,10);
       return String(val).split(' ')[0];
     }
 
     for (const tableRow of tables) {
       const tableName = tableRow.table_name;
-
       // Query batch-wise data
       const [batches] = await db.query(
         `SELECT batch_id, MIN(created_at) as created_at, SUM(amount) as playing_amount, SUM(total_amount) as total_amount, game_id
@@ -1497,24 +1495,24 @@ exports.getAllPlayingRecords = async (req, res) => {
           [user_id, batch.batch_id]
         );
 
-        // `open_select` formatting by game type
+        // open_select formatting by game type
         let open_select = [];
         if (tableName === 'single_ank_entries')
           open_select = entries.map(x => `${x.digit} X ${x.amount}`);
         else if (tableName === 'jodi_entries')
           open_select = entries.map(x => `${x.jodi} X ${x.amount}`);
-        // ...add more else if blocks for other game tables
+        // Extend for other tables...
 
-        // Fetch wallet transactions for this game's batches
+        // Wallet matching: Only by batch.total_amount + game_id (no date filter)
         const [walletTxns] = await db.query(
-          `SELECT * FROM user_wallet WHERE user_id=? AND related_game_id=? ORDER BY id ASC`,
+          `SELECT * FROM user_wallet WHERE user_id=? AND related_game_id=? ORDER BY id DESC`,
           [user_id, batch.game_id]
         );
-        // Match wallet txn by amount and batch date safely
-          const txn = walletTxns.find(
-          t => Number(t.amount) === Number(batch.total_amount) &&
-              t.related_game_id == batch.game_id
+        const txn = walletTxns.find(t =>
+          Number(t.amount) === Number(batch.total_amount) &&
+          t.transaction_type === 'DEBIT'
         );
+
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
         const closing_balance = txn ? Number(txn.balance_after) : null;
         const tax = 0;
@@ -1542,6 +1540,7 @@ exports.getAllPlayingRecords = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
