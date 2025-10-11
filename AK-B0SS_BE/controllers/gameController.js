@@ -1509,6 +1509,11 @@ exports.getAllPlayingRecords = async (req, res) => {
           [user_id, batch.game_id]
         );
         const txn = walletTxns.find(t =>
+          console.log('t: ', t.amount),
+          console.log('t: ',batch.total_amount),
+          console.log('batch: ', batch),
+
+          
           Number(t.amount) === Number(batch.total_amount) &&
           t.transaction_type === 'DEBIT'
         );
