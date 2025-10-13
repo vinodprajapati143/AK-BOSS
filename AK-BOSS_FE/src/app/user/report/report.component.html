@@ -168,11 +168,13 @@
                     <span class="font-bold">₹{{ transaction.tax }}</span>
                 </div>
 
-                <div *ngIf="transaction.open_select?.length"
+                <div *ngIf="transaction.selections?.length"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
-                    <span class="font-medium">Open Select</span>
+
+                    <span class="font-medium">  {{ getSelectLabel(transaction.game_type) }}
+                     </span>
                     <div class="grid grid-cols-3 gap-1">
-                        <span *ngFor="let sel of transaction.open_select"
+                        <span *ngFor="let sel of transaction.selections"
                             style="background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);"
                             class="border-2 px-2 py-1 rounded-md bg-[#D9D9D94D] border-[#20A2A0] text-sm font-semibold">
                             {{ sel }}

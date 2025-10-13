@@ -1669,16 +1669,16 @@ exports.getAllPlayingRecords = async (req, res) => {
             playing_amount: 0,
             total_amount: entry.total_amount, // Will be same for whole batch
             entries: [],
-            open_select: []
+            selections: []
           };
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
         batches[entry.batch_id].entries.push(entry);
         // For open_select formatting
         if (tableName === 'single_ank_entries')
-          batches[entry.batch_id].open_select.push(`${entry.digit} X ${entry.amount}`);
+          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
         else if (tableName === 'jodi_ank_entries')
-          batches[entry.batch_id].open_select.push(`${entry.digit} X ${entry.amount}`);
+          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
         // Add more game tables as needed here
       }
       // Prepare the final batch records
@@ -1701,7 +1701,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           playing_amount: String(batch.playing_amount),
           amount_after_tax,
           tax,
-          open_select: batch.open_select,
+          selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
           entries: batch.entries
         });

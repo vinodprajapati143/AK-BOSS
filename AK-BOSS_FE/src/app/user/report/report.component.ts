@@ -106,6 +106,7 @@ export class ReportsComponent {
     this.reportservice.getAllPlayingRecords().subscribe({
       next: (data) => {
         this.playingrecords = data;
+        console.log('this.playingrecords: ', this.playingrecords);
         this.isLoading = false;
       },
       error: () => {
@@ -114,5 +115,17 @@ export class ReportsComponent {
       }
     });
   }
+
+  getSelectLabel(entryType: string): string {
+  switch(entryType) {
+    case 'single_ank':
+      return 'Open Select';
+    case 'jodi_ank':
+      return 'Jodi Select';
+    // Add more cases if needed
+    default:
+      return 'Select';
+  }
+}
 
 }
