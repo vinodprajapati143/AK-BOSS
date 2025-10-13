@@ -1497,14 +1497,17 @@ exports.addJodiAnk = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    // Generate unique batch_id for jodi ank (prefix changed to jodi_ank_)
+    const batchPrefix = 'jodi_ank_';
+    const prefixLength = batchPrefix.length; // 11
+
     const [[{ lastBatchNum = 0 } = {}]] = await db.query(
-      `SELECT MAX(CAST(SUBSTRING(batch_id, 9) AS UNSIGNED)) as lastBatchNum 
-       FROM jodi_ank_entries 
-       WHERE batch_id LIKE 'jodi_ank_%'`
+      `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
+      FROM single_ank_entries 
+      WHERE batch_id LIKE ?`,
+      [prefixLength + 1, `${batchPrefix}%`]
     );
     const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
-    const batchId = `jodi_ank_${String(nextBatchNum).padStart(5, '0')}`;
+    const batchId = `${batchPrefix}${String(nextBatchNum).padStart(5, '0')}`;   
 
     // Insert entries into jodi_ank_entries table
     const insertEntries = entries.map(e =>
@@ -1674,8 +1677,8 @@ exports.getAllPlayingRecords = async (req, res) => {
         // For open_select formatting
         if (tableName === 'single_ank_entries')
           batches[entry.batch_id].open_select.push(`${entry.digit} X ${entry.amount}`);
-        else if (tableName === 'jodi_entries')
-          batches[entry.batch_id].open_select.push(`${entry.jodi} X ${entry.amount}`);
+        else if (tableName === 'jodi_ank_entries')
+          batches[entry.batch_id].open_select.push(`${entry.digit} X ${entry.amount}`);
         // Add more game tables as needed here
       }
       // Prepare the final batch records
