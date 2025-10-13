@@ -1392,6 +1392,89 @@ exports.getUserBoardGames = async (req, res) => {
 exports.addSingleAnk = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { game_id, input_date, name, total_amount, entrytype, game_time_type, entries } = req.body;
+
+
+    if (!game_id || !input_date || !entries?.length) {
+      return res.status(400).json({ message: 'Invalid input data' });
+    }
+
+    // Sum validation
+    const sumAmounts = entries.reduce((sum, e) => sum + Number(e.amount), 0);
+    if (sumAmounts !== total_amount) {
+      return res.status(400).json({ message: 'Total amount mismatch' });
+    }
+
+    // Fetch user wallet balance
+    const [walletRows] = await db.query(
+      "SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1",
+      [userId]
+    );
+    const currentBalance = walletRows.length ? walletRows[0].balance_after : 0;
+
+    if (currentBalance < total_amount) {
+      return res.status(400).json({ message: 'Insufficient balance' });
+    }
+
+    // Generate a unique sequential batch_id like single_ank_00001
+    // Ensure batch_id column exists on single_ank_entries table!
+    // Option 1: Sequential
+    const batchPrefix = 'single_ank_';
+    const prefixLength = batchPrefix.length; // 11
+
+    const [[{ lastBatchNum = 0 } = {}]] = await db.query(
+      `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
+      FROM single_ank_entries 
+      WHERE batch_id LIKE ?`,
+      [prefixLength + 1, `${batchPrefix}%`]
+    );
+    const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
+    const batchId = `${batchPrefix}${String(nextBatchNum).padStart(5, '0')}`;
+
+    // --- Option 2: Random five-digit batch id (uncomment to use random logic) ---
+    /*
+    let batchId, exists;
+    do {
+      const randomNum = Math.floor(10000 + Math.random() * 90000);
+      batchId = `single_ank_${randomNum}`;
+      [[exists]] = await db.query("SELECT 1 FROM single_ank_entries WHERE batch_id=?", [batchId]);
+    } while (exists);
+    */
+    // -------------------------------------------------------------------
+
+    // Insert game entries with batch_id
+    const insertEntries = entries.map(e =>
+        db.query(
+        `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype, game_time_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype, game_time_type]
+      )
+    );
+    await Promise.all(insertEntries);
+
+    // Insert wallet debit transaction
+    const newBalance = currentBalance - total_amount;
+    await db.query(
+      `INSERT INTO user_wallet 
+        (user_id, transaction_type, amount, balance_after, description, related_game_id)
+       VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
+      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
+    );
+
+    return res.status(201).json({
+      message: 'Entries saved and wallet updated',
+      balance: newBalance,
+      batchId
+    });
+  } catch (error) {
+    console.error('Error in addSingleAnk:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.addJodiAnk = async (req, res) => {
+  try {
+    const userId = req.user.id;
     const { game_id, input_date, name, total_amount, entrytype, entries } = req.body;
 
     if (!game_id || !input_date || !entries?.length) {
@@ -1415,30 +1498,25 @@ exports.addSingleAnk = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    // Generate unique batch_id for this submission
-      const now = new Date();
-      // IST = UTC+5:30
-      const istNow = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+    const batchPrefix = 'jodi_ank_';
+    const prefixLength = batchPrefix.length; // 11
 
-      const pad = n => (n < 10 ? '0' + n : n);
-      let hours = istNow.getHours();
-      const minutes = pad(istNow.getMinutes());
-      const ampm = hours >= 12 ? 'PM' : 'AM';
+    const [[{ lastBatchNum = 0 } = {}]] = await db.query(
+      `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
+      FROM jodi_ank_entries 
+      WHERE batch_id LIKE ?`,
+      [prefixLength + 1, `${batchPrefix}%`]
+    );
+    const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
+    const batchId = `${batchPrefix}${String(nextBatchNum).padStart(5, '0')}`;   
 
-      hours = hours % 12;
-      hours = hours ? hours : 12; // 0 should be 12
-
-      const dateStr = `${pad(istNow.getDate())}_${pad(istNow.getMonth() + 1)}_${String(istNow.getFullYear()).slice(-2)}`;
-      const timeStr = `${pad(hours)}:${minutes}${ampm}`;
-
-      const batchId = `single_ank_${dateStr}_${timeStr}`;
-
-    // Insert game entries with batch_id
+    // Insert entries into jodi_ank_entries table
     const insertEntries = entries.map(e =>
       db.query(
-        `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId]
+        `INSERT INTO jodi_ank_entries 
+         (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype]
       )
     );
     await Promise.all(insertEntries);
@@ -1446,17 +1524,24 @@ exports.addSingleAnk = async (req, res) => {
     // Insert wallet debit transaction
     const newBalance = currentBalance - total_amount;
     await db.query(
-      `INSERT INTO user_wallet (user_id, transaction_type, amount, balance_after, description, related_game_id)
+      `INSERT INTO user_wallet 
+         (user_id, transaction_type, amount, balance_after, description, related_game_id)
        VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
       [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
     );
 
-    return res.status(201).json({ message: 'Entries saved and wallet updated', balance: newBalance, batchId });
+    return res.status(201).json({
+      message: 'Jodi ank entries saved and wallet updated',
+      balance: newBalance,
+      batchId
+    });
   } catch (error) {
-    console.error('Error in addSingleAnk:', error);
+    console.error('Error in addJodiAnk:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
 
 
 // exports.getAllPlayingRecords = async (req, res) => {
@@ -1582,19 +1667,21 @@ exports.getAllPlayingRecords = async (req, res) => {
             batch_id: entry.batch_id,
             created_at: entry.created_at,
             game_id: entry.game_id,
+            game_name: entry.name,
+
             playing_amount: 0,
             total_amount: entry.total_amount, // Will be same for whole batch
             entries: [],
-            open_select: []
+            selections: []
           };
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
         batches[entry.batch_id].entries.push(entry);
         // For open_select formatting
         if (tableName === 'single_ank_entries')
-          batches[entry.batch_id].open_select.push(`${entry.digit} X ${entry.amount}`);
-        else if (tableName === 'jodi_entries')
-          batches[entry.batch_id].open_select.push(`${entry.jodi} X ${entry.amount}`);
+          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
+        else if (tableName === 'jodi_ank_entries')
+          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
         // Add more game tables as needed here
       }
       // Prepare the final batch records
@@ -1611,15 +1698,17 @@ exports.getAllPlayingRecords = async (req, res) => {
           game_type: tableName.replace('_entries', ''),
           batch_id: batch.batch_id,
           game_id: batch.game_id,
+          game_name: batch.game_name,
+
           created_at: batch.created_at,
           opening_balance,
           closing_balance,
           playing_amount: String(batch.playing_amount),
           amount_after_tax,
           tax,
-          open_select: batch.open_select,
+          selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
-          entries: batch.entries
+          // entries: batch.entries
         });
       }
     }

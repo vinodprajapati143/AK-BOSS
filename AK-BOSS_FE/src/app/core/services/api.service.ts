@@ -126,8 +126,8 @@ updateUserProfile(data:any) {
   return this.http.put(`${this.baseUrl}/api/users/update-profile`,data,{ withCredentials: true });
 }
 
-  saveEntries(payload: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/api/games/single-ank/entry`, payload,{ withCredentials: true });
+  saveEntries(payload: any,entry:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/games/${entry}-ank/entry`, payload,{ withCredentials: true });
   }
 
  getUserswithbalnce() {
