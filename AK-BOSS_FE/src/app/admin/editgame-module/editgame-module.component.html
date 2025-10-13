@@ -1,39 +1,54 @@
-<div class="flex items-center justify-between rounded-full border px-6 py-4 w-full gap-x-4 bg-white shadow-md">
+<div class="shadow-md p-5" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
+  <div class="flex flex-col items-center">
+    <h5 class="text-white font-bold text-[20px] my-4">Edit what you want</h5>
+    <div class="form flex items-center justify-between bg-white px-6 py-4 w-full gap-x-4">
+      <div class="relative -rotate-6 bg-teal-500 text-white px-4 py-2 rounded font-bold text-sm shadow-md">
+        KALYAN NIGHT
+      </div>
+
+      <!-- Open Time -->
+      <div class="flex items-center space-x-1">
+        <div class="text-center text-teal-600 text-sm font-semibold">Open</div>
+        <div class="flex items-center bg-blue-100 border border-gray-300 px-2 py-1 rounded">
+          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
+          <span class="px-1">:</span>
+          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
+        </div>
+      </div>
+
+      <!-- Dashed Boxes (3) -->
+      <div class="flex space-x-2">
+        <div
+          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
+          ---</div>
+        <div
+          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
+          ---</div>
+        <div
+          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
+          ---</div>
+        <div
+          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
+          ---</div>
+      </div>
+
+      <!-- Close Time -->
+      <div class="flex items-center space-x-1">
+        <div class="text-center text-teal-600 text-sm font-semibold">Closed</div>
+        <div class="flex items-center bg-blue-100 border border-gray-300 px-2 py-1 rounded">
+          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
+          <span class="px-1">:</span>
+          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="50" />
+        </div>
+      </div>
+
+
+    </div>
+    <!-- Submit Button -->
+    <button class="bg-white text-teal-800 font-bold px-4 py-2 rounded shadow mt-4">
+      Submit
+    </button>
+  </div>
   <!-- Left Tag -->
-  <div class="relative -rotate-6 bg-teal-500 text-white px-4 py-2 rounded font-bold text-sm shadow-md">
-    KALYAN NIGHT
-  </div>
 
-  <!-- Open Time -->
-  <div class="flex items-center space-x-1">
-    <div class="text-center text-teal-600 text-sm font-semibold">Open</div>
-    <div class="flex items-center bg-blue-100 border border-gray-300 px-2 py-1 rounded">
-      <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
-      <span class="px-1">:</span>
-      <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
-    </div>
-  </div>
-
-  <!-- Dashed Boxes (3) -->
-  <div class="flex space-x-2">
-    <div class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">---</div>
-    <div class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">---</div>
-    <div class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">---</div>
-    <div class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">---</div>
-  </div>
-
-  <!-- Close Time -->
-  <div class="flex items-center space-x-1">
-    <div class="text-center text-teal-600 text-sm font-semibold">Closed</div>
-    <div class="flex items-center bg-blue-100 border border-gray-300 px-2 py-1 rounded">
-      <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
-      <span class="px-1">:</span>
-      <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="50" />
-    </div>
-  </div>
-
-  <!-- Submit Button -->
-  <button class="bg-teal-700 hover:bg-teal-800 text-white px-4 py-2 rounded shadow">
-    Submit
-  </button>
 </div>
