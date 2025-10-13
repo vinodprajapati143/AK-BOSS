@@ -1502,7 +1502,7 @@ exports.addJodiAnk = async (req, res) => {
 
     const [[{ lastBatchNum = 0 } = {}]] = await db.query(
       `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
-      FROM single_ank_entries 
+      FROM jodi_ank_entries 
       WHERE batch_id LIKE ?`,
       [prefixLength + 1, `${batchPrefix}%`]
     );
