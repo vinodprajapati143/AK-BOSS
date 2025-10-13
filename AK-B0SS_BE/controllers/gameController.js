@@ -1696,6 +1696,8 @@ exports.getAllPlayingRecords = async (req, res) => {
           game_type: tableName.replace('_entries', ''),
           batch_id: batch.batch_id,
           game_id: batch.game_id,
+          game_name: batch.name,
+
           created_at: batch.created_at,
           opening_balance,
           closing_balance,
@@ -1704,7 +1706,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           tax,
           selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
-          entries: batch.entries
+          // entries: batch.entries
         });
       }
     }
