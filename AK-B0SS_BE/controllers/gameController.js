@@ -1698,7 +1698,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           game_type: tableName.replace('_entries', ''),
           batch_id: batch.batch_id,
           game_id: batch.game_id,
-          game_name: batch.name,
+          game_name: batch.game_name,
 
           created_at: batch.created_at,
           opening_balance,
