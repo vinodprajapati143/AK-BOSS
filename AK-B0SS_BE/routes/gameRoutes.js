@@ -22,6 +22,10 @@ router.put('/:id', gameController.updateGameById);// 10/08/2025 -----> Paid
 router.post('/single-ank/entry', gameController.addSingleAnk);// 10/08/2025 -----> Paid
 
 
+router.post('/jodi-ank/entry', gameController.addJodiAnk);
+
+
+
 
 
 

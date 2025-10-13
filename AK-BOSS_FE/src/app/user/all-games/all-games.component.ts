@@ -21,35 +21,30 @@ export class AllGamesComponent {
   selectedGame: any = null;
 
 
-  menuItems = [
-    { title: 'Single Ank', icon: 'assets/images/dice.png',  active: false , route: '/user/play' },
-    { title: 'Jodi', icon: 'assets/images/dice.png',  active: false , route: '/user/jodi' },
-    { title: 'Single Panna', icon: 'assets/images/dice.png',  active: false , route: '/user/single-panna' },
-    { title: 'Double Panna', icon: 'assets/images/dice.png',  active: false , route: '/user/double-panna' },
-    { title: 'Triple Panna', icon: 'assets/images/dice.png',  active: false , route: '/user/triple-panna' },
-    { title: 'Half Sangam A', icon: 'assets/images/dice.png',  active: false , route: '/user/half-sangam-a' },
-    { title: 'Full Sangam', icon: 'assets/images/dice.png',  active: false , route: '/user/full-sangam' }
-  ];
+menuItems = [
+  { title: 'Single Ank', icon: 'assets/images/dice.png', active: false, entryType: 'singleank' },
+  { title: 'Jodi', icon: 'assets/images/dice.png', active: false, entryType: 'jodi' },
+  { title: 'Single Panna', icon: 'assets/images/dice.png', active: false, entryType: 'singlepanna' },
+  { title: 'Double Panna', icon: 'assets/images/dice.png', active: false, entryType: 'doublepanna' },
+  { title: 'Triple Panna', icon: 'assets/images/dice.png', active: false, entryType: 'triplepanna' },
+  { title: 'Half Sangam A', icon: 'assets/images/dice.png', active: false, entryType: 'halfsangama' },
+  { title: 'Full Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'fullsangam' },
+];
 
-  routeEntryTypeMap: any = {
-    '/user/play': 'singleank',
-    '/user/jodi': 'jodi',
-    '/user/single-panna': 'singlepanna',
-    '/user/double-panna': 'doublepanna',
-    '/user/triple-panna': 'triplepanna',
-    '/user/half-sangam-a': 'halfsangama',
-    '/user/full-sangam': 'fullsangam'
-  };
+ 
 
-  onGameClick(item: any) {
-    const entrytype = this.routeEntryTypeMap[item.route];
-    this.gameDataService.updateEntryType(entrytype);
-    this.router.navigate([item.route]);
-     this.menuItems.forEach(i => i.active = false);
-  // activate clicked one
+onGameClick(item: any) {
+  // update service with the selected entry type
+  this.gameDataService.updateEntryType(item.entryType);
+
+  // navigate to same play route
+  this.router.navigate(['/user/play']);
+
+  // update active state
+  this.menuItems.forEach(i => i.active = false);
   item.active = true;
   this.selectedGame = item;
-  }
+}
 
   back() {
     this.location.back();

@@ -86,25 +86,54 @@ export class PlayGameComponent implements OnInit {
 
     console.log("Payload for submission:", payload);
 
-    this.apiservice.saveEntries(payload).subscribe({
-      next: (response) => {
-        console.log('Entries saved successfully', response);
-        this.toastr.success(response.message)
-        this.walletService.refreshWallet();
-        this.router.navigate(['/user/report'])
+switch(this.game.entrytype) {
+    case 'singleank':
+      this.apiservice.saveEntries(payload, 'single').subscribe({
+        next: (response) => {
+          console.log('Single Ank saved', response);
+          this.handleSuccess(response);
+        },
+        error: (err) => {
+          console.error('Error saving Single Ank', err);
+          this.handleError(err);
+        }
+      });
+      break;
 
-        // Yahan pe success ka UI feedback ya navigation kar sakte ho
-      },
-      error: (err) => {
-        console.error('Error saving entries', err);
-        this.toastr.success(err.message)
+    case 'jodi':
+      this.apiservice.saveEntries(payload, 'jodi').subscribe({
+        next: (response) => {
+          console.log('Jodi saved', response);
+          this.handleSuccess(response);
+        },
+        error: (err) => {
+          console.error('Error saving Jodi', err);
+          this.handleError(err);
+        }
+      });
+      break;
 
-        // Yahan pe error message show karwana
-      }
-    });
+    // Add cases for other entry types following similar structure
+    // Note: Make sure backend API and service support these
+
+    default:
+      console.warn('Unsupported entry type:', this.game.entrytype);
+      break;
+  }
+
+
 
     // yahan aap HTTP call karke payload backend ko send kar sakte hain
   }
+    handleSuccess(response: any) {
+  this.toastr.success(response.message);
+  this.walletService.refreshWallet();
+  this.router.navigate(['/user/report']);
+}
+
+handleError(err: any) {
+  this.toastr.error(err.message || 'Error occurred');
+}
   back() {
     this.location.back();
   }

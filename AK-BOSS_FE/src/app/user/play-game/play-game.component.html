@@ -1,7 +1,7 @@
 <app-header></app-header>
 
 <!-- Single Ank -->
-
+@if(this.game.entrytype == 'singleank'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
     <h2 class="text-lg font-semibold text-center text-teal-700">Single Ank</h2>
     <div class="flex justify-center mt-2 gap-2">
@@ -79,7 +79,9 @@
       Back
     </button>
 </div>
+}
 
+@if(this.game.entrytype == 'jodi'){
 
 <!-- Jodi Ank -->
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
@@ -139,6 +141,9 @@
     Back
   </button>
 </div>
+}
+
+@if(this.game.entrytype == 'singlepanna'){
 
 <!-- Single Panna -->
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
@@ -218,6 +223,7 @@
     Back
   </button>
 </div>
+}
 
 
 <app-footer></app-footer>

@@ -1467,6 +1467,73 @@ exports.addSingleAnk = async (req, res) => {
   }
 };
 
+exports.addJodiAnk = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { game_id, input_date, name, total_amount, entrytype, entries } = req.body;
+
+    if (!game_id || !input_date || !entries?.length) {
+      return res.status(400).json({ message: 'Invalid input data' });
+    }
+
+    // Sum validation
+    const sumAmounts = entries.reduce((sum, e) => sum + Number(e.amount), 0);
+    if (sumAmounts !== total_amount) {
+      return res.status(400).json({ message: 'Total amount mismatch' });
+    }
+
+    // Fetch user wallet balance
+    const [walletRows] = await db.query(
+      "SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1",
+      [userId]
+    );
+    const currentBalance = walletRows.length ? walletRows[0].balance_after : 0;
+
+    if (currentBalance < total_amount) {
+      return res.status(400).json({ message: 'Insufficient balance' });
+    }
+
+    // Generate unique batch_id for jodi ank (prefix changed to jodi_ank_)
+    const [[{ lastBatchNum = 0 } = {}]] = await db.query(
+      `SELECT MAX(CAST(SUBSTRING(batch_id, 9) AS UNSIGNED)) as lastBatchNum 
+       FROM jodi_ank_entries 
+       WHERE batch_id LIKE 'jodi_ank_%'`
+    );
+    const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
+    const batchId = `jodi_ank_${String(nextBatchNum).padStart(5, '0')}`;
+
+    // Insert entries into jodi_ank_entries table
+    const insertEntries = entries.map(e =>
+      db.query(
+        `INSERT INTO jodi_ank_entries 
+         (user_id, game_id, name, input_date, jodi, amount, total_amount, batch_id, entrytype)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype]
+      )
+    );
+    await Promise.all(insertEntries);
+
+    // Insert wallet debit transaction
+    const newBalance = currentBalance - total_amount;
+    await db.query(
+      `INSERT INTO user_wallet 
+         (user_id, transaction_type, amount, balance_after, description, related_game_id)
+       VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
+      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
+    );
+
+    return res.status(201).json({
+      message: 'Jodi ank entries saved and wallet updated',
+      balance: newBalance,
+      batchId
+    });
+  } catch (error) {
+    console.error('Error in addJodiAnk:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 
 // exports.getAllPlayingRecords = async (req, res) => {
