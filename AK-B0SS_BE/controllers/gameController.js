@@ -1506,7 +1506,7 @@ exports.addJodiAnk = async (req, res) => {
     const insertEntries = entries.map(e =>
       db.query(
         `INSERT INTO jodi_ank_entries 
-         (user_id, game_id, name, input_date, jodi, amount, total_amount, batch_id, entrytype)
+         (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype]
       )
