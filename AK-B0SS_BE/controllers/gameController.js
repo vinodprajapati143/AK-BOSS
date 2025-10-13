@@ -1667,6 +1667,8 @@ exports.getAllPlayingRecords = async (req, res) => {
             batch_id: entry.batch_id,
             created_at: entry.created_at,
             game_id: entry.game_id,
+            game_name: entry.name,
+
             playing_amount: 0,
             total_amount: entry.total_amount, // Will be same for whole batch
             entries: [],
