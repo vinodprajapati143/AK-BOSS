@@ -135,7 +135,7 @@ switch(this.game.entrytype) {
 }
 
 handleError(err: any) {
-  this.toastr.error(err.message || 'Error occurred');
+  this.toastr.error(err.data.message || 'Error occurred');
 }
   back() {
     this.location.back();
