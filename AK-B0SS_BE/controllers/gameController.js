@@ -1418,13 +1418,17 @@ exports.addSingleAnk = async (req, res) => {
     // Generate a unique sequential batch_id like single_ank_00001
     // Ensure batch_id column exists on single_ank_entries table!
     // Option 1: Sequential
+    const batchPrefix = 'single_ank_';
+    const prefixLength = batchPrefix.length; // 11
+
     const [[{ lastBatchNum = 0 } = {}]] = await db.query(
-      `SELECT MAX(CAST(SUBSTRING(batch_id, 11) AS UNSIGNED)) as lastBatchNum 
-       FROM single_ank_entries 
-       WHERE batch_id LIKE 'single_ank_%'`
+      `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
+      FROM single_ank_entries 
+      WHERE batch_id LIKE ?`,
+      [prefixLength + 1, `${batchPrefix}%`]
     );
     const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
-    const batchId = `single_ank_${String(nextBatchNum).padStart(5, '0')}`;
+    const batchId = `${batchPrefix}${String(nextBatchNum).padStart(5, '0')}`;
 
     // --- Option 2: Random five-digit batch id (uncomment to use random logic) ---
     /*
