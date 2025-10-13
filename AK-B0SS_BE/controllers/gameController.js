@@ -1474,7 +1474,8 @@ exports.addSingleAnk = async (req, res) => {
 exports.addJodiAnk = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { game_id, input_date, name, total_amount, entrytype, entries } = req.body;
+    const { game_id, input_date, name, total_amount, entrytype, game_time_type, entries } = req.body;
+
 
     if (!game_id || !input_date || !entries?.length) {
       return res.status(400).json({ message: 'Invalid input data' });
@@ -1512,10 +1513,9 @@ exports.addJodiAnk = async (req, res) => {
     // Insert entries into jodi_ank_entries table
     const insertEntries = entries.map(e =>
       db.query(
-        `INSERT INTO jodi_ank_entries 
-         (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype]
+        `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype, game_time_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype, game_time_type]
       )
     );
     await Promise.all(insertEntries);

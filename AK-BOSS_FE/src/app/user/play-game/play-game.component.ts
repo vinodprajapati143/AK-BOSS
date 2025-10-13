@@ -30,6 +30,7 @@ export class PlayGameComponent implements OnInit {
   location = inject(Location);
   toastr = inject(ToastrService);
   router = inject(Router);
+  selectedGameTimeType: any;
 
 
 
@@ -73,11 +74,13 @@ export class PlayGameComponent implements OnInit {
 
 
     const payload = {
+
       game_id: this.game.id,
       input_date: todayDate,
       name: this.game.name,
       total_amount: this.totalAmount,
       entrytype: this.game.entrytype,
+      game_time_type: this.selectedGameTimeType,
       entries: this.numbers.map(item => ({
         digit: Number(item.digit),
         amount: item.amount
