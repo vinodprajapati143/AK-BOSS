@@ -38,20 +38,40 @@
     </div>
 </div>
 
-<div class="mobile-sidebar hidden">
-    <div class="logo">
-        <span>
-            AKBoss
-        </span>
+<div class="mobile-sidebar md:hidden flex" [ngClass]="mobileSidebarOpen?'active':''">
+    <div class="w-full h-[100vh] bg-white ">
+        <div class="logo">
+            <span>
+                AKBoss
+            </span>
+        </div>
+        <nav>
+            <ul>
+                <li *ngFor="let link of this.mobileNavLinks" class="bg-[#F6F6F6]">
+                    <div (click)="handleNavItemClick(link)"
+                        class="px-4 py-2 border-y border-[#20A2A066] flex justify-between w-full font-semibold text-[#000000B2]">
+                        {{link.title}}
+                        <img *ngIf="link.subLinks" class="rotate-[90deg]" src="/assets/images/icons/arrow-left.svg"
+                            alt="">
+                    </div>
+                    <div *ngIf="link.isOpen">
+                        <ul>
+                            <li *ngFor="let subLink of link.subLinks"
+                                [ngStyle]="{'background-color': link.isActive?'#20A2A0': '#fff'}"
+                                class="px-4 py-1 border-y border-[#20A2A066]">
+                                <div (click)="handleNavSubLinkItemClick(link,subLink)">
+                                    {{subLink.title}}
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
     </div>
-    <nav>
-        <ul>
-            <li *ngFor="let link of this.links">
-                {{link.text}}
-                <ul *ngFor="let subLink of this.subLinksMap[link.text]">
-                    {{subLink.text}}
-                </ul>
-            </li>
-        </ul>
-    </nav>
+    <div (click)="this.mobileSidebarOpen=!this.mobileSidebarOpen" class="toggle-button">
+        <div class="w-[4px] rounded-lg bg-white">
+
+        </div>
+    </div>
 </div>

@@ -23,12 +23,14 @@ export interface User {
   styleUrl: './admin-sidebar.component.scss',
 })
 export class AdminSidebarComponent {
+  mobileSidebarOpen: boolean = false;
+
   constructor(
     private router: Router,
     private strorageservice: StorageService,
     private toaster: ToastrService,
     private backendservice: ApiService
-  ) {}
+  ) { }
 
   links = [
     { img: 'home', href: '/admin/dashboard', text: 'Home', active: true },
@@ -75,14 +77,14 @@ export class AdminSidebarComponent {
         href: '/admin/users',
         active: false,
       },
-       {
+      {
         img: 'referral',
         text: 'All Member',
         href: '/admin/all-users',
         active: false,
       },
     ],
-       Payment: [
+    Payment: [
       {
         img: 'report',
         text: 'Balance Transfer',
@@ -95,19 +97,19 @@ export class AdminSidebarComponent {
         href: '/admin/balance-return',
         active: false,
       },
-        {
+      {
         img: 'report',
         text: 'Bal Return Request',
         href: '/admin/bal-return-request',
         active: false,
       },
-        {
+      {
         img: 'report',
         text: 'Payment Request view',
         href: '/admin/payment-request-view',
         active: false,
       },
-        {
+      {
         img: 'report',
         text: 'Purchase Balance',
         href: '/admin/purchase-balance',
@@ -125,6 +127,59 @@ export class AdminSidebarComponent {
     Help: [{ img: 'help', text: 'FAQ', href: '/admin/help', active: false }],
   };
 
+  mobileNavLinks: any = [
+    {
+      title: "Payment",
+      subLinks: [
+        {
+          title: "Link 1",
+          href: "/admin"
+        },
+        {
+          title: "Link 1",
+          href: "/admin"
+        },
+        {
+          title: "Link 1",
+          href: "/admin"
+        }
+      ]
+    },
+    {
+      title: "Report",
+      href: "/admin"
+    },
+    {
+      title: "Games",
+      subLinks: [
+        {
+          title: "All Games",
+          href: "/admin/all-game"
+        },
+        {
+          title: "Add Games",
+          href: "/admin/add-game"
+        },
+      ]
+    },
+    {
+      title: "Members",
+      subLinks: [
+        {
+          title: "All Games",
+          href: "/admin"
+        },
+        {
+          title: "Add Games",
+          href: "/admin"
+        },
+      ]
+    },
+    {
+      title: "Logout",
+      href: "#"
+    }
+  ]
   // by default current submenu (based on active link)
   currentSubLinks: any[] =
     this.subLinksMap[this.links.find((l) => l.active)?.text || 'Home'];
@@ -233,5 +288,16 @@ export class AdminSidebarComponent {
         // this.router.navigate(['/home']);
       },
     });
+  }
+
+  handleNavItemClick(link: any) {
+    if (link.href) {
+      this.router.navigateByUrl(link.href);
+      // console.log(link.href)
+    }
+    link.isOpen = !link.isOpen;
+  }
+  handleNavSubLinkItemClick(link: any, subLink: any) {
+    this.router.navigateByUrl(subLink.href);
   }
 }
