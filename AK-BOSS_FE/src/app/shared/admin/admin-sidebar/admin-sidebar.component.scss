@@ -1,0 +1,27 @@
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 90%;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 999;
+
+    .logo {
+        padding: 10px 20px;
+        width: 100%;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0;
+
+        span {
+            display: flex;
+            justify-content: center;
+            padding: 5px 0;
+            align-items: center;
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid #219EBC;
+        }
+    }
+}

@@ -1,49 +1,53 @@
 .head {
   height: 50px;
-  display: flex;
-  align-items: center;
   padding: 0 20px;
   font-size: 20px;
-  background: #0A7E8D;
+  background: linear-gradient(90deg, #219EBC 0%, #FB8500 100%);
   width: 100%;
   color: white;
   font-weight: bold;
   width: 100%;
 
+  &.left {
+    display: flex;
+    align-items: center;
+  }
+
   &.center {
+    display: flex;
     position: relative;
     justify-content: center;
     align-items: center;
     margin: 10px 0;
+  }
 
-    .searchbar {
-      position: absolute;
-      left: 20px;
-      gap: 10px;
 
-      input {
-        background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);
-        border: 1px solid #FFFFFF99;
-        font-weight: normal;
-        font-size: 16px;
-        padding: 5px 10px;
+  .searchbar {
+    position: absolute;
+    left: 20px;
+    gap: 10px;
 
-        &::placeholder {
-          color: #ffffff6c;
-        }
-      }
+    input {
+      background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);
+      border: 1px solid #FFFFFF99;
+      font-weight: normal;
+      font-size: 16px;
+      padding: 5px 10px;
 
-      .btn {
-        background: linear-gradient(90deg, #219EBC 0%, #FB8500 100%);
-        height: 40px;
-        width: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #fff;
+      &::placeholder {
+        color: #ffffff6c;
       }
     }
 
+    .btn {
+      background: linear-gradient(90deg, #219EBC 0%, #FB8500 100%);
+      height: 40px;
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #fff;
+    }
   }
 }
 
@@ -55,12 +59,18 @@
   padding: 10px 60px;
   border: 2px solid #000;
   border-radius: 80px;
+  position: relative;
+
+  &.mobile {
+    display: none;
+  }
 
   &.type-2 {
     padding: 0;
 
     .name-2 {
       color: #20A2A0;
+      min-width: 300px;
 
       div {
         padding: 20px;
@@ -68,6 +78,7 @@
         span {
           background-color: #fff;
           font-weight: bold;
+          text-wrap: nowrap;
           padding: 20px;
           border-radius: 50px;
         }
@@ -345,12 +356,47 @@ input[readonly] {
   }
 }
 
+@media (max-width:1025px) {
+  .game.type-2 .name-2 {
+    min-width: auto;
+  }
+}
+
 @media (max-width:767px) {
+  .head {
+    &:has(.searchbar) {
+      // padding: 20px 10px;
+      display: flex;
+      height: 60px;
+      margin-top: 10px;
+    }
+
+    &.center {
+      margin: 0;
+    }
+
+    .searchbar {
+      position: relative;
+      width: 100%;
+      left: 0;
+      top: 0;
+    }
+  }
+
   .game {
     border-radius: 0;
     padding: 0 0;
     gap: 0;
     margin: 10px;
+
+    &.desktop {
+      display: none;
+    }
+
+    &.mobile {
+      display: flex;
+      flex-direction: column;
+    }
 
     .name {
       color: white;
@@ -364,6 +410,7 @@ input[readonly] {
       transform: rotate(0deg);
       font-size: 20px;
       padding: 5px 0;
+
       &::before,
       &::after {
         display: none;
@@ -432,4 +479,26 @@ input[readonly] {
 
     }
   }
+}
+
+::ng-deep {
+  .bottom-dialog {
+    position: fixed !important;
+    margin: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    border-radius: 16px 16px 0 0;
+    animation: slideUp 0.3s ease-out;
+
+  }
+
+  .mdc-dialog--open {
+    transform: translate(0, 0) !important;
+  }
+
+  .cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: 100vw !important;
+  }
+
 }

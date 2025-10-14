@@ -1,43 +1,57 @@
 <div class="sidebar w-[280px] h-full lg:block hidden">
-  <div class="logo bg-[#0A7E8D] flex justify-center items-center h-[90px]">
-    <img src="/assets/images/dashboard/images/logo.png" alt="">
-  </div>
+    <div class="logo bg-[#FB8500] flex justify-center items-center h-[90px]">
+        <img src="/assets/images/dashboard/images/logo.png" alt="">
+    </div>
 
-  <div class="admin-navigation flex">
-   <!-- Left Main Menu -->
+    <div class="admin-navigation flex">
+        <!-- Left Main Menu -->
         <div class="left px-4">
-        <ul>
-            <li *ngFor="let link of links">
-            <a [routerLink]="link.href"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: false }">
-                <img [src]="getImageUrl(link.img, false)" alt="" class="">
-                {{ link.text }}
-            </a>
-            </li>
+            <ul>
+                <li *ngFor="let link of links">
+                    <a [routerLink]="link.href" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
+                        <img [src]="getImageUrl(link.img, false)" alt="" class="">
+                        {{ link.text }}
+                    </a>
+                </li>
 
-            <li>
-            <a (click)="logout()">
-                <img [src]="getImageUrl('logout', false)" alt="">
-                Logout
-            </a>
-            </li>
-        </ul>
+                <li>
+                    <a (click)="logout()">
+                        <img [src]="getImageUrl('logout', false)" alt="">
+                        Logout
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <!-- Right Submenu -->
-        <div class="right flex-1">
+        <div class="right flex-1" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
+            <ul>
+                <li *ngFor="let sub of currentSubLinks">
+                    <a [routerLink]="sub.href" routerLinkActive="active" class="text-xs"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <img [src]="getImageUrl(sub.img, false)" alt="">
+                        {{ sub.text }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="mobile-sidebar hidden">
+    <div class="logo">
+        <span>
+            AKBoss
+        </span>
+    </div>
+    <nav>
         <ul>
-            <li *ngFor="let sub of currentSubLinks">
-            <a [routerLink]="sub.href"
-                routerLinkActive="active" class="text-xs"
-                [routerLinkActiveOptions]="{ exact: true }">
-                <img [src]="getImageUrl(sub.img, false)" alt="">
-                {{ sub.text }}
-            </a>
+            <li *ngFor="let link of this.links">
+                {{link.text}}
+                <ul *ngFor="let subLink of this.subLinksMap[link.text]">
+                    {{subLink.text}}
+                </ul>
             </li>
         </ul>
-        </div>
-
-  </div>
+    </nav>
 </div>

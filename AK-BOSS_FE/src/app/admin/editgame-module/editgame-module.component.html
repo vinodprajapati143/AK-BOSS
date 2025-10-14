@@ -1,54 +1,143 @@
-<div class="shadow-md p-5" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
-  <div class="flex flex-col items-center">
-    <h5 class="text-white font-bold text-[20px] my-4">Edit what you want</h5>
-    <div class="form flex items-center justify-between bg-white px-6 py-4 w-full gap-x-4">
-      <div class="relative -rotate-6 bg-teal-500 text-white px-4 py-2 rounded font-bold text-sm shadow-md">
-        KALYAN NIGHT
-      </div>
-
-      <!-- Open Time -->
-      <div class="flex items-center space-x-1">
-        <div class="text-center text-teal-600 text-sm font-semibold">Open</div>
-        <div class="flex items-center bg-blue-100 border border-gray-300 px-2 py-1 rounded">
-          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
-          <span class="px-1">:</span>
-          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
-        </div>
-      </div>
-
-      <!-- Dashed Boxes (3) -->
-      <div class="flex space-x-2">
-        <div
-          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
-          ---</div>
-        <div
-          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
-          ---</div>
-        <div
-          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
-          ---</div>
-        <div
-          class="w-10 h-10 border-2 border-orange-300 rounded bg-gray-50 flex items-center justify-center text-gray-400">
-          ---</div>
-      </div>
-
-      <!-- Close Time -->
-      <div class="flex items-center space-x-1">
-        <div class="text-center text-teal-600 text-sm font-semibold">Closed</div>
-        <div class="flex items-center bg-blue-100 border border-gray-300 px-2 py-1 rounded">
-          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="00" />
-          <span class="px-1">:</span>
-          <input type="text" maxlength="2" class="w-6 text-center bg-transparent outline-none" value="50" />
-        </div>
-      </div>
-
-
-    </div>
-    <!-- Submit Button -->
-    <button class="bg-white text-teal-800 font-bold px-4 py-2 rounded shadow mt-4">
-      Submit
-    </button>
+<div class="shadow-md md:p-5 py-4" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
+  <div class="close-btn absolute right-2 top-2 bg-white p-2 rounded">
+    <img src="/assets/images/dashboard/icons/cross-black.svg" alt="">
   </div>
-  <!-- Left Tag -->
+  <div class="flex items-center flex-col">
+    <div class="h-[4px] w-[200px] bg-white rounded-md"></div>
+    <h5 class="text-[30px] text-center text-white font-bold mt-4">
+      Edit what you want
+    </h5>
+  </div>
+  <div class="game md:flex hidden relative bg-[#20A2A0] type-2">
+    <div class="name-2">
+      <div class="relative">
+        <span>Kalayan</span>
+        <img class="md:hidden absolute top-[50%] right-2 w-[20px] -translate-y-[50%]"
+          src="/assets/images/dashboard/icons/edit-white.svg" alt="">
+      </div>
+    </div>
 
+    <div class="flex w-full">
+      <div class="right md:gap-x-3">
+        <div class="flex flex-col">
+          <div class="time md:order-1 order-2">
+            <div>
+              01
+            </div>
+            :
+            <div>
+              55
+            </div>
+            :
+            <div>
+              20
+            </div>
+          </div>
+          <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
+        </div>
+        <div class="game-detail">
+          <input type="text" id="patte1" class="box w-[100px] ">
+
+          <span></span>
+          <div class="flex gap-x-2">
+            <input type="text" id="patte1_open" class="box w-[50px]">
+            <input type="text" id="patte2_close" class="box w-[50px]">
+
+          </div>
+          <span></span>
+          <input type="text" id="patte2" class="box w-[100px]">
+
+
+        </div>
+
+        <div class="flex flex-col">
+          <div class="time md:order-1 order-2">
+            <div>
+              01
+            </div>
+            :
+            <div>
+              55
+            </div>
+            :
+            <div>
+              20
+            </div>
+          </div>
+          <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed</h5>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- mobile -->
+  <div class="game md:hidden flex relative bg-[#20A2A0] type-2">
+    <div class="name-2">
+      <div class="relative">
+        <span>Rara</span>
+      </div>
+    </div>
+
+    <div class="flex w-full">
+
+      <div class="right md:gap-x-3">
+        <div class="flex gap-x-2">
+          <div class="flex flex-col">
+            <div class="time md:order-1 order-2">
+              <div>
+                01
+              </div>
+              :
+              <div>
+                55
+              </div>
+              :
+              <div>
+                20
+              </div>
+            </div>
+            <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed
+            </h5>
+          </div>
+          <div class="flex flex-col">
+            <div class="time md:order-1 order-2">
+              <div>
+                01
+              </div>
+              :
+              <div>
+                55
+              </div>
+              :
+              <div>
+                20
+              </div>
+            </div>
+            <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open
+            </h5>
+          </div>
+        </div>
+
+        <div class="game-detail">
+          <input type="text" id="patte1" class="box w-[100px] ">
+
+          <span></span>
+          <div class="flex gap-x-2">
+            <input type="text" id="patte1_open" class="box w-[50px]">
+            <input type="text" id="patte2_close" class="box w-[50px]">
+
+          </div>
+          <span></span>
+          <input type="text" id="patte2" class="box w-[100px]">
+
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="flex justify-center">
+    <button class="bg-white text-[#0A7E8D] md:w-[300px] w-[70%] rounded-full py-2 font-bold">Save</button>
+  </div>
 </div>
