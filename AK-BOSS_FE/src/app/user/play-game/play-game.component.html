@@ -94,7 +94,7 @@
       <label class="text-gray-700 text-sm font-medium mb-1">Enter Digit</label>
       <input type="text" placeholder="Enter Digit"
         class="w-full text-center px-3 py-2 rounded-md border outline-none border-teal-500 focus:ring-2 focus:ring-indigo-400"
-        [(ngModel)]="digit" maxlength="2" pattern="[0-9]" />
+        [(ngModel)]="digit" maxlength="2" pattern="[0-9]{2}" required  />
     </div>
     <div class="flex flex-col items-center">
       <label class="text-gray-700 text-sm font-medium mb-1">Enter Amount</label>
@@ -102,7 +102,7 @@
              border-teal-500 focus:ring-2 focus:ring-indigo-400" [(ngModel)]="amount" />
     </div>
   </div>
-  <button
+  <button [disabled]="!isDigitValid()"
     class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-medium py-2 rounded-md mt-3 hover:opacity-90"
     (click)="addNumber()">
     Add Number
@@ -222,6 +222,103 @@
     (click)="back()">
     Back
   </button>
+</div>
+}
+
+@if(this.game.entrytype == 'doublepanna'){
+<div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
+  <h2 class="text-lg font-semibold text-center text-teal-700">Double Panna</h2>
+  <div class="flex justify-center mt-2 gap-2">
+    <div class="p-4 bg-green-100 rounded-lg text-center">
+    <h3 class="text-lg font-semibold text-green-700">
+      Double Panna Game Not Available 🎮
+    </h3>
+    <p class="text-gray-600">Please check other games!</p>
+  </div>
+  </div>
+
+
+  <!-- Total Amount -->
+  <div class="mt-4">
+  <button
+    class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
+    (click)="back()">
+    Back
+  </button>
+</div>
+</div>
+
+}
+
+@if(this.game.entrytype == 'triplepanna'){
+<div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
+  <h2 class="text-lg font-semibold text-center text-teal-700">Triple Panna</h2>
+  <div class="flex justify-center mt-2 gap-2">
+    <div class="p-4 bg-green-100 rounded-lg text-center">
+    <h3 class="text-lg font-semibold text-green-700">
+      Triple Panna Game Not Available 🎮
+    </h3>
+    <p class="text-gray-600">Please check other games!</p>
+  </div>
+  </div>
+
+
+  <!-- Total Amount -->
+  <div class="mt-4">
+  <button
+    class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
+    (click)="back()">
+    Back
+  </button>
+</div>
+</div>
+}
+
+@if(this.game.entrytype == 'halfsangama'){
+<div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
+  <h2 class="text-lg font-semibold text-center text-teal-700">Half Sangama</h2>
+  <div class="flex justify-center mt-2 gap-2">
+    <div class="p-4 bg-green-100 rounded-lg text-center">
+    <h3 class="text-lg font-semibold text-green-700">
+      Half Sangama Game Not Available 🎮
+    </h3>
+    <p class="text-gray-600">Please check other games!</p>
+  </div>
+  </div>
+
+
+  <!-- Total Amount -->
+  <div class="mt-4">
+  <button
+    class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
+    (click)="back()">
+    Back
+  </button>
+</div>
+</div>
+}
+
+@if(this.game.entrytype == 'fullsangam'){
+<div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
+  <h2 class="text-lg font-semibold text-center text-teal-700">Full Sangam</h2>
+  <div class="flex justify-center mt-2 gap-2">
+    <div class="p-4 bg-green-100 rounded-lg text-center">
+    <h3 class="text-lg font-semibold text-green-700">
+      Full Sangam Game Not Available 🎮
+    </h3>
+    <p class="text-gray-600">Please check other games!</p>
+  </div>
+  </div>
+
+
+  <!-- Total Amount -->
+  <div class="mt-4">
+  <button
+    class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
+    (click)="back()">
+    Back
+  </button>
+</div>
 </div>
 }
 

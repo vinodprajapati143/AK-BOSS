@@ -48,6 +48,12 @@ export class PlayGameComponent implements OnInit {
     });
   }
 
+  isDigitValid(): boolean {
+  if (!this.digit) return false;
+  const val = this.digit.toString();
+  return val.length === 2 && !isNaN(Number(val));
+}
+
   addNumber() {
     if (this.digit !== null && this.amount !== null) {
       this.numbers.push({ digit: this.digit, amount: this.amount });
