@@ -27,7 +27,7 @@ menuItems = [
   { title: 'Single Panna', icon: 'assets/images/dice.png', active: false, entryType: 'singlepanna' },
   { title: 'Double Panna', icon: 'assets/images/dice.png', active: false, entryType: 'doublepanna' },
   { title: 'Triple Panna', icon: 'assets/images/dice.png', active: false, entryType: 'triplepanna' },
-  { title: 'Half Sangam A', icon: 'assets/images/dice.png', active: false, entryType: 'halfsangama' },
+  { title: 'Half Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'halfsangama' },
   { title: 'Full Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'fullsangam' },
 ];
 
