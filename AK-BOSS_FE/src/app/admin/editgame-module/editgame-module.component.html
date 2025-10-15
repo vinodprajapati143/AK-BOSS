@@ -1,10 +1,10 @@
 <div class="shadow-md md:p-5 py-4" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
-  <div class="close-btn absolute right-2 top-2 bg-white p-2 rounded">
+  <div (click)="closePopup()" class="close-btn absolute right-2 top-2 p-2 rounded">
     <img src="/assets/images/dashboard/icons/cross-black.svg" alt="">
   </div>
   <div class="flex items-center flex-col">
-    <div class="h-[4px] w-[200px] bg-white rounded-md"></div>
-    <h5 class="text-[30px] text-center text-white font-bold mt-4">
+    <div class="h-[4px] md:w-[200px] w-[100px] bg-white rounded-md"></div>
+    <h5 class="text-[22px] text-center text-white font-bold mt-4">
       Edit what you want
     </h5>
   </div>
@@ -20,7 +20,7 @@
     <div class="flex w-full">
       <div class="right md:gap-x-3">
         <div class="flex flex-col">
-          <div class="time md:order-1 order-2">
+          <div class="time md:order-1 order-1">
             <div>
               01
             </div>
@@ -39,7 +39,7 @@
           <input type="text" id="patte1" class="box w-[100px] ">
 
           <span></span>
-          <div class="flex gap-x-2">
+          <div class="flex gap-x-1">
             <input type="text" id="patte1_open" class="box w-[50px]">
             <input type="text" id="patte2_close" class="box w-[50px]">
 
@@ -81,8 +81,8 @@
 
     <div class="flex w-full">
 
-      <div class="right md:gap-x-3">
-        <div class="flex gap-x-2">
+      <div class="right md:gap-x-3 flex justify-center w-full">
+        <div class="flex gap-x-1 justify-center w-full">
           <div class="flex flex-col">
             <div class="time md:order-1 order-2">
               <div>
@@ -119,7 +119,7 @@
           </div>
         </div>
 
-        <div class="game-detail">
+        <div class="game-detail  justify-center w-full flex">
           <input type="text" id="patte1" class="box w-[100px] ">
 
           <span></span>

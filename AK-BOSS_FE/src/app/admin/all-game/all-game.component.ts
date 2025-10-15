@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { interval, Subscription } from 'rxjs';
 import { EditgameModuleComponent } from '../editgame-module/editgame-module.component';
 import { MatDialog } from '@angular/material/dialog';
+import { FooterComponent } from '../../shared/footer/footer.component';
 export interface User {
   name: string;
   enabled: boolean;
@@ -20,7 +21,7 @@ export interface User {
 @Component({
   selector: 'app-all-game',
   standalone: true,
-  imports: [CommonModule, AdminSidebarComponent, FormsModule],
+  imports: [CommonModule, AdminSidebarComponent, FormsModule, FooterComponent],
   templateUrl: './all-game.component.html',
   styleUrl: './all-game.component.scss'
 })

@@ -16,14 +16,25 @@ export class FooterComponent {
     this.currentPath = this.location.path();
   }
 
+   isAdminRoute(): boolean {
+    return this.router.url.startsWith('/admin');
+  }
+
+  // Check if current route starts with /user
+  isUserRoute(): boolean {
+    return this.router.url.startsWith('/user');
+  } 
+  
   setActive(tab: string) {
     this.active = tab;
     this.router.navigate(['/user/' + tab]);
+    localStorage.setItem('activeTab', tab);
   }
   getCurrentTab(): string {
     var urlList = this.currentPath.split('/');
     var path = urlList[urlList.length - 1]
     return path
+    return localStorage.getItem('activeTab') || 'dashboard';
   }
 
 }

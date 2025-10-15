@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-editgame-module',
@@ -9,4 +10,9 @@ import { Component } from '@angular/core';
 })
 export class EditgameModuleComponent {
 
+   constructor(private dialogRef: MatDialogRef<EditgameModuleComponent>) {}
+  
+    closePopup() {
+    this.dialogRef.close();
+  }
 }
