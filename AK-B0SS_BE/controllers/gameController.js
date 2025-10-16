@@ -1717,10 +1717,12 @@ exports.getAllPlayingRecords = async (req, res) => {
   const user_id = req.user.id;
   try {
     // Get all tables ending with '_entries'
-    const [tables] = await db.query(`
-      SELECT table_name FROM information_schema.tables 
-      WHERE table_schema = DATABASE() AND table_name LIKE '%_entries'
-    `);
+      const entryTables = [
+      'single_ank_entries',
+      'jodi_ank_entries',
+      'singlepanna_ank_entries',
+      // Add other tables like 'doublepanna_ank_entries', etc. here
+    ];
 
     // Fetch all user wallet DEBITs at once
     const [allWalletTxns] = await db.query(
@@ -1735,8 +1737,7 @@ exports.getAllPlayingRecords = async (req, res) => {
     }
 
     const result = [];
-    for (const tableRow of tables) {
-      const tableName = tableRow.table_name;
+    for (const tableName of entryTables) {
       // Fetch all entries once, for grouping
       const [entries] = await db.query(
         `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
@@ -1755,7 +1756,7 @@ exports.getAllPlayingRecords = async (req, res) => {
 
             playing_amount: 0,
             total_amount: entry.total_amount, // Will be same for whole batch
-            entries: [],
+            // entries: [],
             selections: []
           };
         }
