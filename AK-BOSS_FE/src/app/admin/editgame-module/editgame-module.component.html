@@ -11,7 +11,7 @@
   <div class="game md:flex hidden relative bg-[#20A2A0] type-2">
     <div class="name-2">
       <div class="relative">
-        <span>Kalayan</span>
+        <span>{{game.game_name }}</span>
         <img class="md:hidden absolute top-[50%] right-2 w-[20px] -translate-y-[50%]"
           src="/assets/images/dashboard/icons/edit-white.svg" alt="">
       </div>
@@ -20,7 +20,7 @@
     <div class="flex w-full">
       <div class="right md:gap-x-3">
         <div class="flex flex-col">
-          <div class="time md:order-1 order-1">
+          <!-- <div class="time md:order-1 order-1">
             <div>
               01
             </div>
@@ -32,26 +32,26 @@
             <div>
               20
             </div>
-          </div>
+          </div> -->
           <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
         </div>
         <div class="game-detail">
-          <input type="text" id="patte1" class="box w-[100px] ">
+          <input type="text" id="patte1" [(ngModel)]="game.patte1" class="box w-[100px] ">
 
           <span></span>
           <div class="flex gap-x-1">
-            <input type="text" id="patte1_open" class="box w-[50px]">
-            <input type="text" id="patte2_close" class="box w-[50px]">
+            <input type="text" id="patte1_open" [(ngModel)]="game.patte1_open" class="box w-[50px]">
+            <input type="text" id="patte2_close"    [(ngModel)]="game.patte2_close" class="box w-[50px]">
 
           </div>
           <span></span>
-          <input type="text" id="patte2" class="box w-[100px]">
+          <input type="text" id="patte2" [(ngModel)]="game.patte2" class="box w-[100px]">
 
 
         </div>
 
         <div class="flex flex-col">
-          <div class="time md:order-1 order-2">
+          <!-- <div class="time md:order-1 order-2">
             <div>
               01
             </div>
@@ -63,7 +63,7 @@
             <div>
               20
             </div>
-          </div>
+          </div> -->
           <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed</h5>
         </div>
       </div>

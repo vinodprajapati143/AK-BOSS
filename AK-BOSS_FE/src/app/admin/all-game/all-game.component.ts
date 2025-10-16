@@ -419,6 +419,7 @@ export class AllGameComponent implements OnInit, OnDestroy {
       panelClass: 'bottom-dialog',
       position: { left: '0', top: '0' },
       height: '100vh',
+      data: game 
     });
   }
 
