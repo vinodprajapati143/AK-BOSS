@@ -1766,6 +1766,10 @@ exports.getAllPlayingRecords = async (req, res) => {
           batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
         else if (tableName === 'jodi_ank_entries')
           batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
+        else if (tableName === 'singlepanna_ank_entries')
+          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
+
+
         // Add more game tables as needed here
       }
       // Prepare the final batch records
