@@ -1761,7 +1761,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           };
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
-        batches[entry.batch_id].entries.push(entry);
+        // batches[entry.batch_id].entries.push(entry);
         // For open_select formatting
         if (tableName === 'single_ank_entries')
           batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
