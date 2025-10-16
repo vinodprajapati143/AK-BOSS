@@ -23,6 +23,7 @@ router.post('/single-ank/entry', gameController.addSingleAnk);// 10/08/2025 ----
 
 
 router.post('/jodi-ank/entry', gameController.addJodiAnk);
+router.post('/singlepanna-ank/entry', gameController.addSinglePannaAnk);
 
 
 

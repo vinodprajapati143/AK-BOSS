@@ -150,11 +150,11 @@
   <h2 class="text-lg font-semibold text-center text-teal-700">Single Panna</h2>
   <div class="flex justify-center mt-2 gap-2">
     <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500">
-      <input id="bordered-radio-1" type="radio" value="" name="bordered-radio" class="text-blue-600 border-gray-300 ">
+      <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 ">
       <label for="bordered-radio-1" class="text-sm font-medium text-black ">Open Game</label>
     </div>
     <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500">
-      <input checked id="bordered-radio-2" type="radio" value="" name="bordered-radio"
+      <input checked id="bordered-radio-2" type="radio" value="close" [(ngModel)]="selectedGameTimeType" name="bordered-radio"
         class="text-blue-600 border-gray-300 ">
       <label for="bordered-radio-2" class="text-sm font-medium text-black ">Close Game</label>
     </div>

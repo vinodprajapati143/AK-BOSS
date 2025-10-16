@@ -122,6 +122,19 @@ switch(this.game.entrytype) {
       });
       break;
 
+      case 'singlepanna':
+      this.apiservice.saveEntries(payload, 'singlepanna').subscribe({
+        next: (response) => {
+          console.log('singlepanna Ank saved', response);
+          this.handleSuccess(response);
+        },
+        error: (err) => {
+          console.error('Error saving singlepanna Ank', err);
+          this.handleError(err);
+        }
+      });
+      break;
+
     // Add cases for other entry types following similar structure
     // Note: Make sure backend API and service support these
 
