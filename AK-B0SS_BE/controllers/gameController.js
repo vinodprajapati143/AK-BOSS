@@ -1827,7 +1827,6 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='DEBIT' ORDER BY id DESC`,
       [user_id]
     );
-    console.log(`Wallet txns loaded: ${allWalletTxns.length}`);
 
     const walletMap = new Map();
     for (const txn of allWalletTxns) {
@@ -1844,17 +1843,13 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, status) VALUES (?, ?, 'CREDIT', ?, ?, 'SUCCEED')`,
           [user_id, amount, game_id, batch_id]
         );
-        console.log(`Wallet credited: user_id=${user_id}, amount=${amount}, batch_id=${batch_id}, game_id=${game_id}`);
       } else {
-        console.log(`Wallet credit skipped (already credited): user_id=${user_id}, batch_id=${batch_id}, game_id=${game_id}`);
       }
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    console.log('Today:', today);
 
     const [gameResults] = await db.query(`SELECT * FROM game_inputs WHERE input_date=?`, [today]);
-    console.log(`Game inputs loaded for today: ${gameResults.length}`);
 
     const getResultEntry = resultRow => [
       resultRow && resultRow.patte1 ? resultRow.patte1 : '***',
@@ -1870,7 +1865,6 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
         [user_id]
       );
-      console.log(`Entries loaded from ${tableName}: ${entries.length}`);
 
       // Group by batch_id
       const batches = {};
@@ -1887,7 +1881,6 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
             total_amount: entry.total_amount,
             selections: []
           };
-          console.log(`New batch created: ${entry.batch_id} in ${tableName}`);
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
         batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
@@ -1895,14 +1888,23 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
       // Prepare final records
       for (const batch of Object.values(batches)) {
-        console.log('batch: ', batch);
-       const resultRow = gameResults.find(
-          gr => 
+            const resultRow = gameResults.find(
+          gr =>
             Number(gr.game_id) === Number(batch.game_id) &&
-            String(gr.input_date).slice(0,10) === String(batch.input_date)
+            String(gr.input_date).slice(0,10) === String(batch.input_date).slice(0,10)
         );
-        console.log('gameResults: ', gameResults);
-        console.log(`Matching resultRow for batch ${batch.batch_id}:`, resultRow);
+
+        console.log('BATCH:', batch.game_id, batch.input_date, typeof batch.input_date);
+          gameResults.forEach(gr => {
+            console.log(
+              'COMPARE:',
+              Number(gr.game_id), String(gr.input_date).slice(0,10),
+              'vs',
+              Number(batch.game_id), String(batch.input_date).slice(0,10),
+              (Number(gr.game_id) === Number(batch.game_id) && String(gr.input_date).slice(0,10) === String(batch.input_date).slice(0,10))
+            );
+          });
+
  
 
         let isWin = false;
