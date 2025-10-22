@@ -1833,19 +1833,19 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       walletMap.set(`${Number(txn.amount)}|${txn.related_game_id}`, txn);
     }
 
-    async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
-      const [exists] = await db.query(
-        `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
-        [user_id, batch_id, game_id]
-      );
-      if (!exists.length) {
-        await db.query(
-          `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, status) VALUES (?, ?, 'CREDIT', ?, ?, 'SUCCEED')`,
-          [user_id, amount, game_id, batch_id]
+      async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
+        const [exists] = await db.query(
+          `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
+          [user_id, batch_id, game_id]
         );
-      } else {
+        if (!exists.length) {
+          await db.query(
+            `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, status) VALUES (?, ?, 'CREDIT', ?, ?, 'SUCCEED')`,
+            [user_id, amount, game_id, batch_id]
+          );
+        }
       }
-    }
+
 
     const today = new Date().toISOString().slice(0, 10);
 
