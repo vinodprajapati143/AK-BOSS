@@ -6,6 +6,8 @@ import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { GamedataService } from '../../core/services/gamedata.service';
 import { PlayGameComponent } from '../play-game/play-game.component';
+import { take } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-all-games',
@@ -31,20 +33,60 @@ menuItems = [
   { title: 'Full Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'fullsangam' },
 ];
 
- 
+
+
 
 onGameClick(item: any) {
-  // update service with the selected entry type
-  this.gameDataService.updateEntryType(item.entryType);
+  console.log('item: ', item);
 
-  // navigate to same play route
-  this.router.navigate(['/user/play']);
+  this.gameDataService.getGameData().pipe(take(1)).subscribe((gameData) => {
+    console.log('gameData: ', gameData);
 
-  // update active state
-  this.menuItems.forEach(i => i.active = false);
-  item.active = true;
-  this.selectedGame = item;
+    let canProceed = true;
+
+    // 🚫 Only restrict singlepanna
+    if (item.entryType === 'singlepanna') {
+      const currentTime = new Date();
+
+      // Parse open_time (e.g., "5:15 PM")
+      const [hours, minutesPart] = gameData.open_time.split(':');
+      const [minutes, meridian] = minutesPart.split(' ');
+      let openHour = parseInt(hours, 10);
+      const openMinute = parseInt(minutes, 10);
+
+      if (meridian === 'PM' && openHour !== 12) openHour += 12;
+      if (meridian === 'AM' && openHour === 12) openHour = 0;
+
+      const openTime = new Date();
+      openTime.setHours(openHour, openMinute, 0, 0);
+
+      console.log('Current Time:', currentTime);
+      console.log('Open Time:', openTime);
+
+      if (currentTime > openTime) {
+        alert(`You cannot make an entry. ${gameData.name} open time is already over (${gameData.open_time}).`);
+        canProceed = false;
+      }
+    }
+
+    // ✅ Proceed if allowed
+    if (canProceed) {
+      this.gameDataService.updateEntryType(item.entryType);
+      this.router.navigate(['/user/play']);
+      this.menuItems.forEach(i => (i.active = false));
+      item.active = true;
+      this.selectedGame = item;
+    }
+  });
 }
+
+
+
+
+ 
+ 
+
+
 
   back() {
     this.location.back();
