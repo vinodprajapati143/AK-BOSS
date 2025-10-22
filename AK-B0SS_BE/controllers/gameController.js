@@ -1889,6 +1889,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         const resultRow = gameResults.find(
           gr => gr.game_id == batch.game_id && gr.input_date == today
         );
+        console.log('resultRow: ', resultRow);
 
         let isWin = false;
         let winAmount = 0;
