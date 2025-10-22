@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
-import { NgFor, NgIf, NgStyle, CommonModule, DatePipe } from '@angular/common';
+import { NgFor, NgIf, NgStyle, CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
@@ -8,7 +8,7 @@ import { ApiService } from '../../core/services/api.service';
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle,DatePipe],
+  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle,DatePipe,TitleCasePipe],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })
@@ -116,12 +116,15 @@ export class ReportsComponent {
     });
   }
 
-  getSelectLabel(entryType: string): string {
+  getSelectLabel(entryType: string,game_time_type:string): string {
   switch(entryType) {
     case 'single_ank':
-      return 'Open Select';
+      return `${game_time_type} Select`;
     case 'jodi_ank':
       return 'Jodi Select';
+    case 'singlepanna_ank':
+      return `${game_time_type} Select`;
+
     // Add more cases if needed
     default:
       return 'Select';
