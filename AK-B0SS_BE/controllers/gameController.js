@@ -1886,8 +1886,8 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
       // Prepare final records
       for (const batch of Object.values(batches)) {
-        const resultRow = gameResults.find(
-          gr => gr.game_id == batch.game_id && gr.input_date == today
+      const resultRow = gameResults.find(
+          gr => Number(gr.game_id) === Number(batch.game_id) && gr.input_date === today
         );
         console.log('resultRow: ', resultRow);
 
