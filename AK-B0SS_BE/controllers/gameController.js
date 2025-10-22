@@ -1813,6 +1813,118 @@ exports.getAllPlayingRecords = async (req, res) => {
   }
 };
 
+exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
+  const user_id = req.user.id;
+  try {
+    const entryTables = [
+      'single_ank_entries',
+      'jodi_ank_entries',
+      'singlepanna_ank_entries'
+    ];
+
+    // Wallet updater helper
+    async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
+      // Check if already credited for this batch/game
+      const [exists] = await db.query(
+        `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
+        [user_id, batch_id, game_id]
+      );
+      if (!exists.length) {
+        await db.query(
+          `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, status) VALUES (?, ?, 'CREDIT', ?, ?, 'SUCCEED')`,
+          [user_id, amount, game_id, batch_id]
+        );
+      }
+    }
+
+    // Only today's game results
+    const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+    const [gameResults] = await db.query(`SELECT * FROM games_input WHERE input_date=?`, [today]);
+
+    const resultArr = [];
+
+    for (const tableName of entryTables) {
+      const [entries] = await db.query(
+        `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
+        [user_id]
+      );
+
+      for (const entry of entries) {
+        // Match result for today's game
+        const resultRow = gameResults.find(
+          gr => gr.game_id == entry.game_id && gr.input_date == today
+        );
+
+        let resultValue = null;
+        let isWin = false;
+        let winAmount = 0;
+
+        // Single Ank logic
+        if (tableName === 'single_ank_entries' && resultRow) {
+          if (entry.game_time_type === 'open') {
+            resultValue = resultRow.patte1_open != null && resultRow.patte1_open !== '' ? resultRow.patte1_open : '*';
+            isWin = entry.digit == resultRow.patte1_open;
+          }
+          else if (entry.game_time_type === 'close') {
+            resultValue = resultRow.patte2_close != null && resultRow.patte2_close !== '' ? resultRow.patte2_close : '*';
+            isWin = entry.digit == resultRow.patte2_close;
+          }
+          if (isWin) winAmount = entry.amount;
+        }
+
+        // Jodi Ank logic
+        else if (tableName === 'jodi_ank_entries' && resultRow) {
+          const patte1Open = resultRow.patte1_open != null && resultRow.patte1_open !== '' ? resultRow.patte1_open : '*';
+          const patte2Close = resultRow.patte2_close != null && resultRow.patte2_close !== '' ? resultRow.patte2_close : '*';
+          const jodiResult = `${patte1Open}${patte2Close}`;
+          resultValue = jodiResult;
+          isWin = entry.digit == jodiResult;
+          if (isWin) winAmount = entry.amount;
+        }
+
+        // Single Panna logic
+        else if (tableName === 'singlepanna_ank_entries' && resultRow) {
+          if (entry.game_time_type === 'open') {
+            resultValue = resultRow.patte1 != null && resultRow.patte1 !== '' ? resultRow.patte1 : '*';
+            isWin = entry.digit == resultRow.patte1;
+          }
+          else if (entry.game_time_type === 'close') {
+            resultValue = resultRow.patte2 != null && resultRow.patte2 !== '' ? resultRow.patte2 : '*';
+            isWin = entry.digit == resultRow.patte2;
+          }
+          if (isWin) winAmount = entry.amount;
+        }
+
+        // Only credit wallet if today's win detected
+        if (isWin && winAmount > 0) {
+          await creditWalletIfWin(user_id, winAmount, entry.batch_id, entry.game_id);
+        }
+
+        resultArr.push({
+          game_type: tableName.replace('_entries', ''),
+          batch_id: entry.batch_id,
+          game_id: entry.game_id,
+          game_name: entry.name,
+          created_at: entry.created_at,
+          input_digit: entry.digit,
+          user_amount: entry.amount,
+          game_time_type: entry.game_time_type,
+          result_value,
+          win_amount: winAmount,
+          status: isWin ? 'WIN' : 'LOSE'
+        });
+      }
+    }
+
+    resultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    res.json(resultArr);
+  } catch (error) {
+    console.error('PlayingRecordsWinTodayAPI error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 
 
