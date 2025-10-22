@@ -1840,7 +1840,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         );
         if (!exists.length) {
           await db.query(
-            `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, status) VALUES (?, ?, 'CREDIT', ?, ?, 'SUCCEED')`,
+            `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id) VALUES (?, ?, 'CREDIT', ?, ?)`,
             [user_id, amount, game_id, batch_id]
           );
         }
