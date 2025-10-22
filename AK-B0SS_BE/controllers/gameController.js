@@ -1881,6 +1881,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
             created_at: entry.created_at,
             game_id: entry.game_id,
             game_name: entry.name,
+            input_date: entry.input_date,
             game_time_type: entry.game_time_type,
             playing_amount: 0,
             total_amount: entry.total_amount,
@@ -1895,11 +1896,14 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       // Prepare final records
       for (const batch of Object.values(batches)) {
         console.log('batch: ', batch);
-        const resultRow = gameResults.find(
-          gr => Number(gr.game_id) === Number(batch.game_id) && gr.input_date === today
+       const resultRow = gameResults.find(
+          gr => 
+            Number(gr.game_id) === Number(batch.game_id) &&
+            String(gr.input_date).slice(0,10) === String(batch.input_date)
         );
         console.log('gameResults: ', gameResults);
         console.log(`Matching resultRow for batch ${batch.batch_id}:`, resultRow);
+ 
 
         let isWin = false;
         let winAmount = 0;
