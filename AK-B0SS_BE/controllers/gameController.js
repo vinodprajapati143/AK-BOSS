@@ -1909,7 +1909,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           input_digit: entry.digit,
           user_amount: entry.amount,
           game_time_type: entry.game_time_type,
-          result_value,
+          resultValue,
           win_amount: winAmount,
           status: isWin ? 'WIN' : 'LOSE'
         });
