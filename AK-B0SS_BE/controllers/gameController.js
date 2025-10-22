@@ -1827,6 +1827,8 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='DEBIT' ORDER BY id DESC`,
       [user_id]
     );
+    console.log(`Wallet txns loaded: ${allWalletTxns.length}`);
+
     const walletMap = new Map();
     for (const txn of allWalletTxns) {
       walletMap.set(`${Number(txn.amount)}|${txn.related_game_id}`, txn);
@@ -1842,12 +1844,17 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, status) VALUES (?, ?, 'CREDIT', ?, ?, 'SUCCEED')`,
           [user_id, amount, game_id, batch_id]
         );
+        console.log(`Wallet credited: user_id=${user_id}, amount=${amount}, batch_id=${batch_id}, game_id=${game_id}`);
+      } else {
+        console.log(`Wallet credit skipped (already credited): user_id=${user_id}, batch_id=${batch_id}, game_id=${game_id}`);
       }
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    console.log('today: ', today);
+    console.log('Today:', today);
+
     const [gameResults] = await db.query(`SELECT * FROM game_inputs WHERE input_date=?`, [today]);
+    console.log(`Game inputs loaded for today: ${gameResults.length}`);
 
     const getResultEntry = resultRow => [
       resultRow && resultRow.patte1 ? resultRow.patte1 : '***',
@@ -1863,6 +1870,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
         [user_id]
       );
+      console.log(`Entries loaded from ${tableName}: ${entries.length}`);
 
       // Group by batch_id
       const batches = {};
@@ -1878,24 +1886,24 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
             total_amount: entry.total_amount,
             selections: []
           };
+          console.log(`New batch created: ${entry.batch_id} in ${tableName}`);
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
-        // Selections string
         batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
       }
 
       // Prepare final records
       for (const batch of Object.values(batches)) {
-      const resultRow = gameResults.find(
+        const resultRow = gameResults.find(
           gr => Number(gr.game_id) === Number(batch.game_id) && gr.input_date === today
         );
-        console.log('resultRow: ', resultRow);
+        console.log(`Matching resultRow for batch ${batch.batch_id}:`, resultRow);
 
         let isWin = false;
         let winAmount = 0;
         let status = 'PENDING';
+
         if (resultRow) {
-          // Win logic for any one entry can be expanded as per batch if required
           if (tableName === 'single_ank_entries') {
             isWin = batch.selections.some((sel, i) => {
               const digit = entries.filter(e => e.batch_id === batch.batch_id)[i].digit;
@@ -1919,9 +1927,11 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           }
           winAmount = isWin ? batch.playing_amount : 0;
           status = isWin ? 'WIN' : 'LOSE';
+          console.log(`Win check for batch ${batch.batch_id}: isWin=${isWin} winAmount=${winAmount} status=${status}`);
+        } else {
+          console.log(`No resultRow found for batch ${batch.batch_id} and game_id ${batch.game_id}`);
         }
 
-        // Calculate wallet balances
         const walletKey = `${Number(batch.total_amount)}|${batch.game_id}`;
         const txn = walletMap.get(walletKey);
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
@@ -1929,7 +1939,6 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         const tax = 0;
         const amount_after_tax = batch.playing_amount - tax;
 
-        // Credit wallet on win
         if (isWin && winAmount > 0) {
           await creditWalletIfWin(user_id, winAmount, batch.batch_id, batch.game_id);
         }
@@ -1962,6 +1971,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
