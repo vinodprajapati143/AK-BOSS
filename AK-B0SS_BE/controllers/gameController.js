@@ -1980,8 +1980,12 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       }
     }
 
-    resultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    res.json(resultArr);
+   const filteredResultArr = resultArr.filter(record => record.status === 'WIN');
+
+    // Uske baad sorting & response bhejo:
+    filteredResultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    res.json(filteredResultArr);
 
   } catch (error) {
     console.error('PlayingRecordsWinTodayAPI error:', error);
