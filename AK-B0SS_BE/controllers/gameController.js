@@ -1798,7 +1798,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           tax,
           selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
-          game_time_type
+          game_time_type:batch.game_time_type,
           // entries: batch.entries
         });
       }
