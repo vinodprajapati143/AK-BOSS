@@ -1839,7 +1839,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
     // Only today's game results
     const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
-    const [gameResults] = await db.query(`SELECT * FROM game_input WHERE input_date=?`, [today]);
+    const [gameResults] = await db.query(`SELECT * FROM game_inputs WHERE input_date=?`, [today]);
 
     const resultArr = [];
 
