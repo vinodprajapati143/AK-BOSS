@@ -1843,6 +1843,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       resultRow && resultRow.patte1_open ? resultRow.patte1_open : '*',
       resultRow && resultRow.patte2_close ? resultRow.patte2_close : '*',
       resultRow && resultRow.patte2 ? resultRow.patte2 : '***',
+      '***', '***', '***', '***'
     ];
 
     const resultArr = [];
@@ -1860,25 +1861,33 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
         let isWin = false;
         let winAmount = 0;
+        let status = 'PENDING'; // Default status set to PENDING
 
-        if (tableName === 'single_ank_entries' && resultRow) {
-          if (entry.game_time_type === 'open') {
-            isWin = entry.digit == resultRow.patte1_open;
-          } else if (entry.game_time_type === 'close') {
-            isWin = entry.digit == resultRow.patte2_close;
+        if (resultRow) {
+          // Only check win/lose if result exists
+          if (tableName === 'single_ank_entries') {
+            if (entry.game_time_type === 'open') {
+              isWin = entry.digit == resultRow.patte1_open;
+            } else if (entry.game_time_type === 'close') {
+              isWin = entry.digit == resultRow.patte2_close;
+            }
+          } else if (tableName === 'jodi_ank_entries') {
+            const jodiResult = `${resultRow.patte1_open || '*'}${resultRow.patte2_close || '*'}`;
+            isWin = entry.digit == jodiResult;
+          } else if (tableName === 'singlepanna_ank_entries') {
+            if (entry.game_time_type === 'open') {
+              isWin = entry.digit == resultRow.patte1;
+            } else if (entry.game_time_type === 'close') {
+              isWin = entry.digit == resultRow.patte2;
+            }
           }
-          if (isWin) winAmount = entry.amount;
-        } else if (tableName === 'jodi_ank_entries' && resultRow) {
-          const jodiResult = `${resultRow.patte1_open || '*'}${resultRow.patte2_close || '*'}`;
-          isWin = entry.digit == jodiResult;
-          if (isWin) winAmount = entry.amount;
-        } else if (tableName === 'singlepanna_ank_entries' && resultRow) {
-          if (entry.game_time_type === 'open') {
-            isWin = entry.digit == resultRow.patte1;
-          } else if (entry.game_time_type === 'close') {
-            isWin = entry.digit == resultRow.patte2;
+
+          if (isWin) {
+            winAmount = entry.amount;
+            status = 'WIN';
+          } else {
+            status = 'LOSE';
           }
-          if (isWin) winAmount = entry.amount;
         }
 
         if (isWin && winAmount > 0) {
@@ -1896,19 +1905,19 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           game_time_type: entry.game_time_type,
           result: getResultEntry(resultRow),
           win_amount: winAmount,
-          status: isWin ? 'WIN' : 'LOSE'
+          status: status
         });
       }
     }
 
     resultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json(resultArr);
-
   } catch (error) {
     console.error('PlayingRecordsWinTodayAPI error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
