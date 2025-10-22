@@ -1753,6 +1753,7 @@ exports.getAllPlayingRecords = async (req, res) => {
             created_at: entry.created_at,
             game_id: entry.game_id,
             game_name: entry.name,
+            game_time_type:entry.game_time_type,
 
             playing_amount: 0,
             total_amount: entry.total_amount, // Will be same for whole batch
@@ -1797,6 +1798,7 @@ exports.getAllPlayingRecords = async (req, res) => {
           tax,
           selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
+          game_time_type
           // entries: batch.entries
         });
       }
