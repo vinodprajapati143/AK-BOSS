@@ -1822,9 +1822,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       'singlepanna_ank_entries'
     ];
 
-    // Wallet updater helper
     async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
-      // Check if already credited for this batch/game
       const [exists] = await db.query(
         `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
         [user_id, batch_id, game_id]
@@ -1837,9 +1835,15 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       }
     }
 
-    // Only today's game results
-    const today = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+    const today = new Date().toISOString().slice(0, 10);
     const [gameResults] = await db.query(`SELECT * FROM game_inputs WHERE input_date=?`, [today]);
+
+    const getResultEntry = resultRow => [
+      resultRow && resultRow.patte1 ? resultRow.patte1 : '***',
+      resultRow && resultRow.patte1_open ? resultRow.patte1_open : '*',
+      resultRow && resultRow.patte2_close ? resultRow.patte2_close : '*',
+      resultRow && resultRow.patte2 ? resultRow.patte2 : '***',
+    ];
 
     const resultArr = [];
 
@@ -1850,52 +1854,33 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       );
 
       for (const entry of entries) {
-        // Match result for today's game
         const resultRow = gameResults.find(
           gr => gr.game_id == entry.game_id && gr.input_date == today
         );
 
-        let resultValue = null;
         let isWin = false;
         let winAmount = 0;
 
-        // Single Ank logic
         if (tableName === 'single_ank_entries' && resultRow) {
           if (entry.game_time_type === 'open') {
-            resultValue = resultRow.patte1_open != null && resultRow.patte1_open !== '' ? resultRow.patte1_open : '*';
             isWin = entry.digit == resultRow.patte1_open;
-          }
-          else if (entry.game_time_type === 'close') {
-            resultValue = resultRow.patte2_close != null && resultRow.patte2_close !== '' ? resultRow.patte2_close : '*';
+          } else if (entry.game_time_type === 'close') {
             isWin = entry.digit == resultRow.patte2_close;
           }
           if (isWin) winAmount = entry.amount;
-        }
-
-        // Jodi Ank logic
-        else if (tableName === 'jodi_ank_entries' && resultRow) {
-          const patte1Open = resultRow.patte1_open != null && resultRow.patte1_open !== '' ? resultRow.patte1_open : '*';
-          const patte2Close = resultRow.patte2_close != null && resultRow.patte2_close !== '' ? resultRow.patte2_close : '*';
-          const jodiResult = `${patte1Open}${patte2Close}`;
-          resultValue = jodiResult;
+        } else if (tableName === 'jodi_ank_entries' && resultRow) {
+          const jodiResult = `${resultRow.patte1_open || '*'}${resultRow.patte2_close || '*'}`;
           isWin = entry.digit == jodiResult;
           if (isWin) winAmount = entry.amount;
-        }
-
-        // Single Panna logic
-        else if (tableName === 'singlepanna_ank_entries' && resultRow) {
+        } else if (tableName === 'singlepanna_ank_entries' && resultRow) {
           if (entry.game_time_type === 'open') {
-            resultValue = resultRow.patte1 != null && resultRow.patte1 !== '' ? resultRow.patte1 : '*';
             isWin = entry.digit == resultRow.patte1;
-          }
-          else if (entry.game_time_type === 'close') {
-            resultValue = resultRow.patte2 != null && resultRow.patte2 !== '' ? resultRow.patte2 : '*';
+          } else if (entry.game_time_type === 'close') {
             isWin = entry.digit == resultRow.patte2;
           }
           if (isWin) winAmount = entry.amount;
         }
 
-        // Only credit wallet if today's win detected
         if (isWin && winAmount > 0) {
           await creditWalletIfWin(user_id, winAmount, entry.batch_id, entry.game_id);
         }
@@ -1909,7 +1894,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           input_digit: entry.digit,
           user_amount: entry.amount,
           game_time_type: entry.game_time_type,
-          resultValue,
+          result: getResultEntry(resultRow),
           win_amount: winAmount,
           status: isWin ? 'WIN' : 'LOSE'
         });
@@ -1918,11 +1903,13 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
     resultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json(resultArr);
+
   } catch (error) {
     console.error('PlayingRecordsWinTodayAPI error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
