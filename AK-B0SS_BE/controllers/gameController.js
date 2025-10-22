@@ -1822,6 +1822,16 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       'singlepanna_ank_entries'
     ];
 
+    // Get all user wallet DEBITs
+    const [allWalletTxns] = await db.query(
+      `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='DEBIT' ORDER BY id DESC`,
+      [user_id]
+    );
+    const walletMap = new Map();
+    for (const txn of allWalletTxns) {
+      walletMap.set(`${Number(txn.amount)}|${txn.related_game_id}`, txn);
+    }
+
     async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
       const [exists] = await db.query(
         `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
@@ -1842,8 +1852,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       resultRow && resultRow.patte1 ? resultRow.patte1 : '***',
       resultRow && resultRow.patte1_open ? resultRow.patte1_open : '*',
       resultRow && resultRow.patte2_close ? resultRow.patte2_close : '*',
-      resultRow && resultRow.patte2 ? resultRow.patte2 : '***',
-      '***', '***', '***', '***'
+      resultRow && resultRow.patte2 ? resultRow.patte2 : '***'
     ];
 
     const resultArr = [];
@@ -1854,69 +1863,104 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         [user_id]
       );
 
+      // Group by batch_id
+      const batches = {};
       for (const entry of entries) {
+        if (!batches[entry.batch_id]) {
+          batches[entry.batch_id] = {
+            batch_id: entry.batch_id,
+            created_at: entry.created_at,
+            game_id: entry.game_id,
+            game_name: entry.name,
+            game_time_type: entry.game_time_type,
+            playing_amount: 0,
+            total_amount: entry.total_amount,
+            selections: []
+          };
+        }
+        batches[entry.batch_id].playing_amount += Number(entry.amount);
+        // Selections string
+        batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
+      }
+
+      // Prepare final records
+      for (const batch of Object.values(batches)) {
         const resultRow = gameResults.find(
-          gr => gr.game_id == entry.game_id && gr.input_date == today
+          gr => gr.game_id == batch.game_id && gr.input_date == today
         );
 
         let isWin = false;
         let winAmount = 0;
-        let status = 'PENDING'; // Default status set to PENDING
-
+        let status = 'PENDING';
         if (resultRow) {
-          // Only check win/lose if result exists
+          // Win logic for any one entry can be expanded as per batch if required
           if (tableName === 'single_ank_entries') {
-            if (entry.game_time_type === 'open') {
-              isWin = entry.digit == resultRow.patte1_open;
-            } else if (entry.game_time_type === 'close') {
-              isWin = entry.digit == resultRow.patte2_close;
-            }
+            isWin = batch.selections.some((sel, i) => {
+              const digit = entries.filter(e => e.batch_id === batch.batch_id)[i].digit;
+              if (batch.game_time_type === 'open') return digit == resultRow.patte1_open;
+              if (batch.game_time_type === 'close') return digit == resultRow.patte2_close;
+              return false;
+            });
           } else if (tableName === 'jodi_ank_entries') {
             const jodiResult = `${resultRow.patte1_open || '*'}${resultRow.patte2_close || '*'}`;
-            isWin = entry.digit == jodiResult;
+            isWin = batch.selections.some((sel, i) => {
+              const digit = entries.filter(e => e.batch_id === batch.batch_id)[i].digit;
+              return digit == jodiResult;
+            });
           } else if (tableName === 'singlepanna_ank_entries') {
-            if (entry.game_time_type === 'open') {
-              isWin = entry.digit == resultRow.patte1;
-            } else if (entry.game_time_type === 'close') {
-              isWin = entry.digit == resultRow.patte2;
-            }
+            isWin = batch.selections.some((sel, i) => {
+              const digit = entries.filter(e => e.batch_id === batch.batch_id)[i].digit;
+              if (batch.game_time_type === 'open') return digit == resultRow.patte1;
+              if (batch.game_time_type === 'close') return digit == resultRow.patte2;
+              return false;
+            });
           }
-
-          if (isWin) {
-            winAmount = entry.amount;
-            status = 'WIN';
-          } else {
-            status = 'LOSE';
-          }
+          winAmount = isWin ? batch.playing_amount : 0;
+          status = isWin ? 'WIN' : 'LOSE';
         }
 
+        // Calculate wallet balances
+        const walletKey = `${Number(batch.total_amount)}|${batch.game_id}`;
+        const txn = walletMap.get(walletKey);
+        const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
+        const closing_balance = txn ? Number(txn.balance_after) : null;
+        const tax = 0;
+        const amount_after_tax = batch.playing_amount - tax;
+
+        // Credit wallet on win
         if (isWin && winAmount > 0) {
-          await creditWalletIfWin(user_id, winAmount, entry.batch_id, entry.game_id);
+          await creditWalletIfWin(user_id, winAmount, batch.batch_id, batch.game_id);
         }
 
         resultArr.push({
           game_type: tableName.replace('_entries', ''),
-          batch_id: entry.batch_id,
-          game_id: entry.game_id,
-          game_name: entry.name,
-          created_at: entry.created_at,
-          input_digit: entry.digit,
-          user_amount: entry.amount,
-          game_time_type: entry.game_time_type,
+          batch_id: batch.batch_id,
+          game_id: batch.game_id,
+          game_name: batch.game_name,
+          created_at: batch.created_at,
+          game_time_type: batch.game_time_type,
+          opening_balance,
+          closing_balance,
+          playing_amount: String(batch.playing_amount),
+          amount_after_tax,
+          tax,
+          selections: batch.selections,
           result: getResultEntry(resultRow),
           win_amount: winAmount,
-          status: status
+          status
         });
       }
     }
 
     resultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json(resultArr);
+
   } catch (error) {
     console.error('PlayingRecordsWinTodayAPI error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
