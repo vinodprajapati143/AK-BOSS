@@ -1834,17 +1834,27 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
     }
 
       async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
+        // Get latest balance
+        const [lastRow] = await db.query(
+          `SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1`,
+          [user_id]
+        );
+        const currentBalance = lastRow.length ? Number(lastRow[0].balance_after) : 0;
+        const newBalance = currentBalance + Number(amount);
+
+        // Check for existing credit on batch
         const [exists] = await db.query(
           `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
           [user_id, batch_id, game_id]
         );
         if (!exists.length) {
           await db.query(
-            `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id) VALUES (?, ?, 'CREDIT', ?, ?)`,
-            [user_id, amount, game_id, batch_id]
+            `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, balance_after, status, created_at) VALUES (?, ?, 'CREDIT', ?, ?, ?, 'SUCCEED', NOW())`,
+            [user_id, amount, game_id, batch_id, newBalance]
           );
         }
       }
+
 
 
     const today = new Date().toISOString().slice(0, 10);
