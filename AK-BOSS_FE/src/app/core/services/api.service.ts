@@ -142,5 +142,9 @@ updateUserProfile(data:any) {
    return this.http.get(`${this.baseUrl}/api/games/getAllPlayingRecords`,{ withCredentials: true });
   }
 
+  getAllWinRecords() {
+   return this.http.get(`${this.baseUrl}/api/games/getAllWinRecords`,{ withCredentials: true });
+  }
+
 
 }

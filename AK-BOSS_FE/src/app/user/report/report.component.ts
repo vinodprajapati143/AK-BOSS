@@ -100,6 +100,7 @@ export class ReportsComponent {
     },
   ];
   playingrecords: any;
+  winrecords: any;
 
     ngOnInit() {
     this.isLoading = true;
@@ -107,6 +108,17 @@ export class ReportsComponent {
       next: (data) => {
         this.playingrecords = data;
         console.log('this.playingrecords: ', this.playingrecords);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load data';
+        this.isLoading = false;
+      }
+    });
+    this.reportservice.getAllWinRecords().subscribe({
+      next: (data) => {
+        this.winrecords = data;
+        console.log('this.this.winrecords: ', this.winrecords);
         this.isLoading = false;
       },
       error: () => {

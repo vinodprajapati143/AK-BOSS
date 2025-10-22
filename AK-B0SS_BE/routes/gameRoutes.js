@@ -11,7 +11,7 @@ router.get('/:gameId/panel-records', gameController.getPanelRecords);// 10/08/20
 // Protected routes (token required)
 router.use(verifyToken); // middleware lagao yahan se
 router.get("/getAllPlayingRecords", gameController.getAllPlayingRecords);
-router.get("/getAllWinRecords", gameController.getAllPlayingRecords);
+router.get("/getAllWinRecords", gameController.getAllPlayingRecordsWithWinToday);
 
 
 router.post("/add-game",  gameController.addGame);// 10/08/2025 -----> Paid
