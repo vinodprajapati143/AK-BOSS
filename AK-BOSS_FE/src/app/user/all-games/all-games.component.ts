@@ -44,8 +44,8 @@ onGameClick(item: any) {
 
     let canProceed = true;
 
-    // 🚫 Only restrict singlepanna
-    if (item.entryType === 'singlepanna') {
+    // 🚫 Only restrict jodi
+    if (item.entryType === 'jodi') {
       const currentTime = new Date();
 
       // Parse open_time (e.g., "5:15 PM")
