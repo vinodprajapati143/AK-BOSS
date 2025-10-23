@@ -21,7 +21,7 @@ export interface User {
 @Component({
   selector: 'app-all-game',
   standalone: true,
-  imports: [CommonModule, AdminSidebarComponent, FormsModule, FooterComponent],
+  imports: [CommonModule, AdminSidebarComponent, FormsModule],
   templateUrl: './all-game.component.html',
   styleUrl: './all-game.component.scss'
 })

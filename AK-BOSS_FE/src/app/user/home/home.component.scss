@@ -8,7 +8,7 @@
 }
 
 .animate-scroll {
-  animation: scroll-up 6s linear infinite;
+  animation: scroll-up 5s linear infinite;
 }
 .blink-text {
   animation: blink 1.5s infinite;
@@ -18,4 +18,5 @@
   0% { opacity: 1; }
   50% { opacity: 0.2; }
   100% { opacity: 1; }
-}       
+}  
+     

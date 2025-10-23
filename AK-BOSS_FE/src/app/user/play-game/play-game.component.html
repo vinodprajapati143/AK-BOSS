@@ -3,7 +3,7 @@
 <!-- Single Ank -->
 @if(this.game.entrytype == 'singleank'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-    <h2 class="text-lg font-semibold text-center text-teal-700">Single Ank</h2>
+    <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Single Ank</h2>
     <div class="flex justify-center mt-2 gap-2">
         <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500" [class.opacity-50]="isOpenDisabled"  (click)="onRadioClick('open')">
           <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 "
@@ -91,7 +91,7 @@
 
 <!-- Jodi Ank -->
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-  <h2 class="text-lg font-semibold text-center text-teal-700">Jodi</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Jodi</h2>
   <div class="btn-bg-color from-teal-500 to-indigo-600 text-white font-bold text-center py-2 rounded-md mt-2">
     {{date | date:'dd-MM-yyyy'}}
   </div>
@@ -153,7 +153,7 @@
 
 <!-- Single Panna -->
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-  <h2 class="text-lg font-semibold text-center text-teal-700">Single Panna</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Single Panna</h2>
   <div class="flex justify-center mt-2 gap-2">
         <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500" [class.opacity-50]="isOpenDisabled"  (click)="onRadioClick('open')">
           <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 "
@@ -238,7 +238,7 @@
 
 @if(this.game.entrytype == 'doublepanna'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-  <h2 class="text-lg font-semibold text-center text-teal-700">Double Panna</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Double Panna</h2>
   <div class="flex justify-center mt-2 gap-2">
     <div class="p-4 bg-green-100 rounded-lg text-center">
     <h3 class="text-lg font-semibold text-green-700">
@@ -263,7 +263,7 @@
 
 @if(this.game.entrytype == 'triplepanna'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-  <h2 class="text-lg font-semibold text-center text-teal-700">Triple Panna</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Triple Panna</h2>
   <div class="flex justify-center mt-2 gap-2">
     <div class="p-4 bg-green-100 rounded-lg text-center">
     <h3 class="text-lg font-semibold text-green-700">
@@ -287,7 +287,7 @@
 
 @if(this.game.entrytype == 'halfsangama'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-  <h2 class="text-lg font-semibold text-center text-teal-700">Half Sangama</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Half Sangama</h2>
   <div class="flex justify-center mt-2 gap-2">
     <div class="p-4 bg-green-100 rounded-lg text-center">
     <h3 class="text-lg font-semibold text-green-700">
@@ -311,7 +311,7 @@
 
 @if(this.game.entrytype == 'fullsangam'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
-  <h2 class="text-lg font-semibold text-center text-teal-700">Full Sangam</h2>
+  <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Full Sangam</h2>
   <div class="flex justify-center mt-2 gap-2">
     <div class="p-4 bg-green-100 rounded-lg text-center">
     <h3 class="text-lg font-semibold text-green-700">

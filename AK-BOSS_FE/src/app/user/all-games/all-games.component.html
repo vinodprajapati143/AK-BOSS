@@ -4,7 +4,7 @@
   <!-- Header -->
   <div class="flex items-center justify-between btn-bg-color text-white py-3 px-4 rounded-t-md shadow">
     <button (click)="back()" class="text-xl">←</button>
-    <h2 class="font-semibold text-lg">AKBOSS</h2>
+    <h2 class="font-semibold text-lg">{{ gameName }}</h2>
     <div class="flex items-center space-x-2">
       <!-- <span class="material-icons">giftcard</span>
       <span class="font-semibold">5</span> -->
@@ -20,7 +20,7 @@
     class="bg-blue-50 shadow rounded-lg flex flex-col items-center justify-center p-6 hover:shadow-md transition cursor-pointer"
   >
     <img [src]="item.icon" alt="icon" class="w-14 h-14 mb-2" />
-    <p class="text-gray-800 font-medium">{{ item.title }}</p>
+    <p class="text-gray-800  text-[12px] font-medium">{{ item.title }}</p>
   </div>
 </div>
 </div>

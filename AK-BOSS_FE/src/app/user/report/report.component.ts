@@ -4,11 +4,12 @@ import { NgFor, NgIf, NgStyle, CommonModule, DatePipe, TitleCasePipe } from '@an
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
+import { LoaderComponent } from "../../shared/loader/loader.component";
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle,DatePipe,TitleCasePipe],
+  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle, DatePipe, TitleCasePipe, LoaderComponent],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })

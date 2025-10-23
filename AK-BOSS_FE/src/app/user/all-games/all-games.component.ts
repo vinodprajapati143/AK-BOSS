@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { GamedataService } from '../../core/services/gamedata.service';
 import { PlayGameComponent } from '../play-game/play-game.component';
 import { take } from 'rxjs/operators';
+import { ApiService } from '../../core/services/api.service';
 
 
 @Component({
@@ -19,7 +20,9 @@ import { take } from 'rxjs/operators';
 export class AllGamesComponent {
   router = inject(Router);
   gameDataService = inject(GamedataService);
+  gameService = inject(ApiService); 
   location = inject(Location);
+  gameName: string = '';
   selectedGame: any = null;
 
 
@@ -33,6 +36,12 @@ menuItems = [
   { title: 'Full Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'fullsangam' },
 ];
 
+
+ngOnInit() {
+  this.gameDataService.getGameData().pipe(take(1)).subscribe((gameData) => {
+    this.gameName = gameData.name;
+  });
+}
 
 
 

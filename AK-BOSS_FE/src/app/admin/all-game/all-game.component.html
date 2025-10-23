@@ -133,7 +133,7 @@
                             </div>
                         </div>
                         <div class="game-detail">
-                            <input type="text" class="box w-[100px] " [(ngModel)]="game.patte1"
+                            <input type="text" class="box !w-[80px] " [(ngModel)]="game.patte1"
                                 [disabled]="!game.openInputEnabled" maxlength="3" min="0" max="999"
                                 (input)="game.patte1 = restrictToThreeDigits(game.patte1)" placeholder="---" />
 
@@ -150,7 +150,7 @@
 
                             </div>
                             <span></span>
-                            <input type="text" class="box w-[100px]" [(ngModel)]="game.patte2"
+                            <input type="text" class="box !w-[80px]" [(ngModel)]="game.patte2"
                                 [disabled]="!game.closeInputEnabled" maxlength="3" min="0" max="999"
                                 (input)="game.patte2 = restrictToThreeDigits(game.patte2)" placeholder="---" />
 
@@ -202,19 +202,19 @@
                                 <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
                             </div>
                             <div class="game-detail">
-                                <input type="text" id="patte1" class="box w-[100px] " [(ngModel)]="game.patte1"
+                                <input type="number" id="patte1" class="box w-[100px] " [(ngModel)]="game.patte1"
                                     [readonly]="!game.openInputEnabled">
 
                                 <span></span>
                                 <div class="flex gap-x-2">
-                                    <input type="text" id="patte1_open" class="box w-[50px]"
+                                    <input type="number" id="patte1_open" class="box w-[50px]"
                                         [(ngModel)]="game.patte1_open" [readonly]="!game.openInputEnabled">
-                                    <input type="text" id="patte2_close" class="box w-[50px]"
+                                    <input type="number" id="patte2_close" class="box w-[50px]"
                                         [(ngModel)]="game.patte2_close" [readonly]="!game.closeInputEnabled">
 
                                 </div>
                                 <span></span>
-                                <input type="text" id="patte2" class="box w-[100px]" [(ngModel)]="game.patte2"
+                                <input type="number" id="patte2" class="box w-[100px]" [(ngModel)]="game.patte2"
                                     [readonly]="!game.closeInputEnabled">
 
 
@@ -302,19 +302,19 @@
                             </div>
 
                             <div class="game-detail">
-                                <input type="text" id="patte1" class="box w-[100px] " [(ngModel)]="game.patte1"
+                                <input type="number" maxlength="3" min="0" max="999" id="patte1" class="box !w-[80px] " [(ngModel)]="game.patte1"
                                     [readonly]="!game.openInputEnabled">
 
                                 <span></span>
                                 <div class="flex gap-x-2">
-                                    <input type="text" id="patte1_open" class="box w-[50px]"
+                                    <input type="number" maxlength="1" min="0" max="9" id="patte1_open" class="box w-[50px] text-center flex"
                                         [(ngModel)]="game.patte1_open" [readonly]="!game.openInputEnabled">
-                                    <input type="text" id="patte2_close" class="box w-[50px]"
+                                    <input type="number" maxlength="1" min="0" max="9" id="patte2_close" class="box w-[50px] text-center flex"
                                         [(ngModel)]="game.patte2_close" [readonly]="!game.closeInputEnabled">
 
                                 </div>
                                 <span></span>
-                                <input type="text" id="patte2" class="box w-[100px]" [(ngModel)]="game.patte2"
+                                <input type="number" maxlength="3" min="0" max="999" id="patte2" class="box !w-[80px]" [(ngModel)]="game.patte2"
                                     [readonly]="!game.closeInputEnabled">
 
 
@@ -323,7 +323,7 @@
 
 
                             <button
-                                class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4"
+                                class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4 md:block hidden"
                                 (click)="editGame(game)">
                                 Edit
                             </button>

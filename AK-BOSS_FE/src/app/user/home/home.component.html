@@ -80,13 +80,8 @@
 
       <!-- List -->
       <div class="overflow-hidden h-20 bg-white text-teal-700 font-bold text-lg">
-        <div class="animate-scroll flex flex-col items-center py-2 space-y-1">
-          <div>MADHUR DAY - 0</div>
-          <div>TIME BAZAR - 4</div>
-          <div>KARNATAKA DAY - 8</div>
-          <div>MADHUR DAY - 0</div>
-          <div>TIME BAZAR - 4</div>
-          <div>KARNATAKA DAY - 8</div>
+        <div class="animate-scroll flex flex-col items-center py-1 space-y-1" *ngFor="let game of games">
+          <div>{{ game.game_name }}</div>
         </div>
       </div>
 
@@ -173,11 +168,7 @@
     [patte1]="game.patte1"
     [patte1_open]="game.patte1_open"
     [patte2_close]="game.patte2_close"
-    [patte2]="game.patte2"
-
-
-
-  
+    [patte2]="game.patte2" 
   >
 </app-game-display>
 
