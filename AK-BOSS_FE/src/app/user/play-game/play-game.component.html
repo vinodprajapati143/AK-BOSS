@@ -5,16 +5,22 @@
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
     <h2 class="text-lg font-semibold text-center text-teal-700">Single Ank</h2>
     <div class="flex justify-center mt-2 gap-2">
-      <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500">
-        <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 ">
-        <label for="bordered-radio-1" class="text-sm font-medium text-black ">Open Game</label>
+        <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500" [class.opacity-50]="isOpenDisabled"  (click)="onRadioClick('open')">
+          <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 "
+            [disabled]="isOpenDisabled"
+         
+          >
+          <label for="bordered-radio-1" class="text-sm font-medium text-black ">Open Game</label>
+        </div>
+        <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500" [class.opacity-50]="isCloseDisabled"   (click)="onRadioClick('close')">
+          <input checked id="bordered-radio-2" type="radio" value="close" [(ngModel)]="selectedGameTimeType" name="bordered-radio"
+            class="text-blue-600 border-gray-300 "
+              [disabled]="isCloseDisabled"
+        >
+          <label for="bordered-radio-2" class="text-sm font-medium text-black ">Close Game</label>
+        </div>
       </div>
-      <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500">
-        <input checked id="bordered-radio-2" type="radio" value="close" [(ngModel)]="selectedGameTimeType" name="bordered-radio"
-          class="text-blue-600 border-gray-300 ">
-        <label for="bordered-radio-2" class="text-sm font-medium text-black ">Close Game</label>
-      </div>
-    </div>
+  
     <!-- Date -->
     <div class="btn-bg-color from-teal-500 to-indigo-600 text-white font-bold text-center py-2 rounded-md mt-2">
       {{date | date:'dd-MM-yyyy'}}
@@ -149,16 +155,21 @@
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
   <h2 class="text-lg font-semibold text-center text-teal-700">Single Panna</h2>
   <div class="flex justify-center mt-2 gap-2">
-    <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500">
-      <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 ">
-      <label for="bordered-radio-1" class="text-sm font-medium text-black ">Open Game</label>
-    </div>
-    <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500">
-      <input checked id="bordered-radio-2" type="radio" value="close" [(ngModel)]="selectedGameTimeType" name="bordered-radio"
-        class="text-blue-600 border-gray-300 ">
-      <label for="bordered-radio-2" class="text-sm font-medium text-black ">Close Game</label>
-    </div>
-  </div>
+        <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500" [class.opacity-50]="isOpenDisabled"  (click)="onRadioClick('open')">
+          <input id="bordered-radio-1" type="radio" value="open" [(ngModel)]="selectedGameTimeType" name="bordered-radio" class="text-blue-600 border-gray-300 "
+            [disabled]="isOpenDisabled"
+         
+          >
+          <label for="bordered-radio-1" class="text-sm font-medium text-black ">Open Game</label>
+        </div>
+        <div class="flex items-center w-full text-center px-3 py-2 gap-x-1 rounded-md border outline-none border-teal-500" [class.opacity-50]="isCloseDisabled"   (click)="onRadioClick('close')">
+          <input checked id="bordered-radio-2" type="radio" value="close" [(ngModel)]="selectedGameTimeType" name="bordered-radio"
+            class="text-blue-600 border-gray-300 "
+              [disabled]="isCloseDisabled"
+        >
+          <label for="bordered-radio-2" class="text-sm font-medium text-black ">Close Game</label>
+        </div>
+      </div>
   <!-- Date -->
   <div class="btn-bg-color from-teal-500 to-indigo-600 text-white font-bold text-center py-2 rounded-md mt-2">
     {{date | date:'dd-MM-yyyy'}}

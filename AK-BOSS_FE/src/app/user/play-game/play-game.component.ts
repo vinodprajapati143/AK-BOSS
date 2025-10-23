@@ -8,6 +8,7 @@ import { ApiService } from '../../core/services/api.service';
 import { WalletService } from '../../core/services/wallet.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import moment from 'moment';
 
 @Component({
   selector: 'app-play-game',
@@ -31,6 +32,8 @@ export class PlayGameComponent implements OnInit {
   toastr = inject(ToastrService);
   router = inject(Router);
   selectedGameTimeType: any;
+    isOpenDisabled = false;
+  isCloseDisabled = false;
 
 
 
@@ -40,12 +43,35 @@ export class PlayGameComponent implements OnInit {
       if (game) {
         this.game = game;
         console.log('this.game: ', this.game);
+        this.evaluateGameTime()
         // Setup UI accordingly
       } else {
         // Redirect or show message
         // this.router.navigate(['/user/all-games']);
       }
     });
+  }
+
+  evaluateGameTime() {
+    const now = moment(); // Current IST time
+    const openTime = moment(this.game.open_time, 'h:mm A');
+    const closeTime = moment(this.game.close_time, 'h:mm A');
+
+    // Disable radio buttons if time passed
+    if (now.isAfter(openTime)) this.isOpenDisabled = true;
+    if (now.isAfter(closeTime)) this.isCloseDisabled = true;
+  }
+
+  onRadioClick(type: string) {
+    if (type === 'open' && this.isOpenDisabled) {
+      this.toastr.warning('Open time is over!');
+      return;
+    }
+    if (type === 'close' && this.isCloseDisabled) {
+      this.toastr.warning('Close time is over!');
+      return;
+    }
+    this.selectedGameTimeType = type;
   }
 
   isDigitValid(): boolean {
