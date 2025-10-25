@@ -1829,23 +1829,17 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       singlepanna_ank: 10
     };
 
-    // Get all user wallet DEBITs
-    const [allWalletTxns] = await db.query(
-      `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='DEBIT' ORDER BY id DESC`,
-      [user_id]
-    );
-    const walletMap = new Map();
-    for (const txn of allWalletTxns) {
-      walletMap.set(`${Number(txn.amount)}|${txn.related_game_id}`, txn);
-    }
-
-    async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
-      // Get latest balance
+    // Helper function to get latest wallet balance
+    async function getLatestBalance(user_id) {
       const [lastRow] = await db.query(
         `SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1`,
         [user_id]
       );
-      const currentBalance = lastRow.length ? Number(lastRow[0].balance_after) : 0;
+      return lastRow.length ? Number(lastRow[0].balance_after) : 0;
+    }
+
+    async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
+      const currentBalance = await getLatestBalance(user_id);
       const newBalance = currentBalance + Number(amount);
 
       // Check for existing credit on batch
@@ -1898,12 +1892,11 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
         batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
-        batches[entry.batch_id].entry_refs.push(entry); // direct reference for matching + amount
+        batches[entry.batch_id].entry_refs.push(entry);
       }
 
       // Prepare final records
       for (const batch of Object.values(batches)) {
-        console.log('batch: ', batch);
         const resultRow = gameResults.find(
           gr =>
             Number(gr.game_id) === Number(batch.game_id) &&
@@ -1948,18 +1941,22 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
         const status = isAnyWin ? 'WIN' : resultRow ? 'LOSE' : 'PENDING';
 
-        // Wallet balances
-        const walletKey = `${Number(batch.total_amount)}|${batch.game_id}`;
-        const txn = walletMap.get(walletKey);
-        const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
-        const closing_balance = txn ? Number(txn.balance_after) : null;
-        const tax = 0;
-        const amount_after_tax = batch.playing_amount - tax;
+        // Get DEBIT transaction for opening balance
+        const [debitTxn] = await db.query(
+          `SELECT balance_after FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='DEBIT' ORDER BY id DESC LIMIT 1`,
+          [user_id, batch.batch_id, batch.game_id]
+        );
+        const opening_balance = debitTxn.length ? Number(debitTxn[0].balance_after) + Number(batch.total_amount) : null;
 
         // Only credit wallet if win_amount > 0
         if (isAnyWin && totalWinAmount > 0) {
           await creditWalletIfWin(user_id, totalWinAmount, batch.batch_id, batch.game_id);
         }
+
+        // Get LATEST closing balance (real-time)
+        const closing_balance = await getLatestBalance(user_id);
+
+        const tax = 0;
 
         resultArr.push({
           game_type: gameType,
@@ -1971,7 +1968,6 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           opening_balance,
           closing_balance,
           playing_amount: String(batch.playing_amount),
-          amount_after_tax,
           tax,
           selections: batch.selections,
           result: getResultEntry(resultRow),
@@ -1981,9 +1977,9 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       }
     }
 
-   const filteredResultArr = resultArr.filter(record => record.status === 'WIN');
+    const filteredResultArr = resultArr.filter(record => record.status === 'WIN');
 
-    // Uske baad sorting & response bhejo:
+    // Sort by created_at descending
     filteredResultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     res.json(filteredResultArr);
@@ -1993,6 +1989,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
