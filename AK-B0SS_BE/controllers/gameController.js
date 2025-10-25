@@ -1903,6 +1903,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
       // Prepare final records
       for (const batch of Object.values(batches)) {
+        console.log('batch: ', batch);
         const resultRow = gameResults.find(
           gr =>
             Number(gr.game_id) === Number(batch.game_id) &&
