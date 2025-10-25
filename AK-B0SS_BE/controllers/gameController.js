@@ -1389,6 +1389,54 @@ exports.getUserBoardGames = async (req, res) => {
 };
 
 
+async function creditReferralCommission(invitee_id, bet_amount) {
+  try {
+    // Check if invitee has a referrer
+    const [referralRelation] = await db.query(
+      `SELECT referrer_id FROM referral_relations WHERE invitee_id = ? LIMIT 1`,
+      [invitee_id]
+    );
+
+    if (!referralRelation.length) {
+      // No referrer found, skip commission
+      console.log(`No referrer found for user ${invitee_id}`);
+      return;
+    }
+
+    const referrer_id = referralRelation[0].referrer_id;
+    const commission_rate = 0.10; // 10%
+    const commission_amount = Number(bet_amount) * commission_rate;
+
+    // Get referrer's latest balance
+    const [walletRows] = await db.query(
+      `SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1`,
+      [referrer_id]
+    );
+    const currentBalance = walletRows.length ? Number(walletRows[0].balance_after) : 0;
+    const newBalance = currentBalance + commission_amount;
+
+    // Credit commission to referrer's wallet
+    await db.query(
+      `INSERT INTO user_wallet 
+        (user_id, transaction_type, amount, balance_after, description, created_at)
+       VALUES (?, 'CREDIT', ?, ?, ?, NOW())`,
+      [
+        referrer_id, 
+        commission_amount, 
+        newBalance, 
+        `Referral commission from user ${invitee_id} (10% of ${bet_amount})`
+      ]
+    );
+
+    console.log(`✅ Commission credited: ${commission_amount} to referrer ${referrer_id}`);
+  } catch (error) {
+    console.error('Error crediting referral commission:', error);
+    // Don't throw error - bet placement should succeed even if commission fails
+  }
+}
+
+
+
 exports.addSingleAnk = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -1415,7 +1463,7 @@ exports.addSingleAnk = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    // Generate a unique sequential batch_id like single_ank_00001
+    // Generate a unique sequential batch_id
     const batchPrefix = 'single_ank_';
     const prefixLength = batchPrefix.length;
 
@@ -1445,8 +1493,10 @@ exports.addSingleAnk = async (req, res) => {
         (user_id, transaction_type, amount, balance_after, description, related_game_id, batch_id)
        VALUES (?, 'DEBIT', ?, ?, ?, ?, ?)`,
       [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id, batchId]
-      //                                                                              ^^^^^^^ YE ADD KARO
     );
+
+    // ✅✅✅ STEP 2: Credit referral commission to referrer (if exists) ✅✅✅
+    await creditReferralCommission(userId, total_amount);
 
     return res.status(201).json({
       message: 'Entries saved and wallet updated',
@@ -1458,6 +1508,7 @@ exports.addSingleAnk = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 exports.addJodiAnk = async (req, res) => {
@@ -1516,8 +1567,10 @@ exports.addJodiAnk = async (req, res) => {
          (user_id, transaction_type, amount, balance_after, description, related_game_id, batch_id)
        VALUES (?, 'DEBIT', ?, ?, ?, ?, ?)`,
       [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id, batchId]
-      //                                                                              ^^^^^^^ YE ADD KARO
     );
+
+    // ✅✅✅ ADD THIS LINE: Credit referral commission to referrer (if exists) ✅✅✅
+    await creditReferralCommission(userId, total_amount);
 
     return res.status(201).json({
       message: 'Jodi ank entries saved and wallet updated',
@@ -1529,6 +1582,7 @@ exports.addJodiAnk = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
@@ -1558,7 +1612,7 @@ exports.addSinglePannaAnk = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    // Generate a unique sequential batch_id like singlepanna_ank_00001
+    // Generate a unique sequential batch_id
     const batchPrefix = 'singlepanna_ank_';
     const prefixLength = batchPrefix.length;
 
@@ -1590,6 +1644,9 @@ exports.addSinglePannaAnk = async (req, res) => {
       [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id, batchId]
     );
 
+    // ✅✅✅ ADD THIS LINE: Credit referral commission to referrer (if exists) ✅✅✅
+    await creditReferralCommission(userId, total_amount);
+
     return res.status(201).json({
       message: 'Entries saved and wallet updated',
       balance: newBalance,
@@ -1600,6 +1657,7 @@ exports.addSinglePannaAnk = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 

@@ -67,9 +67,11 @@ exports.getReferralList = async (req, res) => {
   try {
     const referrerId = req.user.id;
 
+    // Get base referral list with invitee details
     const sql = `
       SELECT rr.id, 
              rr.invite_code AS referrer_code,
+             u.id AS invitee_id,
              u.username AS invitee_username,
              u.phone AS invitee_phone,
              u.invitecode AS invitee_code,
@@ -82,21 +84,82 @@ exports.getReferralList = async (req, res) => {
 
     const [referrals] = await db.query(sql, [referrerId]);
 
-    // Mask last 5 characters of invitee_code
-    const maskedReferrals = referrals.map(r => {
-      if (r.invitee_code && r.invitee_code.length > 5) {
-        const visiblePart = r.invitee_code.slice(0, -5);
-        r.invitee_code = visiblePart + "*****";
+    // If no referrals found, return empty array
+    if (!referrals.length) {
+      return res.json({ success: true, referrals: [] });
+    }
+
+    // Define entry tables for iteration
+    const entryTables = [
+      'single_ank_entries',
+      'jodi_ank_entries',
+      'singlepanna_ank_entries'
+    ];
+
+    // Process each referral to get their bet details
+    const updatedReferrals = [];
+
+    for (const ref of referrals) {
+      // Dynamically build UNION ALL query
+      const unionQueries = entryTables
+        .map(table => `SELECT total_amount AS bid_amount, name AS game_name, batch_id, created_at AS bet_date FROM ${table} WHERE user_id = ?`)
+        .join(' UNION ALL ');
+      
+      const fullQuery = `${unionQueries} ORDER BY bet_date DESC`;
+      
+      // Execute query with repeated invitee_id for each table
+      const params = entryTables.map(() => ref.invitee_id);
+      const [bets] = await db.query(fullQuery, params);
+
+      // Convert each bet into commission object with all details
+      const invitee_bid_commision = bets.map(b => ({
+        bid_amount: Number(b.bid_amount).toFixed(2),
+        commission: (Number(b.bid_amount) * 0.10).toFixed(2),
+        game_name: b.game_name,
+        batch_id: b.batch_id,
+        bet_date: b.bet_date
+      }));
+
+      // Mask last 5 characters of invitee_code
+      let maskedCode = ref.invitee_code;
+      if (ref.invitee_code && ref.invitee_code.length > 5) {
+        const visiblePart = ref.invitee_code.slice(0, -5);
+        maskedCode = visiblePart + "*****";
       }
-      return r;
+
+      // Calculate total stats for this invitee
+      const totalBidAmount = bets.reduce((sum, b) => sum + Number(b.bid_amount), 0);
+      const totalCommission = totalBidAmount * 0.10;
+
+      updatedReferrals.push({
+        id: ref.id,
+        referrer_code: ref.referrer_code,
+        invitee_username: ref.invitee_username,
+        invitee_phone: ref.invitee_phone,
+        invitee_code: maskedCode,
+        total_bids: bets.length,
+        total_bid_amount: totalBidAmount.toFixed(2),
+        total_commission: totalCommission.toFixed(2),
+        invitee_bid_commision: invitee_bid_commision,
+        created_at: ref.created_at
+      });
+    }
+
+    return res.json({ 
+      success: true, 
+      total_referrals: updatedReferrals.length,
+      referrals: updatedReferrals 
     });
 
-    return res.json({ success: true, referrals: maskedReferrals });
   } catch (error) {
     console.error("Referral List API error:", error);
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res.status(500).json({ 
+      success: false, 
+      message: "Internal Server Error" 
+    });
   }
 };
+
 
 // User Profile Controller
 exports.getUserProfile = async (req, res) => {
