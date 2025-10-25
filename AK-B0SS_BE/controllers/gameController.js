@@ -1394,7 +1394,6 @@ exports.addSingleAnk = async (req, res) => {
     const userId = req.user.id;
     const { game_id, input_date, name, total_amount, entrytype, game_time_type, entries } = req.body;
 
-
     if (!game_id || !input_date || !entries?.length) {
       return res.status(400).json({ message: 'Invalid input data' });
     }
@@ -1417,10 +1416,8 @@ exports.addSingleAnk = async (req, res) => {
     }
 
     // Generate a unique sequential batch_id like single_ank_00001
-    // Ensure batch_id column exists on single_ank_entries table!
-    // Option 1: Sequential
     const batchPrefix = 'single_ank_';
-    const prefixLength = batchPrefix.length; // 11
+    const prefixLength = batchPrefix.length;
 
     const [[{ lastBatchNum = 0 } = {}]] = await db.query(
       `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
@@ -1431,20 +1428,9 @@ exports.addSingleAnk = async (req, res) => {
     const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
     const batchId = `${batchPrefix}${String(nextBatchNum).padStart(5, '0')}`;
 
-    // --- Option 2: Random five-digit batch id (uncomment to use random logic) ---
-    /*
-    let batchId, exists;
-    do {
-      const randomNum = Math.floor(10000 + Math.random() * 90000);
-      batchId = `single_ank_${randomNum}`;
-      [[exists]] = await db.query("SELECT 1 FROM single_ank_entries WHERE batch_id=?", [batchId]);
-    } while (exists);
-    */
-    // -------------------------------------------------------------------
-
     // Insert game entries with batch_id
     const insertEntries = entries.map(e =>
-        db.query(
+      db.query(
         `INSERT INTO single_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype, game_time_type)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype, game_time_type]
@@ -1452,13 +1438,14 @@ exports.addSingleAnk = async (req, res) => {
     );
     await Promise.all(insertEntries);
 
-    // Insert wallet debit transaction
+    // Insert wallet debit transaction WITH batch_id
     const newBalance = currentBalance - total_amount;
     await db.query(
       `INSERT INTO user_wallet 
-        (user_id, transaction_type, amount, balance_after, description, related_game_id)
-       VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
-      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
+        (user_id, transaction_type, amount, balance_after, description, related_game_id, batch_id)
+       VALUES (?, 'DEBIT', ?, ?, ?, ?, ?)`,
+      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id, batchId]
+      //                                                                              ^^^^^^^ YE ADD KARO
     );
 
     return res.status(201).json({
@@ -1471,6 +1458,7 @@ exports.addSingleAnk = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 exports.addJodiAnk = async (req, res) => {
   try {
@@ -1499,7 +1487,7 @@ exports.addJodiAnk = async (req, res) => {
     }
 
     const batchPrefix = 'jodi_ank_';
-    const prefixLength = batchPrefix.length; // 11
+    const prefixLength = batchPrefix.length;
 
     const [[{ lastBatchNum = 0 } = {}]] = await db.query(
       `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
@@ -1521,13 +1509,14 @@ exports.addJodiAnk = async (req, res) => {
     );
     await Promise.all(insertEntries);
 
-    // Insert wallet debit transaction
+    // Insert wallet debit transaction WITH batch_id
     const newBalance = currentBalance - total_amount;
     await db.query(
       `INSERT INTO user_wallet 
-         (user_id, transaction_type, amount, balance_after, description, related_game_id)
-       VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
-      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
+         (user_id, transaction_type, amount, balance_after, description, related_game_id, batch_id)
+       VALUES (?, 'DEBIT', ?, ?, ?, ?, ?)`,
+      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id, batchId]
+      //                                                                              ^^^^^^^ YE ADD KARO
     );
 
     return res.status(201).json({
@@ -1542,11 +1531,11 @@ exports.addJodiAnk = async (req, res) => {
 };
 
 
+
 exports.addSinglePannaAnk = async (req, res) => {
   try {
     const userId = req.user.id;
     const { game_id, input_date, name, total_amount, entrytype, game_time_type, entries } = req.body;
-
 
     if (!game_id || !input_date || !entries?.length) {
       return res.status(400).json({ message: 'Invalid input data' });
@@ -1569,11 +1558,9 @@ exports.addSinglePannaAnk = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
 
-    // Generate a unique sequential batch_id like single_ank_00001
-    // Ensure batch_id column exists on single_ank_entries table!
-    // Option 1: Sequential
+    // Generate a unique sequential batch_id like singlepanna_ank_00001
     const batchPrefix = 'singlepanna_ank_';
-    const prefixLength = batchPrefix.length; // 11
+    const prefixLength = batchPrefix.length;
 
     const [[{ lastBatchNum = 0 } = {}]] = await db.query(
       `SELECT MAX(CAST(SUBSTRING(batch_id, ?) AS UNSIGNED)) as lastBatchNum 
@@ -1584,20 +1571,9 @@ exports.addSinglePannaAnk = async (req, res) => {
     const nextBatchNum = (Number(lastBatchNum) || 0) + 1;
     const batchId = `${batchPrefix}${String(nextBatchNum).padStart(5, '0')}`;
 
-    // --- Option 2: Random five-digit batch id (uncomment to use random logic) ---
-    /*
-    let batchId, exists;
-    do {
-      const randomNum = Math.floor(10000 + Math.random() * 90000);
-      batchId = `single_ank_${randomNum}`;
-      [[exists]] = await db.query("SELECT 1 FROM single_ank_entries WHERE batch_id=?", [batchId]);
-    } while (exists);
-    */
-    // -------------------------------------------------------------------
-
     // Insert game entries with batch_id
     const insertEntries = entries.map(e =>
-        db.query(
+      db.query(
         `INSERT INTO singlepanna_ank_entries (user_id, game_id, name, input_date, digit, amount, total_amount, batch_id, entrytype, game_time_type)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [userId, game_id, name, input_date, e.digit, Number(e.amount), total_amount, batchId, entrytype, game_time_type]
@@ -1605,13 +1581,13 @@ exports.addSinglePannaAnk = async (req, res) => {
     );
     await Promise.all(insertEntries);
 
-    // Insert wallet debit transaction
+    // Insert wallet debit transaction WITH batch_id
     const newBalance = currentBalance - total_amount;
     await db.query(
       `INSERT INTO user_wallet 
-        (user_id, transaction_type, amount, balance_after, description, related_game_id)
-       VALUES (?, 'DEBIT', ?, ?, ?, ?)`,
-      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id]
+        (user_id, transaction_type, amount, balance_after, description, related_game_id, batch_id)
+       VALUES (?, 'DEBIT', ?, ?, ?, ?, ?)`,
+      [userId, total_amount, newBalance, `Bet placed on game ${game_id}`, game_id, batchId]
     );
 
     return res.status(201).json({
@@ -1624,6 +1600,7 @@ exports.addSinglePannaAnk = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
