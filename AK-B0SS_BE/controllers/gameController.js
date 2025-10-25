@@ -1498,7 +1498,7 @@ exports.addSingleAnk = async (req, res) => {
     );
 
     // ✅✅✅ STEP 2: Credit referral commission to referrer (if exists) ✅✅✅
-    await creditReferralCommission(userId, total_amount);
+    await creditReferralCommission(userId, total_amount, batchId);
 
     return res.status(201).json({
       message: 'Entries saved and wallet updated',
@@ -1572,7 +1572,7 @@ exports.addJodiAnk = async (req, res) => {
     );
 
     // ✅✅✅ ADD THIS LINE: Credit referral commission to referrer (if exists) ✅✅✅
-    await creditReferralCommission(userId, total_amount);
+    await creditReferralCommission(userId, total_amount, batchId);
 
     return res.status(201).json({
       message: 'Jodi ank entries saved and wallet updated',
@@ -1647,7 +1647,7 @@ exports.addSinglePannaAnk = async (req, res) => {
     );
 
     // ✅✅✅ ADD THIS LINE: Credit referral commission to referrer (if exists) ✅✅✅
-    await creditReferralCommission(userId, total_amount);
+    await creditReferralCommission(userId, total_amount, batchId);
 
     return res.status(201).json({
       message: 'Entries saved and wallet updated',
