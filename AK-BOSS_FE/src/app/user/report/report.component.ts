@@ -69,7 +69,6 @@ export class ReportsComponent {
     // },
         {
       type: 'Withdrawal',
-      route: '/add-amount',
       date: '2025-03-31 18:03:14',
       status: 'SUCCEED',
       color: '#0A7E8D',

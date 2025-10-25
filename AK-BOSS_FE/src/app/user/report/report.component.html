@@ -154,15 +154,13 @@
                 </div>
                 
 
-                <!-- <div *ngIf="transaction.type === 'Playing'"
+                <div *ngIf="transaction.type === 'Withdrawal'"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
-                    <span class="font-medium">Playing Amount</span>
-                    <span class="text-[#00D457]">₹{{ transaction.playingAmount }}</span>
-                </div> -->
+                    <span class="font-medium">Withdrawal Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.withdrawalAmount }}</span>
+                </div>              
 
-              
-
-                <div *ngIf="transaction.amountAfterTax"
+                <div *ngIf="transaction.amountAfterTax && transaction.type !== 'Withdrawal'"
                     class="flex justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Amount After Tax</span>
                     <span class="font-bold">₹{{ transaction.amountAfterTax }}</span>
@@ -174,7 +172,7 @@
                     <span class="font-bold">₹{{ transaction.tax }}</span>
                 </div>
 
-                <div *ngIf="transaction.openSelect?.length"
+                <div *ngIf="transaction.openSelect?.length && transaction.type !== 'Withdrawal'" 
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Open Select</span>
                     <div class="flex gap-x-4">
@@ -190,13 +188,21 @@
                 <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-semibold">Status</span>
                     <span class="rounded-full text-[#00D457] font-bold px-2 ">{{ transaction.status }}</span>
-                </div>
-
-              
+                </div>             
 
                 <div class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
                     <span class="font-semibold">Closing Balance</span>
                     <span class="font-semibold">₹{{ transaction.closingBalance }}</span>
+                </div>
+
+                <div *ngIf="transaction.type === 'Withdrawal'" class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Payment Mode</span>
+                    <span class="font-semibold">{{ transaction.paymentmode }}</span>
+                </div>
+
+                <div *ngIf="transaction.type === 'Withdrawal'" class="flex justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Remark</span>
+                    <span class="font-semibold">{{ transaction.remark }}</span>
                 </div>
             </div>
         </div>
