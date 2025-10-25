@@ -111,10 +111,25 @@ exports.getReferralList = async (req, res) => {
       const params = entryTables.map(() => ref.invitee_id);
       const [bets] = await db.query(fullQuery, params);
 
-      // Convert each bet into commission object with all details
-      const invitee_bid_commision = bets.map(b => ({
-        bid_amount: Number(b.bid_amount).toFixed(2),
-        commission: (Number(b.bid_amount) * 0.10).toFixed(2),
+      // ✅ Group bets by batch_id (one batch = one transaction with multiple digits)
+      const batchMap = new Map();
+      
+      for (const bet of bets) {
+        if (!batchMap.has(bet.batch_id)) {
+          batchMap.set(bet.batch_id, {
+            bid_amount: Number(bet.bid_amount),
+            game_name: bet.game_name,
+            batch_id: bet.batch_id,
+            bet_date: bet.bet_date
+          });
+        }
+        // If same batch_id appears multiple times (shouldn't for total_amount), skip duplicate
+      }
+
+      // Convert Map to Array with commission calculation
+      const invitee_bid_commision = Array.from(batchMap.values()).map(b => ({
+        bid_amount: b.bid_amount.toFixed(2),
+        commission: (b.bid_amount * 0.10).toFixed(2),
         game_name: b.game_name,
         batch_id: b.batch_id,
         bet_date: b.bet_date
@@ -127,8 +142,8 @@ exports.getReferralList = async (req, res) => {
         maskedCode = visiblePart + "*****";
       }
 
-      // Calculate total stats for this invitee
-      const totalBidAmount = bets.reduce((sum, b) => sum + Number(b.bid_amount), 0);
+      // Calculate total stats for this invitee (based on unique batches)
+      const totalBidAmount = invitee_bid_commision.reduce((sum, b) => sum + Number(b.bid_amount), 0);
       const totalCommission = totalBidAmount * 0.10;
 
       updatedReferrals.push({
@@ -137,7 +152,7 @@ exports.getReferralList = async (req, res) => {
         invitee_username: ref.invitee_username,
         invitee_phone: ref.invitee_phone,
         invitee_code: maskedCode,
-        total_bids: bets.length,
+        total_bids: invitee_bid_commision.length, // Unique batches count
         total_bid_amount: totalBidAmount.toFixed(2),
         total_commission: totalCommission.toFixed(2),
         invitee_bid_commision: invitee_bid_commision,
@@ -159,6 +174,7 @@ exports.getReferralList = async (req, res) => {
     });
   }
 };
+
 
 
 // User Profile Controller
