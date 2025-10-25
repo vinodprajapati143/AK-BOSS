@@ -12,6 +12,7 @@ import { WithdrawalComponent } from './withdrawal/withdrawal.component';
 import { AllGamesComponent } from './all-games/all-games.component';
 import { PlayGameComponent } from './play-game/play-game.component';
 import { ReportsComponent } from './report/report.component';
+import { GameRateComponent } from './game-rate/game-rate.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'all-games', component: AllGamesComponent },
   { path: 'play', component: PlayGameComponent },
   { path: 'withdrawal', component: WithdrawalComponent },
+  { path: 'game-rate', component: GameRateComponent }
 ];
 
 
