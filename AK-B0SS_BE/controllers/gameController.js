@@ -1389,7 +1389,7 @@ exports.getUserBoardGames = async (req, res) => {
 };
 
 
-async function creditReferralCommission(invitee_id, bet_amount) {
+async function creditReferralCommission(invitee_id, bet_amount, batch_id) {
   try {
     // Check if invitee has a referrer
     const [referralRelation] = await db.query(
@@ -1415,25 +1415,27 @@ async function creditReferralCommission(invitee_id, bet_amount) {
     const currentBalance = walletRows.length ? Number(walletRows[0].balance_after) : 0;
     const newBalance = currentBalance + commission_amount;
 
-    // Credit commission to referrer's wallet
+    // ✅ Credit commission to referrer's wallet WITH batch_id
     await db.query(
       `INSERT INTO user_wallet 
-        (user_id, transaction_type, amount, balance_after, description, created_at)
-       VALUES (?, 'CREDIT', ?, ?, ?, NOW())`,
+        (user_id, transaction_type, amount, balance_after, description, batch_id, created_at)
+       VALUES (?, 'CREDIT', ?, ?, ?, ?, NOW())`,
       [
         referrer_id, 
         commission_amount, 
         newBalance, 
-        `Referral commission from user ${invitee_id} (10% of ${bet_amount})`
+        `Referral commission from user ${invitee_id} (10% of ${bet_amount})`,
+        batch_id  // ✅ Add batch_id here
       ]
     );
 
-    console.log(`✅ Commission credited: ${commission_amount} to referrer ${referrer_id}`);
+    console.log(`✅ Commission credited: ${commission_amount} to referrer ${referrer_id} for batch ${batch_id}`);
   } catch (error) {
     console.error('Error crediting referral commission:', error);
     // Don't throw error - bet placement should succeed even if commission fails
   }
 }
+
 
 
 
