@@ -38,13 +38,19 @@
 
   <!-- Withdraw Form -->
   <div class="mx-4 mt-5 space-y-3">
+    <!-- Amount Input -->
     <input
       type="number"
       placeholder="Enter Amount (Minimum Withdraw 1000)"
+      [(ngModel)]="withdraw.amount"
+      name="amount"
       class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
     />
 
+    <!-- Mode Selection -->
     <select
+      [(ngModel)]="withdraw.mode"
+      name="mode"
       class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
     >
       <option value="">Select your mode</option>
@@ -53,20 +59,66 @@
       <option value="wallet">Wallet</option>
     </select>
 
+    <!-- Phone -->
     <input
       type="tel"
       placeholder="Enter Phone Number"
+      [(ngModel)]="withdraw.phone"
+      name="phone"
       class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
     />
-  </div>
 
-  <!-- Withdraw Button -->
-  <div class="mx-4 mt-6 ">
+    <!-- 👇 Conditional Fields for UPI -->
+    <div *ngIf="withdraw.mode === 'upi'" class="space-y-3">
+      <input
+        type="text"
+        placeholder="Enter Account Holder Name"
+        [(ngModel)]="withdraw.name"
+        name="upiName"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+      />
+      <input
+        type="text"
+        placeholder="Enter UPI ID (e.g. username@upi)"
+        [(ngModel)]="withdraw.upiId"
+        name="upiId"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+      />
+    </div>
+
+    <!-- 👇 Conditional Fields for Bank -->
+    <div *ngIf="withdraw.mode === 'bank'" class="space-y-3">
+      <input
+        type="text"
+        placeholder="Enter Account Holder Name"
+        [(ngModel)]="withdraw.name"
+        name="bankName"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+      />
+      <input
+        type="text"
+        placeholder="Enter Account Number"
+        [(ngModel)]="withdraw.accountNumber"
+        name="accountNumber"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+      />
+      <input
+        type="text"
+        placeholder="Enter IFSC Code"
+        [(ngModel)]="withdraw.ifsc"
+        name="ifsc"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+      />
+    </div>
+
+    <!-- Withdraw Button -->
     <button
-      class="w-full btn-bg-color text-white font-semibold py-3 rounded-lg shadow"
+      (click)="submitWithdrawal()"
+      class="w-full bg-green-600 text-white rounded-full py-3 mt-2 hover:bg-green-700 transition"
     >
-      Withdraw
+      Withdraw Now
     </button>
   </div>
+
 </div>
 <app-footer></app-footer>

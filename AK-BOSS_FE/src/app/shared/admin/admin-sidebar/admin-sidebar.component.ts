@@ -99,8 +99,8 @@ export class AdminSidebarComponent {
       },
       {
         img: 'report',
-        text: 'Bal Return Request',
-        href: '/admin/bal-return-request',
+        text: 'Bal Withdrawal',
+        href: '/admin/bal-withdrawal',
         active: false,
       },
       {

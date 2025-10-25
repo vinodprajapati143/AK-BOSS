@@ -1,6 +1,6 @@
 import { Component, Inject, inject, PLATFORM_ID } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
-import { isPlatformBrowser, NgFor } from '@angular/common';
+import { CommonModule, isPlatformBrowser, NgFor } from '@angular/common';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-share-page',
   standalone: true,
-  imports: [HeaderComponent, NgFor, FooterComponent],
+  imports: [HeaderComponent, NgFor, CommonModule, FooterComponent],
   templateUrl: './share-page.component.html',
   styleUrl: './share-page.component.scss'
 })
@@ -16,8 +16,16 @@ export class SharePageComponent {
   apiService = inject(ApiService)
   toastr = inject(ToastrService)
   platformId = inject(PLATFORM_ID);
+ transactions = [
+    {
+      invitee_id: '1',
+      invitee_code: 'AK_111***',
+      invitee_username: 'Ajay Reff',
+      invitee_phone: '987456321',
+      active: false,
+    },
+  ];
   
-
  referralList:any
 
   inviteLink: string = '';
