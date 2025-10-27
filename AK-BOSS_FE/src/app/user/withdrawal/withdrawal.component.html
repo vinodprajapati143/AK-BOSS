@@ -51,6 +51,7 @@
     <select
       [(ngModel)]="withdraw.mode"
       name="mode"
+      (change)="onModeChange($event)"
       class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
     >
       <option value="">Select your mode</option>
@@ -65,6 +66,7 @@
       placeholder="Enter Phone Number"
       [(ngModel)]="withdraw.phone"
       name="phone"
+      [disabled]="inputsDisabled"
       class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
     />
 
@@ -75,12 +77,14 @@
         placeholder="Enter Account Holder Name"
         [(ngModel)]="withdraw.name"
         name="upiName"
+        [disabled]="inputsDisabled"
         class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
       />
       <input
         type="text"
         placeholder="Enter UPI ID (e.g. username@upi)"
         [(ngModel)]="withdraw.upiId"
+        [disabled]="inputsDisabled"
         name="upiId"
         class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
       />
@@ -92,6 +96,7 @@
         type="text"
         placeholder="Enter Account Holder Name"
         [(ngModel)]="withdraw.name"
+        [disabled]="inputsDisabled"
         name="bankName"
         class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
       />
@@ -99,6 +104,7 @@
         type="text"
         placeholder="Enter Account Number"
         [(ngModel)]="withdraw.accountNumber"
+        [disabled]="inputsDisabled"
         name="accountNumber"
         class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
       />
@@ -106,6 +112,7 @@
         type="text"
         placeholder="Enter IFSC Code"
         [(ngModel)]="withdraw.ifsc"
+        [disabled]="inputsDisabled"
         name="ifsc"
         class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
       />

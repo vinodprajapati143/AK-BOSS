@@ -146,5 +146,20 @@ updateUserProfile(data:any) {
    return this.http.get(`${this.baseUrl}/api/games/getAllWinRecords`,{ withCredentials: true });
   }
 
+    // ✅ Get saved payment details
+  getPaymentDetails() {
+    return this.http.get(`${this.baseUrl}/api/payments/details`, { withCredentials: true });
+  }
+
+  // ✅ Save payment details (one time, pehli baar)
+  savePaymentDetails(data: any) {
+    return this.http.post(`${this.baseUrl}/api/payments/save`, data, { withCredentials: true });
+  }
+
+  // ✅ Create new withdrawal request
+  createWithdrawal(data: any) {
+    return this.http.post(`${this.baseUrl}/api/withdrawal/create`, data, { withCredentials: true });
+  }
+
 
 }
