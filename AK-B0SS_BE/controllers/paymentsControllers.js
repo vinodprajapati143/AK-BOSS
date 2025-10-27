@@ -13,41 +13,92 @@ exports.savePaymentDetails = async (req, res) => {
       upi_id
     } = req.body;
 
-    // Check if user already saved payment details
-    const [existing] = await db.query(
-      `SELECT id FROM user_payment_details WHERE user_id = ?`,
+    // Check if user already has record
+    const [existingRows] = await db.query(
+      `SELECT * FROM user_payment_details WHERE user_id = ?`,
       [userId]
     );
 
-    if (existing.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment details already saved. To change details, please contact support."
+    // No record exists, insert new
+    if (!existingRows.length) {
+      await db.query(
+        `INSERT INTO user_payment_details 
+          (user_id, bank_phone_number, bank_account_holder_name, bank_account_number, bank_ifsc_code,
+           upi_phone_number, upi_account_holder_name, upi_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          userId,
+          bank_phone_number || null,
+          bank_account_holder_name || null,
+          bank_account_number || null,
+          bank_ifsc_code || null,
+          upi_phone_number || null,
+          upi_account_holder_name || null,
+          upi_id || null
+        ]
+      );
+      return res.status(201).json({
+        success: true,
+        message: "Payment details saved successfully"
       });
     }
 
-    // Insert new payment details
-    await db.query(
-      `INSERT INTO user_payment_details 
-        (user_id, bank_phone_number, bank_account_holder_name, bank_account_number, bank_ifsc_code,
-         upi_phone_number, upi_account_holder_name, upi_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        userId,
-        bank_phone_number || null,
-        bank_account_holder_name || null,
-        bank_account_number || null,
-        bank_ifsc_code || null,
-        upi_phone_number || null,
-        upi_account_holder_name || null,
-        upi_id || null
-      ]
-    );
+    // Record exists -- check which part is missing
+    const existing = existingRows[0];
+    // Bank details save allowed only if all are null
+    if (
+      (bank_account_number && !existing.bank_account_number)
+      || (bank_ifsc_code && !existing.bank_ifsc_code)
+      || (bank_account_holder_name && !existing.bank_account_holder_name)
+      || (bank_phone_number && !existing.bank_phone_number)
+    ) {
+      // Only allow update if bank fields are still missing for this user
+      await db.query(
+        `UPDATE user_payment_details 
+         SET bank_phone_number = ?, bank_account_holder_name = ?, bank_account_number = ?, bank_ifsc_code = ?
+         WHERE user_id = ?`,
+        [
+          bank_phone_number || existing.bank_phone_number,
+          bank_account_holder_name || existing.bank_account_holder_name,
+          bank_account_number || existing.bank_account_number,
+          bank_ifsc_code || existing.bank_ifsc_code,
+          userId
+        ]
+      );
+      return res.status(200).json({
+        success: true,
+        message: "Bank details added successfully"
+      });
+    }
+    // UPI details save allowed only if all are null
+    if (
+      (upi_id && !existing.upi_id)
+      || (upi_account_holder_name && !existing.upi_account_holder_name)
+      || (upi_phone_number && !existing.upi_phone_number)
+    ) {
+      await db.query(
+        `UPDATE user_payment_details 
+         SET upi_phone_number = ?, upi_account_holder_name = ?, upi_id = ?
+         WHERE user_id = ?`,
+        [
+          upi_phone_number || existing.upi_phone_number,
+          upi_account_holder_name || existing.upi_account_holder_name,
+          upi_id || existing.upi_id,
+          userId
+        ]
+      );
+      return res.status(200).json({
+        success: true,
+        message: "UPI details added successfully"
+      });
+    }
 
-    res.status(201).json({
-      success: true,
-      message: "Payment details saved successfully"
+    // Har field already filled, not allowed to edit!
+    return res.status(400).json({
+      success: false,
+      message: "Both Bank and UPI payment details already saved. For changes, please contact support."
     });
+
   } catch (error) {
     console.error('Error saving payment details:', error);
     res.status(500).json({
@@ -56,6 +107,7 @@ exports.savePaymentDetails = async (req, res) => {
     });
   }
 };
+
 
 exports.getPaymentDetails = async (req, res) => {
   try {

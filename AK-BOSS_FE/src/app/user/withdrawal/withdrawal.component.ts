@@ -39,6 +39,7 @@ export class WithdrawalComponent implements OnInit{
         this.withdrawalService.getPaymentDetails().subscribe((res: any) => {
       if (res.success && res.payment_details) {
         this.savedDetails = res.payment_details;
+        console.log(' this.savedDetails: ',  this.savedDetails);
         // Default mode prefilling if only one mode available
         if (this.savedDetails.upi_id) this.setMode('upi');
         else if (this.savedDetails.bank_account_number) this.setMode('bank');
@@ -52,13 +53,13 @@ export class WithdrawalComponent implements OnInit{
 
   setMode(mode: string) {
     this.withdraw.mode = mode;
-    if (mode === 'upi' && this.savedDetails) {
+    if (mode === 'upi' && this.savedDetails && this.savedDetails.upi_id) {
       this.withdraw.phone = this.savedDetails.upi_phone_number;
       this.withdraw.name = this.savedDetails.upi_account_holder_name;
       this.withdraw.upiId = this.savedDetails.upi_id;
       this.withdraw.accountNumber = '';
       this.withdraw.ifsc = '';
-    } else if (mode === 'bank' && this.savedDetails) {
+    } else if (mode === 'bank' && this.savedDetails &this.savedDetails.bank_account_number) {
       this.withdraw.phone = this.savedDetails.bank_phone_number;
       this.withdraw.name = this.savedDetails.bank_account_holder_name;
       this.withdraw.accountNumber = this.savedDetails.bank_account_number;
@@ -71,6 +72,7 @@ export class WithdrawalComponent implements OnInit{
       this.withdraw.upiId = '';
       this.withdraw.accountNumber = '';
       this.withdraw.ifsc = '';
+      this.inputsDisabled = false;
     }
   }
 
@@ -78,31 +80,18 @@ export class WithdrawalComponent implements OnInit{
     this.setMode(event.target.value);
   }
 
-  openWhatsApp() {
-    const phoneNumber = "919575259525";
-    const message = "Hello, I need assistance!";
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  }
-
-  closeWhatsApp() {
-    const url = `https://wa.me/919575259525?text=Goodbye`;
-    window.open(url, "_blank");
-  }
-
-  navigateToAddAmount() {
-    window.location.href = '/user/add-amount';
-  }
-
-submitWithdrawal() {
+  submitWithdrawal() {
   // Validation
   if (!this.withdraw.amount || this.withdraw.amount < 100 || !this.withdraw.mode) {
-    this.toastr.error('Enter all required details and minimum ₹1000 amount');
+    this.toastr.error('Enter all required details and minimum ₹100 amount');
     return;
   }
 
   // Only withdrawal if savedDetails ready (never trigger save again!)
-  if (this.savedDetails) {
+  if (
+    (this.withdraw.mode === 'upi' && this.savedDetails && this.savedDetails.upi_id) ||
+    (this.withdraw.mode === 'bank' && this.savedDetails && this.savedDetails.bank_account_number)
+  ) {
     this.postWithdrawal();
     return;
   }
@@ -134,8 +123,10 @@ submitWithdrawal() {
 
   this.withdrawalService.savePaymentDetails(saveObj).subscribe({
     next: (res: any) => {
+      console.log('res: ', res);
       if (res.success) {
         this.savedDetails = saveObj; // so form disables next time
+        console.log('this.savedDetails: ', this.savedDetails);
         this.postWithdrawal();
       } else {
         this.toastr.error(res.message || 'Could not save details');
@@ -169,5 +160,23 @@ postWithdrawal() {
     }
   });
 }
+
+  openWhatsApp() {
+    const phoneNumber = "919575259525";
+    const message = "Hello, I need assistance!";
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  }
+
+  closeWhatsApp() {
+    const url = `https://wa.me/919575259525?text=Goodbye`;
+    window.open(url, "_blank");
+  }
+
+  navigateToAddAmount() {
+    window.location.href = '/user/add-amount';
+  }
+
+
 
 }
