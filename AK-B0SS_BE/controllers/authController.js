@@ -271,7 +271,8 @@ exports.loginUser = async (req, res) => {
 
     const tokenPayload = {
       id: user.id,
-      username: user.username || user.phone,
+      username: user.username,
+      phone: user.phone,
       registerType: user.registerType,
     };
 
