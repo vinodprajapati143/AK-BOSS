@@ -38,7 +38,7 @@ exports.createAddMoneyOrder = async (req, res) => {
       amount: String(amount),
       p_info: "Wallet Recharge",
       customer_name: user.username,
-      customer_email: "",
+      customer_email: " ",
       customer_mobile: user.phone,
       redirect_url: "https://ak247pro.com/user/add-amount", // Or wherever you want (handle result here)
       udf1: user.id.toString()
