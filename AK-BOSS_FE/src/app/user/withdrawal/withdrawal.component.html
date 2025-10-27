@@ -37,7 +37,7 @@
   </div>
 
   <!-- Withdraw Form -->
-  <div class="mx-4 mt-5 space-y-3">
+  <div class="mx-4 mt-5 gap-y-2">
     <!-- Amount Input -->
     <input
       type="number"
@@ -52,7 +52,7 @@
       [(ngModel)]="withdraw.mode"
       name="mode"
       (change)="onModeChange($event)"
-      class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+      class="w-full rounded-full border border-gray-300 px-4 py-3 mt-4 mb-[5px] focus:outline-none focus:ring-2"
     >
       <option value="">Select your mode</option>
       <option value="upi">UPI</option>
@@ -61,6 +61,7 @@
     </select>
 
     <!-- Phone -->
+    <label for="phone" class="pl-[20px]">Phone Number</label>
     <input
       type="tel"
       placeholder="Enter Phone Number"
@@ -71,50 +72,55 @@
     />
 
     <!-- 👇 Conditional Fields for UPI -->
-    <div *ngIf="withdraw.mode === 'upi'" class="space-y-3">
+    <div *ngIf="withdraw.mode === 'upi'" class="space-y-1">
+      <label for="upiName" class="pl-[20px]">Account Holder Name</label>
       <input
         type="text"
         placeholder="Enter Account Holder Name"
         [(ngModel)]="withdraw.name"
         name="upiName"
         [disabled]="inputsDisabled"
-        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
       />
+      <label for="upiId" class="pl-[20px]">UPI ID</label>
       <input
         type="text"
         placeholder="Enter UPI ID (e.g. username@upi)"
         [(ngModel)]="withdraw.upiId"
         [disabled]="inputsDisabled"
         name="upiId"
-        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
       />
     </div>
 
     <!-- 👇 Conditional Fields for Bank -->
-    <div *ngIf="withdraw.mode === 'bank'" class="space-y-3">
+    <div *ngIf="withdraw.mode === 'bank'" class="gap-y-2">
+      <label for="bankName" class="pl-[20px]">Account Holder Name</label>
       <input
         type="text"
         placeholder="Enter Account Holder Name"
         [(ngModel)]="withdraw.name"
         [disabled]="inputsDisabled"
         name="bankName"
-        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
       />
+      <label for="accountNumber" class="pl-[20px]">Account Number</label>
       <input
         type="text"
         placeholder="Enter Account Number"
         [(ngModel)]="withdraw.accountNumber"
         [disabled]="inputsDisabled"
         name="accountNumber"
-        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
       />
+      <label for="ifsc" class="pl-[20px]">IFSC Code</label>
       <input
         type="text"
         placeholder="Enter IFSC Code"
         [(ngModel)]="withdraw.ifsc"
         [disabled]="inputsDisabled"
         name="ifsc"
-        class="w-full rounded-full border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
       />
     </div>
 

@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import { NgFor } from '@angular/common';
+import { BalanceModalComponent } from '../balance-modal/balance-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-bal-withdrawal',
@@ -10,6 +12,7 @@ import { NgFor } from '@angular/common';
   styleUrl: './bal-withdrawal.component.scss',
 })
 export class BalWithdrawalComponent {
+  dialog = inject(MatDialog)
   users = [
     {
       id: 1,
@@ -142,4 +145,17 @@ export class BalWithdrawalComponent {
       action: 'Update'
     },
   ];
+
+  viewUser(user: any) {
+    this.dialog.open(BalanceModalComponent, {
+      width: '400px',
+      panelClass: 'custom-dialog',
+      data: {
+        name: user.username, // ya user.name
+        phone: user.phone,
+        balance: user.normal_balance,
+        userId: user.user_id // id bhi bhejna zaroori
+      }
+    });
+  }
 }

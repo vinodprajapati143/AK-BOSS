@@ -37,13 +37,8 @@ export class AdminSidebarComponent {
     { img: 'gamepad', href: '/admin/all-game', text: 'Game', active: false },
     { img: 'referral', href: '/admin/users', text: 'Members', active: false },
     { img: 'report', href: '/admin/bal-transfer', text: 'Payment', active: false },
-
-    {
-      img: 'referral',
-      href: '/admin/referral',
-      text: 'Referral',
-      active: false,
-    },
+    { img: 'report', href: '/admin/all-report', text: 'Report', active: false },
+    { img: 'referral', href: '/admin/referral', text: 'Referral', active: false },
     { img: 'help', href: '/admin/help', text: 'Help', active: false },
   ];
 
@@ -113,6 +108,14 @@ export class AdminSidebarComponent {
         img: 'report',
         text: 'Purchase Balance',
         href: '/admin/purchase-balance',
+        active: false,
+      },
+    ],
+    Report: [
+      {
+        img: 'report',
+        text: 'All Rreport',
+        href: '/admin/all-report',
         active: false,
       },
     ],

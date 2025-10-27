@@ -6,6 +6,7 @@ import { AllGameComponent } from './all-game/all-game.component';
 import { BalTransferComponent } from './bal-transfer/bal-transfer.component';
 import { BalanceReturnComponent } from './balance-return/balance-return.component';
 import { BalWithdrawalComponent } from './bal-withdrawal/bal-withdrawal.component';
+import { AllReportComponent } from './all-report/all-report.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'users', pathMatch: 'full' },
@@ -14,7 +15,8 @@ const routes: Routes = [
   { path: 'all-game', component: AllGameComponent },
   { path: 'bal-transfer', component: BalTransferComponent },
   { path: 'balance-return', component: BalanceReturnComponent },
-  { path: 'bal-withdrawal', component: BalWithdrawalComponent }
+  { path: 'bal-withdrawal', component: BalWithdrawalComponent },
+  { path: 'all-report' , component: AllReportComponent}
 ];
 
 
