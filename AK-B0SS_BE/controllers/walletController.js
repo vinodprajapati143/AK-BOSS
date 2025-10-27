@@ -30,7 +30,7 @@ exports.createAddMoneyOrder = async (req, res) => {
 
     // 1. Create unique client_txn_id each request
     const client_txn_id = Date.now() + '_' + user.id + '_' + Math.round(Math.random() * 10000);
-
+    const redirectUrl = `https://ak247pro.com/user/add-amount?client_txn_id=${encodeURIComponent(client_txn_id)}`;
     // 2. Prepare API request payload
     const payload = {
       key: process.env.EKQR_API_KEY,
@@ -40,7 +40,7 @@ exports.createAddMoneyOrder = async (req, res) => {
       customer_name: user.username,
       customer_email: "tbz0u@tiffincrane.com",
       customer_mobile: user.phone,
-      redirect_url: "https://ak247pro.com/user/add-amount", // Or wherever you want (handle result here)
+      redirect_url: redirectUrl, // Or wherever you want (handle result here)
       udf1: user.id.toString()
     };
 
@@ -119,6 +119,43 @@ exports.ekqrWebhook = async (req, res) => {
     res.status(500).send('Webhook error');
   }
 };
+
+exports.checkOrderStatus = async (req, res) => {
+  try {
+    const { client_txn_id } = req.query;
+    if (!client_txn_id) {
+      return res.status(400).json({ success: false, message: "client_txn_id required" });
+    }
+
+    // Prepare payload for ekQR API
+    const bodyData = {
+      key: process.env.EKQR_API_KEY,
+      client_txn_id,
+      txn_date: new Date().toLocaleDateString('en-GB').replace(/\//g, '-'), // DD-MM-YYYY format
+    };
+
+    // Call ekQR order status API
+    const ekqrResponse = await axios.post('https://api.ekqr.in/api/check_order_status', bodyData, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!ekqrResponse.data.status) {
+      return res.status(400).json({ success: false, message: ekqrResponse.data.msg });
+    }
+
+    // Send status and data back to frontend
+    res.json({
+      success: true,
+      status: ekqrResponse.data.data.status,
+      data: ekqrResponse.data.data
+    });
+
+  } catch (error) {
+    console.error('checkOrderStatus error:', error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 
 

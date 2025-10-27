@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 
 @Component({
   selector: 'app-add-amount',
@@ -18,17 +19,32 @@ export class AddAmountComponent implements OnInit {
     amount: number = 0; // for bound input
   userdata: any;
   walletblance: any;
+  paymentStatus: any;
+  paymentData: any;
+  errorMessage: any;
 
   constructor(
     private walletService: WalletService,
     private apiservice:ApiService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private route:ActivatedRoute
   ) {}
 
     ngOnInit(): void {
 
     this.getuseerandwalletbalnce()
-
+      const clientTxnId = this.route.snapshot.queryParamMap.get('client_txn_id');
+      if (clientTxnId) {
+        this.walletService.checkOrderStatus(clientTxnId).subscribe(result => {
+          if (result.success) {
+            // Show success/failure UI based on result.status
+            this.paymentStatus = result.status;
+            this.paymentData = result.data;
+          } else {
+            this.errorMessage = result.message;
+          }
+        });
+      }
 
   }
 

@@ -38,4 +38,12 @@ export class WalletService {
       { withCredentials: true }
     );
   }
+    checkOrderStatus(clientTxnId: string) {
+    return this.http.get<{
+      message: any; success: boolean; status: string; data: any 
+}>(
+      `${this.baseUrl}/api/wallet/check-order-status?client_txn_id=${encodeURIComponent(clientTxnId)}`,
+      { withCredentials: true }
+    );
+  }
 }
