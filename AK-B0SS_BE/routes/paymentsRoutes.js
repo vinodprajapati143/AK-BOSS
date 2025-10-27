@@ -5,3 +5,5 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 
 router.post('/save', verifyToken, paymentsControllers.savePaymentDetails);
 router.get("/details", verifyToken, paymentsControllers.getPaymentDetails);
+
+module.exports = router;
