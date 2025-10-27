@@ -30,4 +30,12 @@ export class WalletService {
   refreshWallet() {
     this.fetchWalletBalance().subscribe(balance => this.walletBalanceSubject.next(balance));
   }
+
+    createAddMoneyOrder(amount: number) {
+    return this.http.post<any>(
+      `${this.baseUrl}/api/wallet/create-order`,
+      { amount },
+      { withCredentials: true }
+    );
+  }
 }
