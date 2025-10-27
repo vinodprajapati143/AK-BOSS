@@ -33,7 +33,7 @@ exports.createAddMoneyOrder = async (req, res) => {
 
     // 2. Prepare API request payload
     const payload = {
-      key: EKQR_API_KEY,
+      key: process.env.EKQR_API_KEY,
       client_txn_id,
       amount: String(amount),
       p_info: "Wallet Recharge",
