@@ -12,13 +12,13 @@
   <!-- User Card -->
   <div class="bg-white shadow rounded-lg mx-2 mt-4 overflow-hidden">
     <div class="bg-black text-white text-center p-3">
-      <p class="font-semibold">Vinod</p>
-      <p class="text-sm">+91 9575259525</p>
+      <p class="font-semibold">{{userdata?.username}}</p>
+      <p class="text-sm">{{userdata?.countryCode}}{{userdata?.phone}}</p>
     </div>
     <div class="flex items-center gap-3 p-4">
       <img src="/assets/images/amount-wallet.svg" alt="wallet" class="w-10 h-10" />
       <div>
-        <p class="text-gray-800 font-semibold">₹ 5</p>
+        <p class="text-gray-800 font-semibold">₹ {{walletblance}}</p>
         <p class="text-gray-500 text-sm">Current Balance</p>
       </div>
     </div>

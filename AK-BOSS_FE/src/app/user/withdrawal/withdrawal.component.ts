@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
+import { WalletService } from '../../core/services/wallet.service';
 
 @Component({
   selector: 'app-withdrawal',
@@ -26,20 +27,42 @@ export class WithdrawalComponent implements OnInit{
 
   savedDetails: any = null;
   inputsDisabled = false;
+  userdata: any;
+  walletblance: any;
   constructor(
     private withdrawalService: ApiService,
+    private walletservice: WalletService,
+
     private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
     this.getpaymentdetails()
+
+    this.getuseerandwalletbalnce()
+
+
   }
+
+  getuseerandwalletbalnce(){
+    this.withdrawalService.userSubject.subscribe((val:any)=>{
+
+      this.userdata = val
+
+    })
+
+    this.walletservice.walletBalance$.subscribe((val:any)=>{
+      this.walletblance = val
+
+    })
+  }
+
+
 
   getpaymentdetails(){
         this.withdrawalService.getPaymentDetails().subscribe((res: any) => {
       if (res.success && res.payment_details) {
         this.savedDetails = res.payment_details;
-        console.log(' this.savedDetails: ',  this.savedDetails);
         // Default mode prefilling if only one mode available
         if (this.savedDetails.upi_id) this.setMode('upi');
         else if (this.savedDetails.bank_account_number) this.setMode('bank');
@@ -59,7 +82,7 @@ export class WithdrawalComponent implements OnInit{
       this.withdraw.upiId = this.savedDetails.upi_id;
       this.withdraw.accountNumber = '';
       this.withdraw.ifsc = '';
-    } else if (mode === 'bank' && this.savedDetails &this.savedDetails.bank_account_number) {
+    } else if (mode === 'bank' && this.savedDetails && this.savedDetails.bank_account_number) {
       this.withdraw.phone = this.savedDetails.bank_phone_number;
       this.withdraw.name = this.savedDetails.bank_account_holder_name;
       this.withdraw.accountNumber = this.savedDetails.bank_account_number;
@@ -126,7 +149,8 @@ export class WithdrawalComponent implements OnInit{
       console.log('res: ', res);
       if (res.success) {
         this.savedDetails = saveObj; // so form disables next time
-        console.log('this.savedDetails: ', this.savedDetails);
+        this.toastr.success(res.message);
+        
         this.postWithdrawal();
       } else {
         this.toastr.error(res.message || 'Could not save details');
@@ -154,8 +178,9 @@ postWithdrawal() {
       }
     },
     error: (err: any) => {
+      console.log('err: ', err);
       // Proper error parsing
-      const msg = err?.error?.message || 'Withdrawal failed, please try again or contact support.';
+      const msg = err?.data?.message || 'Withdrawal failed, please try again or contact support.';
       this.toastr.error(msg);
     }
   });
