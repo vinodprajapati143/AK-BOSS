@@ -37,14 +37,15 @@ exports.createAddMoneyOrder = async (req, res) => {
       client_txn_id,
       amount: String(amount),
       p_info: "Wallet Recharge",
-      customer_name: user.username || "User",
-      customer_email: user.email || "noemail@example.com",
-      customer_mobile: user.phone || "9999999999",
+      customer_name: user.username,
+      customer_email: "",
+      customer_mobile: user.phone,
       redirect_url: "https://ak247pro.com/user/add-amount", // Or wherever you want (handle result here)
       udf1: user.id.toString()
     };
 
     // 3. Call ekQR API (with error handling)
+    console.log('payload: ', payload);
     const ekqrResp = await axios.post('https://api.ekqr.in/api/create_order', payload, {
       headers: { 'Content-Type': 'application/json' }
     });
