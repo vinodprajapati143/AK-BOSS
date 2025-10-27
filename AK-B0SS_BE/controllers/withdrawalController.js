@@ -56,7 +56,7 @@ exports.createWithdrawalRequest = async (req, res) => {
       }
       phone_number = d.bank_phone_number;
       account_holder_name = d.bank_account_holder_name;
-      account_number = d.bank_account_number;
+      account_number = d.bank_account_number;   
       ifsc_code = d.bank_ifsc_code;
     }
 

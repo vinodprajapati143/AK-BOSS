@@ -5,6 +5,9 @@ const authRoutes = require('./routes/authRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const userRoutes = require('./routes/user.routes');
 const walletRoutes = require('./routes/walletRoutes');
+const paymentsRoutes = require('./routes/paymentsRoutes');
+const withdrawalRoutes = require('./routes/withdrawalRoutes');
+
 
 
 
