@@ -6,8 +6,8 @@ exports.createWithdrawalRequest = async (req, res) => {
     const { amount, payment_method } = req.body; // Only amount and method from frontend
 
     // 1. Basic validations
-    if (!amount || amount < 1000) {
-      return res.status(400).json({ message: 'Minimum withdrawal amount is ₹1000' });
+    if (!amount || amount < 100) {
+      return res.status(400).json({ message: 'Minimum withdrawal amount is ₹100' });
     }
     if (!['upi', 'bank', 'wallet'].includes(payment_method)) {
       return res.status(400).json({ message: 'Invalid payment method' });

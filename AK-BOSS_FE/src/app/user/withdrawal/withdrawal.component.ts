@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FooterComponent } from "../../shared/footer/footer.component";
 import { HeaderComponent } from '../header/header.component';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './withdrawal.component.html',
   styleUrl: './withdrawal.component.scss'
 })
-export class WithdrawalComponent {
+export class WithdrawalComponent implements OnInit{
   withdraw: any = {
     amount: null,
     mode: '',
@@ -30,6 +30,10 @@ export class WithdrawalComponent {
     private withdrawalService: ApiService,
     private toastr: ToastrService
   ) {}
+
+  ngOnInit(): void {
+    this.getpaymentdetails()
+  }
 
   getpaymentdetails(){
         this.withdrawalService.getPaymentDetails().subscribe((res: any) => {
@@ -90,62 +94,80 @@ export class WithdrawalComponent {
     window.location.href = '/user/add-amount';
   }
 
- submitWithdrawal() {
-    // Validation
-    if (!this.withdraw.amount || this.withdraw.amount < 1000 || !this.withdraw.mode) {
-      this.toastr.error('Enter all required details and minimum ₹1000 amount');
-      return;
-    }
-    if (this.savedDetails) {
-      // Already saved, only withdrawal
-      this.postWithdrawal();
-    } else {
-      // First time: save details then withdraw
-      let saveObj = {};
-      if (this.withdraw.mode === 'upi') {
-        if (!this.withdraw.phone || !this.withdraw.name || !this.withdraw.upiId) {
-          this.toastr.error('All UPI details required');
-          return;
-        }
-        saveObj = {
-          upi_phone_number: this.withdraw.phone,
-          upi_account_holder_name: this.withdraw.name,
-          upi_id: this.withdraw.upiId
-        };
-      } else if (this.withdraw.mode === 'bank') {
-        if (!this.withdraw.phone || !this.withdraw.name || !this.withdraw.accountNumber || !this.withdraw.ifsc) {
-          this.toastr.error('All bank details required');
-          return;
-        }
-        saveObj = {
-          bank_phone_number: this.withdraw.phone,
-          bank_account_holder_name: this.withdraw.name,
-          bank_account_number: this.withdraw.accountNumber,
-          bank_ifsc_code: this.withdraw.ifsc
-        };
-      }
-      this.withdrawalService.savePaymentDetails(saveObj).subscribe((res: any) => {
-        if (res.success) {
-          this.postWithdrawal();
-        } else {
-          this.toastr.error(res.message || 'Could not save details');
-        }
-      });
-    }
+submitWithdrawal() {
+  // Validation
+  if (!this.withdraw.amount || this.withdraw.amount < 100 || !this.withdraw.mode) {
+    this.toastr.error('Enter all required details and minimum ₹1000 amount');
+    return;
   }
 
-    postWithdrawal() {
-    this.withdrawalService.createWithdrawal({
-      amount: this.withdraw.amount,
-      payment_method: this.withdraw.mode
-    }).subscribe((res: any) => {
-      if (res.success) {
-        this.toastr.success(res.message);
-        this.withdraw.amount = null;
-        // form fields remain autofilled & disabled on next load
-      } else {
-        this.toastr.error(res.message);
-      }
-    });
+  // Only withdrawal if savedDetails ready (never trigger save again!)
+  if (this.savedDetails) {
+    this.postWithdrawal();
+    return;
   }
+
+  // First time: save details then withdraw
+  let saveObj: any = {};
+  if (this.withdraw.mode === 'upi') {
+    if (!this.withdraw.phone || !this.withdraw.name || !this.withdraw.upiId) {
+      this.toastr.error('All UPI details required');
+      return;
+    }
+    saveObj = {
+      upi_phone_number: this.withdraw.phone,
+      upi_account_holder_name: this.withdraw.name,
+      upi_id: this.withdraw.upiId,
+    };
+  } else if (this.withdraw.mode === 'bank') {
+    if (!this.withdraw.phone || !this.withdraw.name || !this.withdraw.accountNumber || !this.withdraw.ifsc) {
+      this.toastr.error('All bank details required');
+      return;
+    }
+    saveObj = {
+      bank_phone_number: this.withdraw.phone,
+      bank_account_holder_name: this.withdraw.name,
+      bank_account_number: this.withdraw.accountNumber,
+      bank_ifsc_code: this.withdraw.ifsc,
+    };
+  }
+
+  this.withdrawalService.savePaymentDetails(saveObj).subscribe({
+    next: (res: any) => {
+      if (res.success) {
+        this.savedDetails = saveObj; // so form disables next time
+        this.postWithdrawal();
+      } else {
+        this.toastr.error(res.message || 'Could not save details');
+      }
+    },
+    error: (err: any) => {
+      // API rejected or network error
+      const msg = err?.error?.message || 'Failed to save details. This may be due to already submitted details—please contact support.';
+      this.toastr.error(msg);
+    }
+  });
+}
+
+postWithdrawal() {
+  this.withdrawalService.createWithdrawal({
+    amount: this.withdraw.amount,
+    payment_method: this.withdraw.mode
+  }).subscribe({
+    next: (res: any) => {
+      if (res.success) {
+        this.toastr.success(res.message || 'Withdrawal request placed successfully!');
+        this.withdraw.amount = null;
+      } else {
+        this.toastr.error(res.message || 'Withdrawal could not be placed');
+      }
+    },
+    error: (err: any) => {
+      // Proper error parsing
+      const msg = err?.error?.message || 'Withdrawal failed, please try again or contact support.';
+      this.toastr.error(msg);
+    }
+  });
+}
+
 }
