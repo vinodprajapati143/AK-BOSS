@@ -21,6 +21,7 @@ exports.getUserWalletBalance = async (req, res) => {
 exports.createAddMoneyOrder = async (req, res) => {
   try {
     const user = req.user; // from authMiddleware
+    console.log('user: ', user);
     const { amount } = req.body;
 
     if (!amount || amount < 1) {
