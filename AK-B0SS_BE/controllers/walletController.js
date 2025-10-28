@@ -76,7 +76,7 @@ exports.createAddMoneyOrder = async (req, res) => {
 exports.ekqrWebhook = async (req, res) => {
   try {
     const data = req.body;
-    console.log('data: ', data);
+    console.log('data: webhook ', data);
     const { client_txn_id, status, amount, upi_txn_id, remark, id } = data;
 
     // 1. Check if already credited (idempotency)
