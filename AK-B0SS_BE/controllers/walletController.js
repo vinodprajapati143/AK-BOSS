@@ -75,6 +75,8 @@ exports.createAddMoneyOrder = async (req, res) => {
 
 exports.ekqrWebhook = async (req, res) => {
   try {
+    console.log("Headers:", req.headers);
+    console.log("Body:", req.body);
     const data = req.body;
     console.log('data: webhook ', data);
     const { client_txn_id, status, amount, upi_txn_id, remark, id } = data;
