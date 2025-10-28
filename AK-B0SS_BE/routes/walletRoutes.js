@@ -8,7 +8,7 @@ router.get('/balance', verifyToken, walletController.getUserWalletBalance);// 10
 router.get('/check-order-status', verifyToken, walletController.checkOrderStatus);
 
 router.post('/create-order', verifyToken, walletController.createAddMoneyOrder);
-router.get('/add-money-list', verifyToken, walletController.checkOrderStatus);
+router.get('/add-money-list', verifyToken, walletController.getAddMoneyListAllStatus);
 
 router.post('/webhook', urlencodedParser, walletController.ekqrWebhook);
 
