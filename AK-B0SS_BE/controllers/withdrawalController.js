@@ -102,32 +102,41 @@ exports.getWithdrawalsWithBalance = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Latest withdrawals list
+    // 1. Withdrawal list (latest first)
     const [withdrawals] = await db.query(
       "SELECT * FROM withdrawal_requests WHERE user_id = ? ORDER BY requested_at DESC",
       [userId]
     );
 
-    // Har withdrawal ke liye us waqt ka balance nikaalo
-    const withdrawalWithBalance = [];
+    // 2. Sabhi withdrawals ka time/ID loop karke balances nikaalo
+    const withdrawalWithBalances = [];
     for (const w of withdrawals) {
-      // Find the closing balance for this withdrawal (after withdrawal processed)
-      const [walletRow] = await db.query(
+      // Closing balance at/after withdrawal time
+      const [closingWallet] = await db.query(
         "SELECT balance_after FROM user_wallet WHERE user_id = ? AND created_at <= ? ORDER BY created_at DESC LIMIT 1",
         [userId, w.requested_at]
       );
-      const closing_balance = walletRow.length ? walletRow[0].balance_after : 0;
-      withdrawalWithBalance.push({
+      const closing = closingWallet.length ? Number(closingWallet[0].balance_after) : 0;
+
+      // Opening balance = last wallet entry before this withdrawal
+      const [openingWallet] = await db.query(
+        "SELECT balance_after FROM user_wallet WHERE user_id = ? AND created_at < ? ORDER BY created_at DESC LIMIT 1",
+        [userId, w.requested_at]
+      );
+      const opening = openingWallet.length ? Number(openingWallet[0].balance_after) : 0;
+
+      withdrawalWithBalances.push({
         ...w,
-        closing_balance
+        opening_balance: opening,
+        closing_balance: closing
       });
     }
 
-    // Response
-    return res.status(200).json(withdrawalWithBalance);
+    return res.status(200).json(withdrawalWithBalances);
   } catch (err) {
     console.error("Withdrawal List Error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
