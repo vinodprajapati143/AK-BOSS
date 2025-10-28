@@ -1850,7 +1850,184 @@ exports.getAllPlayingRecords = async (req, res) => {
   }
 };
 
-exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
+// exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
+//   const user_id = req.user.id;
+//   try {
+//     const entryTables = [
+//       'single_ank_entries',
+//       'jodi_ank_entries',
+//       'singlepanna_ank_entries'
+//     ];
+
+//     // Define win rates for each game type
+//     const winRates = {
+//       single_ank: 9,
+//       jodi_ank: 100,
+//       singlepanna_ank: 10
+//     };
+
+//     // Helper function to get latest wallet balance
+//     async function getLatestBalance(user_id) {
+//       const [lastRow] = await db.query(
+//         `SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1`,
+//         [user_id]
+//       );
+//       return lastRow.length ? Number(lastRow[0].balance_after) : 0;
+//     }
+
+//     async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
+//       const currentBalance = await getLatestBalance(user_id);
+//       const newBalance = currentBalance + Number(amount);
+
+//       // Check for existing credit on batch
+//       const [exists] = await db.query(
+//         `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
+//         [user_id, batch_id, game_id]
+//       );
+//       if (!exists.length) {
+//         await db.query(
+//           `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, balance_after, created_at) VALUES (?, ?, 'CREDIT', ?, ?, ?, NOW())`,
+//           [user_id, amount, game_id, batch_id, newBalance]
+//         );
+//       }
+//     }
+
+//     const today = new Date().toISOString().slice(0, 10);
+//     const [gameResults] = await db.query(`SELECT * FROM game_inputs WHERE input_date=?`, [today]);
+//     const getResultEntry = resultRow => [
+//       resultRow && resultRow.patte1 ? resultRow.patte1 : '***',
+//       resultRow && resultRow.patte1_open ? resultRow.patte1_open : '*',
+//       resultRow && resultRow.patte2_close ? resultRow.patte2_close : '*',
+//       resultRow && resultRow.patte2 ? resultRow.patte2 : '***'
+//     ];
+
+//     const resultArr = [];
+//     for (const tableName of entryTables) {
+//       const gameType = tableName.replace('_entries', '');
+//       const rate = winRates[gameType];
+//       const [entries] = await db.query(
+//         `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
+//         [user_id]
+//       );
+
+//       // Group by batch_id
+//       const batches = {};
+//       for (const entry of entries) {
+//         if (!batches[entry.batch_id]) {
+//           batches[entry.batch_id] = {
+//             batch_id: entry.batch_id,
+//             created_at: entry.created_at,
+//             game_id: entry.game_id,
+//             game_name: entry.name,
+//             input_date: entry.input_date,
+//             game_time_type: entry.game_time_type,
+//             playing_amount: 0,
+//             total_amount: entry.total_amount,
+//             selections: [],
+//             entry_refs: []
+//           };
+//         }
+//         batches[entry.batch_id].playing_amount += Number(entry.amount);
+//         batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
+//         batches[entry.batch_id].entry_refs.push(entry);
+//       }
+
+//       // Prepare final records
+//       for (const batch of Object.values(batches)) {
+//         const resultRow = gameResults.find(
+//           gr =>
+//             Number(gr.game_id) === Number(batch.game_id) &&
+//             String(gr.input_date).slice(0, 10) === String(batch.input_date).slice(0, 10)
+//         );
+
+//         let totalWinAmount = 0;
+//         let isAnyWin = false;
+//         if (resultRow) {
+//           if (tableName === 'single_ank_entries') {
+//             batch.entry_refs.forEach(entry => {
+//               if (batch.game_time_type === 'open' && String(entry.digit) === String(resultRow.patte1_open)) {
+//                 totalWinAmount += Number(entry.amount) * rate;
+//                 isAnyWin = true;
+//               }
+//               if (batch.game_time_type === 'close' && String(entry.digit) === String(resultRow.patte2_close)) {
+//                 totalWinAmount += Number(entry.amount) * rate;
+//                 isAnyWin = true;
+//               }
+//             });
+//           } else if (tableName === 'jodi_ank_entries') {
+//             const jodiResult = `${resultRow.patte1_open || '*'}${resultRow.patte2_close || '*'}`;
+//             batch.entry_refs.forEach(entry => {
+//               if (String(entry.digit) === String(jodiResult)) {
+//                 totalWinAmount += Number(entry.amount) * rate;
+//                 isAnyWin = true;
+//               }
+//             });
+//           } else if (tableName === 'singlepanna_ank_entries') {
+//             batch.entry_refs.forEach(entry => {
+//               if (batch.game_time_type === 'open' && String(entry.digit) === String(resultRow.patte1)) {
+//                 totalWinAmount += Number(entry.amount) * rate;
+//                 isAnyWin = true;
+//               }
+//               if (batch.game_time_type === 'close' && String(entry.digit) === String(resultRow.patte2)) {
+//                 totalWinAmount += Number(entry.amount) * rate;
+//                 isAnyWin = true;
+//               }
+//             });
+//           }
+//         }
+
+//         const status = isAnyWin ? 'WIN' : resultRow ? 'LOSE' : 'PENDING';
+
+//         // Get DEBIT transaction for opening balance
+//         const [debitTxn] = await db.query(
+//           `SELECT balance_after FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='DEBIT' ORDER BY id DESC LIMIT 1`,
+//           [user_id, batch.batch_id, batch.game_id]
+//         );
+//         const opening_balance = debitTxn.length ? Number(debitTxn[0].balance_after) + Number(batch.total_amount) : null;
+
+//         // Only credit wallet if win_amount > 0
+//         if (isAnyWin && totalWinAmount > 0) {
+//           await creditWalletIfWin(user_id, totalWinAmount, batch.batch_id, batch.game_id);
+//         }
+
+//         // Get LATEST closing balance (real-time)
+//         const closing_balance = await getLatestBalance(user_id);
+
+//         const tax = 0;
+
+//         resultArr.push({
+//           game_type: gameType,
+//           batch_id: batch.batch_id,
+//           game_id: batch.game_id,
+//           game_name: batch.game_name,
+//           created_at: batch.created_at,
+//           game_time_type: batch.game_time_type,
+//           opening_balance,
+//           closing_balance,
+//           playing_amount: String(batch.playing_amount),
+//           tax,
+//           selections: batch.selections,
+//           result: getResultEntry(resultRow),
+//           win_amount: totalWinAmount,
+//           status
+//         });
+//       }
+//     }
+
+//     const filteredResultArr = resultArr.filter(record => record.status === 'WIN');
+
+//     // Sort by created_at descending
+//     filteredResultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+//     res.json(filteredResultArr);
+
+//   } catch (error) {
+//     console.error('PlayingRecordsWinTodayAPI error:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
+
+exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
   const user_id = req.user.id;
   try {
     const entryTables = [
@@ -1866,7 +2043,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       singlepanna_ank: 10
     };
 
-    // Helper function to get latest wallet balance
+    // --- Credit logic helpers (NO CHANGE) ---
     async function getLatestBalance(user_id) {
       const [lastRow] = await db.query(
         `SELECT balance_after FROM user_wallet WHERE user_id=? ORDER BY id DESC LIMIT 1`,
@@ -1876,15 +2053,15 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
     }
 
     async function creditWalletIfWin(user_id, amount, batch_id, game_id) {
-      const currentBalance = await getLatestBalance(user_id);
-      const newBalance = currentBalance + Number(amount);
-
-      // Check for existing credit on batch
-      const [exists] = await db.query(
-        `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT'`,
-        [user_id, batch_id, game_id]
+      // CREDIT LOGIC: Only run if today!
+      const today = new Date().toISOString().slice(0, 10);
+      const [alreadyCredited] = await db.query(
+        `SELECT id FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='CREDIT' AND DATE(created_at)=?`,
+        [user_id, batch_id, game_id, today]
       );
-      if (!exists.length) {
+      if (!alreadyCredited.length) {
+        const currentBalance = await getLatestBalance(user_id);
+        const newBalance = currentBalance + Number(amount);
         await db.query(
           `INSERT INTO user_wallet (user_id, amount, transaction_type, related_game_id, batch_id, balance_after, created_at) VALUES (?, ?, 'CREDIT', ?, ?, ?, NOW())`,
           [user_id, amount, game_id, batch_id, newBalance]
@@ -1892,8 +2069,18 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       }
     }
 
+    // --- Date Logic for RANGE (e.g. 7 days) ---
+    const days = 7;
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - (days - 1)); // last 7 days include today
+    const dateFrom = sevenDaysAgo.toISOString().slice(0, 10);
     const today = new Date().toISOString().slice(0, 10);
-    const [gameResults] = await db.query(`SELECT * FROM game_inputs WHERE input_date=?`, [today]);
+
+    // Game results for 7 days
+    const [gameResults] = await db.query(
+      `SELECT * FROM game_inputs WHERE input_date >= ?`, [dateFrom]
+    );
+
     const getResultEntry = resultRow => [
       resultRow && resultRow.patte1 ? resultRow.patte1 : '***',
       resultRow && resultRow.patte1_open ? resultRow.patte1_open : '*',
@@ -1905,9 +2092,10 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
     for (const tableName of entryTables) {
       const gameType = tableName.replace('_entries', '');
       const rate = winRates[gameType];
+      // 7 din ki entries lo
       const [entries] = await db.query(
-        `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
-        [user_id]
+        `SELECT * FROM ${tableName} WHERE user_id=? AND input_date >= ? ORDER BY created_at DESC`,
+        [user_id, dateFrom]
       );
 
       // Group by batch_id
@@ -1978,15 +2166,15 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 
         const status = isAnyWin ? 'WIN' : resultRow ? 'LOSE' : 'PENDING';
 
-        // Get DEBIT transaction for opening balance
+        // Opening balance
         const [debitTxn] = await db.query(
           `SELECT balance_after FROM user_wallet WHERE user_id=? AND batch_id=? AND related_game_id=? AND transaction_type='DEBIT' ORDER BY id DESC LIMIT 1`,
           [user_id, batch.batch_id, batch.game_id]
         );
         const opening_balance = debitTxn.length ? Number(debitTxn[0].balance_after) + Number(batch.total_amount) : null;
 
-        // Only credit wallet if win_amount > 0
-        if (isAnyWin && totalWinAmount > 0) {
+        // Only CREDIT if batch input_date === today (CREDIT only for today's result!)
+        if (isAnyWin && totalWinAmount > 0 && String(batch.input_date).slice(0, 10) === today) {
           await creditWalletIfWin(user_id, totalWinAmount, batch.batch_id, batch.game_id);
         }
 
@@ -2001,6 +2189,7 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
           game_id: batch.game_id,
           game_name: batch.game_name,
           created_at: batch.created_at,
+          input_date: batch.input_date,
           game_time_type: batch.game_time_type,
           opening_balance,
           closing_balance,
@@ -2014,19 +2203,18 @@ exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
       }
     }
 
+    // WIN records last X days (7 din) ka
     const filteredResultArr = resultArr.filter(record => record.status === 'WIN');
 
     // Sort by created_at descending
     filteredResultArr.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     res.json(filteredResultArr);
-
   } catch (error) {
     console.error('PlayingRecordsWinTodayAPI error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 
 
 

@@ -9,7 +9,7 @@ import { LoaderComponent } from "../../shared/loader/loader.component";
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle, DatePipe, TitleCasePipe, LoaderComponent],
+  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle, DatePipe, TitleCasePipe, LoaderComponent,CommonModule],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })
