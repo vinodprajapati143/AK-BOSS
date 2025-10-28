@@ -105,11 +105,12 @@ exports.ekqrWebhook = async (req, res) => {
       );
       const oldBal = walletRows.length ? Number(walletRows[0].balance_after) : 0;
       const newBal = oldBal + newAmt;
-      await db.query(
-        `INSERT INTO user_wallet (user_id, transaction_type, amount, balance_after, description, related_transaction, created_at)
-         VALUES (?, 'CREDIT', ?, ?, ?, ?, NOW())`,
+        await db.query(
+        `INSERT INTO user_wallet (user_id, transaction_type, amount, balance_after, description, reference_id, created_at)
+        VALUES (?, 'CREDIT', ?, ?, ?, ?, NOW())`,
         [userId, newAmt, newBal, `UPI Recharge ${client_txn_id}`, upi_txn_id || id]
       );
+
       await db.query("UPDATE payment_orders SET status='success', payment_id=?, remark=?, completed_at=NOW() WHERE client_txn_id=?", [upi_txn_id || id, remark || "", client_txn_id]);
       return res.status(200).send('Wallet credited');
     } else {
