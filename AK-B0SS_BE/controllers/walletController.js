@@ -169,19 +169,17 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // 1. All payment orders ASC sorted for time chain
+    // 1. ASC for correct balance chain
     const [orders] = await db.query(
       `SELECT * FROM payment_orders WHERE user_id=? ORDER BY created_at ASC`,
       [userId]
     );
-
-    // 2. All wallet entries, sorted ASC, including all types
     const [walletRows] = await db.query(
       `SELECT * FROM user_wallet WHERE user_id=? ORDER BY id ASC`,
       [userId]
     );
 
-    // Prepare an array of only wallet credits to find closing (after recharge)
+    // UPI Recharge credits mapping
     const walletCreditsByTxnId = {};
     walletRows.forEach(w => {
       const match = /UPI Recharge ([^ ]+)/.exec(w.description);
@@ -189,12 +187,11 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
     });
 
     let addMoneyList = [];
-
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i];
       const walletCredit = walletCreditsByTxnId[order.client_txn_id];
 
-      // Find opening_balance: latest wallet balance BEFORE this order's created_at
+      // Wallet balance just BEFORE this created_at (chain-wise)
       let openingBalance = 0;
       for (let j = 0; j < walletRows.length; j++) {
         if (new Date(walletRows[j].created_at) < new Date(order.created_at)) {
@@ -203,7 +200,7 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
           break;
         }
       }
-      
+
       let closingBalance = openingBalance;
       if (order.status === 'success' && walletCredit) {
         closingBalance = Number(walletCredit.balance_after);
@@ -223,12 +220,16 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
       });
     }
 
+    // Reverse output for latest first
+    addMoneyList = addMoneyList.reverse();
+
     return res.json(addMoneyList);
   } catch (err) {
     console.error('AddMoneyListAllStatus API error:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
