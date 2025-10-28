@@ -60,11 +60,25 @@ exports.createWithdrawalRequest = async (req, res) => {
       ifsc_code = d.bank_ifsc_code;
     }
 
-    // 5. Save withdrawal request
+    // 5. Generate next batch_id in withdraw_XXXX format
+    const [lastBatch] = await db.query(
+      "SELECT batch_id FROM withdrawal_requests WHERE batch_id IS NOT NULL ORDER BY id DESC LIMIT 1"
+    );
+
+    let batchNo = 1;
+    if (lastBatch.length && lastBatch[0].batch_id) {
+      const match = lastBatch[0].batch_id.match(/withdraw_(\d+)/);
+      if (match && match[1]) {
+        batchNo = parseInt(match[1]) + 1;
+      }
+    }
+    const batchId = `withdraw_${batchNo.toString().padStart(5, '0')}`;
+
+    // 6. Save withdrawal request
     await db.query(
       `INSERT INTO withdrawal_requests
-        (user_id, amount, payment_method, phone_number, account_holder_name, account_number, ifsc_code, upi_id, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+        (user_id, amount, payment_method, phone_number, account_holder_name, account_number, ifsc_code, upi_id, batch_id, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
       [
         userId,
         amount,
@@ -73,22 +87,24 @@ exports.createWithdrawalRequest = async (req, res) => {
         account_holder_name,
         account_number,
         ifsc_code,
-        upi_id
+        upi_id,
+        batchId
       ]
     );
 
-    // 6. Deduct amount from wallet (temporary)
+    // 7. Deduct amount from wallet (temporary) with batch_id
     const newBalance = currentBalance - amount;
     await db.query(
       `INSERT INTO user_wallet 
-        (user_id, transaction_type, amount, balance_after, description, created_at)
-      VALUES (?, 'DEBIT', ?, ?, ?, NOW())`,
-      [userId, amount, newBalance, `Withdrawal request (${payment_method}) of ₹${amount} (pending)`]
+        (user_id, transaction_type, amount, balance_after, description, batch_id, created_at)
+      VALUES (?, 'DEBIT', ?, ?, ?, ?, NOW())`,
+      [userId, amount, newBalance, `Withdrawal request (${payment_method}) of ₹${amount} (pending)`, batchId]
     );
 
     return res.status(201).json({
       success: true,
       message: 'Withdrawal request submitted successfully. Admin will process within 24-48h.',
+      batchId,
       balance: newBalance
     });
 
@@ -97,6 +113,7 @@ exports.createWithdrawalRequest = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 exports.getWithdrawalsWithBalance = async (req, res) => {
   try {
