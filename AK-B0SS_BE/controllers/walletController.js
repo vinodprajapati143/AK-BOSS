@@ -111,7 +111,7 @@ exports.ekqrWebhook = async (req, res) => {
         [userId, newAmt, newBal, `UPI Recharge ${client_txn_id}`, upi_txn_id || id]
       );
 
-      await db.query("UPDATE payment_orders SET status='success', payment_id=?, remark=?, completed_at=NOW() WHERE client_txn_id=?", [upi_txn_id || id, remark && remark.length ? remark : "Recharge successful via webhook",, client_txn_id]);
+      await db.query("UPDATE payment_orders SET status='success', payment_id=?, remark=?, completed_at=NOW() WHERE client_txn_id=?", [upi_txn_id || id, remark && remark.length ? remark : "Recharge successful via webhook", client_txn_id]);
       return res.status(200).send('Wallet credited');
     } else {
         let failRemark = "Webhook payment failed";
