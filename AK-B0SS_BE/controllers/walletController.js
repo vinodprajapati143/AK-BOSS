@@ -111,11 +111,16 @@ exports.ekqrWebhook = async (req, res) => {
         [userId, newAmt, newBal, `UPI Recharge ${client_txn_id}`, upi_txn_id || id]
       );
 
-      await db.query("UPDATE payment_orders SET status='success', payment_id=?, remark=?, completed_at=NOW() WHERE client_txn_id=?", [upi_txn_id || id, remark || "", client_txn_id]);
+      await db.query("UPDATE payment_orders SET status='success', payment_id=?, remark=?, completed_at=NOW() WHERE client_txn_id=?", [upi_txn_id || id, remark && remark.length ? remark : "Recharge successful via webhook",, client_txn_id]);
       return res.status(200).send('Wallet credited');
     } else {
+        let failRemark = "Webhook payment failed";
+        // Agar remark aa raha hai to usme specific reason rakh sakte hain
+        if (remark && remark.length) failRemark = `Webhook fail: ${remark}`;
+        else if (!orderRows.length) failRemark = "Payment order not found";
+        else if (alreadyCredited.length) failRemark = "Duplicate credit attempt";
       // On fail, just update payment_orders status
-      await db.query("UPDATE payment_orders SET status='failed', remark=? WHERE client_txn_id=?", [remark || "fail", client_txn_id]);
+      await db.query("UPDATE payment_orders SET status='failed', remark=? WHERE client_txn_id=?", [failRemark, client_txn_id]);
       return res.status(200).send('Failed marked');
     }
   } catch (err) {
