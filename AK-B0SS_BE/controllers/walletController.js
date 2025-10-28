@@ -169,41 +169,43 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // 1. All payment orders -- sorted ASC for chaining
+    // All payment orders sorted by created_at ASC (time-chain)
     const [orders] = await db.query(
       `SELECT * FROM payment_orders WHERE user_id=? ORDER BY created_at ASC`,
       [userId]
     );
 
-    // 2. All wallet credits (CREDIT) mapped by client_txn_id
+    // All wallet credits (CREDIT, not DEBIT) sorted ASC
     const [walletRows] = await db.query(
       `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='CREDIT' ORDER BY id ASC`,
       [userId]
     );
+
+    // Map credits by client_txn_id
     const walletByTxn = {};
     walletRows.forEach(w => {
       const match = /UPI Recharge ([^ ]+)/.exec(w.description);
       if (match && match[1]) walletByTxn[match[1]] = w;
     });
 
-    // 3. Prepare wallet balance chain (last confirmed)
-    let lastConfirmedBalance = 0;
+    // Track latest confirmed wallet balance for pending/failed
+    let lastBalance = 0;
     let addMoneyList = [];
 
     for (const order of orders) {
       const walletCredit = walletByTxn[order.client_txn_id];
 
-      let openingBalance = lastConfirmedBalance;
-      let closingBalance = lastConfirmedBalance;
+      let openingBalance, closingBalance;
 
       if (order.status === 'success' && walletCredit) {
-        openingBalance = lastConfirmedBalance;
+        // Success: opening = lastBalance, closing = post-recharge
+        openingBalance = lastBalance;
         closingBalance = walletCredit.balance_after;
-        lastConfirmedBalance = walletCredit.balance_after; // Update only on success!
+        lastBalance = walletCredit.balance_after; // Update tracker
       } else {
-        // Pending/failed - both balances = last confirmed
-        openingBalance = lastConfirmedBalance;
-        closingBalance = lastConfirmedBalance;
+        // Pending/failed: both balances = lastBalance
+        openingBalance = lastBalance;
+        closingBalance = lastBalance;
       }
 
       addMoneyList.push({
@@ -226,6 +228,7 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
