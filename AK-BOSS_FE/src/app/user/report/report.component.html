@@ -43,7 +43,10 @@
             </div>
 
             <div *ngIf="transaction.active" class="rounded-md overflow-hidden">
-
+                <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                                    <span class="font-medium">Game Name</span>
+                                    <span class="text-[#00D457]">{{ transaction.game_name }}</span>
+                </div> 
                 <div class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Opening Balance</span>
                     <span class="text-[#00D457]">₹{{ transaction.opening_balance }}</span>
@@ -238,6 +241,16 @@
                     class="flex justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Tax</span>
                     <span class="font-bold">₹0</span>
+                </div>
+                <div  
+                    class="flex justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Account Holder name</span>
+                    <span class="font-bold">{{ transaction.account_holder_name }}</span>
+                </div>
+                 <div  *ngIf="transaction.upi_id" 
+                    class="flex justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Upi ID</span>
+                    <span class="font-bold">{{ transaction.upi_id }}</span>
                 </div>
 
               

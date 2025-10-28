@@ -102,6 +102,7 @@ export class ReportsComponent {
   playingrecords: any;
   winrecords: any;
   withdrawals: any;
+  addMoneyList: any;
 
     ngOnInit() {
     this.isLoading = true;
@@ -137,7 +138,18 @@ export class ReportsComponent {
         this.isLoading = false;
       }
     });
+       this.reportservice.getAddMoneyList().subscribe({
+      next: (data) => {
+        this.addMoneyList = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        // error handling logic
+        this.isLoading = false;
+      }
+    });
   }
+  
   
 
   getSelectLabel(entryType: string,game_time_type:string): string {

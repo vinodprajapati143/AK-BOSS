@@ -165,6 +165,66 @@ exports.checkOrderStatus = async (req, res) => {
   }
 };
 
+exports.getAddMoneyListAllStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // 1. Get all payment orders (no status filter)
+    const [orders] = await db.query(
+      `SELECT * FROM payment_orders WHERE user_id=? ORDER BY created_at DESC`,
+      [userId]
+    );
+
+    // 2. Get all wallet credits for these payments
+    const clientTxnIds = orders.map(o => o.client_txn_id);
+    const [walletRows] = await db.query(
+      `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='CREDIT' ORDER BY created_at DESC`,
+      [userId]
+    );
+
+    // Mapping wallet credits by order/payment id
+    const walletByTxn = {};
+    walletRows.forEach(w => {
+      const match = /UPI Recharge ([^ ]+)/.exec(w.description);
+      if (match && match[1]) {
+        walletByTxn[match[1]] = w;
+      }
+    });
+
+    // 3. Final List: Show all statuses
+    const finalList = [];
+    for (const order of orders) {
+      const walletCredit = walletByTxn[order.client_txn_id];
+      let openingBalance = null;
+      if (walletCredit) {
+        const [prevWalletRows] = await db.query(
+          `SELECT balance_after FROM user_wallet WHERE user_id=? AND id < ? ORDER BY id DESC LIMIT 1`,
+          [userId, walletCredit.id]
+        );
+        openingBalance = prevWalletRows.length ? Number(prevWalletRows[0].balance_after) : 0;
+      }
+      finalList.push({
+        client_txn_id: order.client_txn_id,
+        added_at: order.completed_at || order.created_at,
+        status: order.status,
+        recharge_amount: order.amount,
+        opening_balance: openingBalance,
+        closing_balance: walletCredit ? walletCredit.balance_after : null,
+        payment_id: order.payment_id,
+        remark: order.remark,
+        tax: 0, // Tax logic as needed
+        amount_after_tax: walletCredit ? walletCredit.amount : order.amount
+      });
+    }
+
+    return res.json(finalList);
+  } catch (err) {
+    console.error('AddMoneyListAllStatus API error:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 
 

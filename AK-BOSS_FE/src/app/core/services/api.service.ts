@@ -166,5 +166,10 @@ updateUserProfile(data:any) {
 
   }
 
+  getAddMoneyList(): Observable<any> {
+      return this.http.get(`${this.baseUrl}/api/wallet/add-money-list`, { withCredentials: true });
+
+}
+
 
 }
