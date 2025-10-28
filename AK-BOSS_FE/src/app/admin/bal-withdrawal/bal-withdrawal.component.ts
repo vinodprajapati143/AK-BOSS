@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
-import { NgFor } from '@angular/common';
-import { BalanceModalComponent } from '../balance-modal/balance-modal.component';
+import { CommonModule, NgFor } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { WithdrawalModalComponent } from '../withdrawal-modal/withdrawal-modal.component';
 
 @Component({
   selector: 'app-bal-withdrawal',
   standalone: true,
-  imports: [AdminSidebarComponent, NgFor],
+  imports: [AdminSidebarComponent, NgFor, CommonModule],
   templateUrl: './bal-withdrawal.component.html',
   styleUrl: './bal-withdrawal.component.scss',
 })
@@ -36,7 +36,7 @@ export class BalWithdrawalComponent {
       method: 'UPI / BARCODE',
       amount: '5,000.00',
       utr: '8525822',
-      status: 'pending',
+      status: 'reject',
       paymentype: 'Manual',
       action: 'Update'
     },
@@ -62,7 +62,7 @@ export class BalWithdrawalComponent {
       method: 'UPI / BARCODE',
       amount: '5,000.00',
       utr: '8525822',
-      status: 'pending',
+      status: 'reject',
       paymentype: 'Manual',
       action: 'Update'
     },
@@ -75,7 +75,7 @@ export class BalWithdrawalComponent {
       method: 'UPI / BARCODE',
       amount: '5,000.00',
       utr: '8525822',
-      status: 'pending',
+      status: 'success',
       paymentype: 'Manual',
       action: 'Update'
     },
@@ -88,7 +88,7 @@ export class BalWithdrawalComponent {
       method: 'UPI / BARCODE',
       amount: '5,000.00',
       utr: '8525822',
-      status: 'pending',
+      status: 'success',
       paymentype: 'Manual',
       action: 'Update'
     },
@@ -147,7 +147,7 @@ export class BalWithdrawalComponent {
   ];
 
   viewUser(user: any) {
-    this.dialog.open(BalanceModalComponent, {
+    this.dialog.open(WithdrawalModalComponent, {
       width: '400px',
       panelClass: 'custom-dialog',
       data: {

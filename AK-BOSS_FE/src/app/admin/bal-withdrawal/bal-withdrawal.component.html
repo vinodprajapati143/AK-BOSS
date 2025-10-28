@@ -8,7 +8,7 @@
       <div class="p-6 bg-white shadow-md rounded-lg">
         <div class="flex justify-between items-center mb-4">
           <h2 class="sm:text-xl text-sm font-semibold">Balance Withdrawal</h2>
-          <input type="text" placeholder="Search: 8319369598"
+          <input type="text" placeholder="Search"
             class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
@@ -38,10 +38,14 @@
                 <td class="px-4 py-2">{{ user.method }}</td>
                 <td class="px-4 py-2">{{ user.amount }}</td>
                 <td class="px-4 py-2">{{ user.utr }}</td>
-                <td class="px-4 py-2">{{ user.status }}</td>
+                <td class="px-4 py-2" [ngClass]="{
+                  'text-green-600': user.status === 'success',
+                  'text-red-600': user.status === 'reject',
+                  'text-orange-500': user.status === 'pending'
+                }">{{ user.status }}</td>
                 <td class="px-4 py-2">
-                  <button (click)="viewUser(user)" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded">
-              View
+                  <button (click)="viewUser(user)" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded">
+              Update
             </button>
                 </td>
                 <!-- <td class="px-4 py-2">{{ user.action }}</td> -->
