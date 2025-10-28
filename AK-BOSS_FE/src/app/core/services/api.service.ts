@@ -161,5 +161,10 @@ updateUserProfile(data:any) {
     return this.http.post(`${this.baseUrl}/api/withdrawal/create`, data, { withCredentials: true });
   }
 
+    getWithdrawalsWithBalance(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/api/withdrawal/withdrawl-req`, { withCredentials: true });
+
+  }
+
 
 }

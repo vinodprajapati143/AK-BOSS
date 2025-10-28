@@ -97,3 +97,37 @@ exports.createWithdrawalRequest = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+exports.getWithdrawalsWithBalance = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Latest withdrawals list
+    const [withdrawals] = await db.query(
+      "SELECT * FROM withdrawal_requests WHERE user_id = ? ORDER BY requested_at DESC",
+      [userId]
+    );
+
+    // Har withdrawal ke liye us waqt ka balance nikaalo
+    const withdrawalWithBalance = [];
+    for (const w of withdrawals) {
+      // Find the closing balance for this withdrawal (after withdrawal processed)
+      const [walletRow] = await db.query(
+        "SELECT balance_after FROM user_wallet WHERE user_id = ? AND created_at <= ? ORDER BY created_at DESC LIMIT 1",
+        [userId, w.requested_at]
+      );
+      const closing_balance = walletRow.length ? walletRow[0].balance_after : 0;
+      withdrawalWithBalance.push({
+        ...w,
+        closing_balance
+      });
+    }
+
+    // Response
+    return res.status(200).json(withdrawalWithBalance);
+  } catch (err) {
+    console.error("Withdrawal List Error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+

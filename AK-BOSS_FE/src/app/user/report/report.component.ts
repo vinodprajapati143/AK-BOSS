@@ -101,6 +101,7 @@ export class ReportsComponent {
   ];
   playingrecords: any;
   winrecords: any;
+  withdrawals: any;
 
     ngOnInit() {
     this.isLoading = true;
@@ -126,7 +127,18 @@ export class ReportsComponent {
         this.isLoading = false;
       }
     });
+    this.reportservice.getWithdrawalsWithBalance().subscribe({
+      next: list => {
+        this.withdrawals = list;
+        this.isLoading = false;
+      },
+      error: err => {
+        // error handle karo
+        this.isLoading = false;
+      }
+    });
   }
+  
 
   getSelectLabel(entryType: string,game_time_type:string): string {
   switch(entryType) {

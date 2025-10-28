@@ -133,6 +133,7 @@ export class LoginComponent {
         else{
           this.router.navigate(['/user/dashboard']);
         }
+        window.location.reload();
       },
       error: (err) => {
         this.loading = false;
