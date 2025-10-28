@@ -128,12 +128,19 @@ export class LoginComponent {
         }
         this.toastr.success('Login successful!');
         if(res.data.registerType === "admin"){
-          this.router.navigate(['/admin/users']);
+          // this.router.navigate(['/admin/users']);
+             this.router.navigate(['/admin/users']).then(() => {
+          window.location.reload();
+        });
+          
         }
         else{
-          this.router.navigate(['/user/dashboard']);
+          // this.router.navigate(['/user/dashboard']);
+            this.router.navigate(['/user/dashboard']).then(() => {
+          window.location.reload();
+        });
         }
-        window.location.reload();
+        // window.location.reload();
       },
       error: (err) => {
         this.loading = false;
