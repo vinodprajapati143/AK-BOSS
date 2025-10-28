@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './share-page.component.scss'
 })
 export class SharePageComponent {
+  status: boolean = false;
   apiService = inject(ApiService)
   toastr = inject(ToastrService)
   platformId = inject(PLATFORM_ID);
@@ -22,6 +23,9 @@ export class SharePageComponent {
       invitee_code: 'AK_111***',
       invitee_username: 'Ajay Reff',
       invitee_phone: '987456321',
+      reward_amount: '50',
+      status: 'success',
+      date: '12-08-2023',
       active: false,
     },
   ];
