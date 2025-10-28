@@ -169,42 +169,42 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // All payment orders (show all statuses)
+    // 1. All payment orders -- sorted ASC for chaining
     const [orders] = await db.query(
-      `SELECT * FROM payment_orders WHERE user_id=? ORDER BY created_at ASC`, // ASC for correct balance chain
+      `SELECT * FROM payment_orders WHERE user_id=? ORDER BY created_at ASC`,
       [userId]
     );
 
-    // All wallet credit entries (CREDIT) mapped by client_txn_id
+    // 2. All wallet credits (CREDIT) mapped by client_txn_id
     const [walletRows] = await db.query(
       `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='CREDIT' ORDER BY id ASC`,
       [userId]
     );
-
-    // Map txn credits for lookup
     const walletByTxn = {};
     walletRows.forEach(w => {
       const match = /UPI Recharge ([^ ]+)/.exec(w.description);
       if (match && match[1]) walletByTxn[match[1]] = w;
     });
 
-    // Prepare running balance chain (initial value, then update per row)
-    let lastBalance = 0;
+    // 3. Prepare wallet balance chain (last confirmed)
+    let lastConfirmedBalance = 0;
     let addMoneyList = [];
 
     for (const order of orders) {
       const walletCredit = walletByTxn[order.client_txn_id];
 
-      let openingBalance = lastBalance;
-      let closingBalance = lastBalance;
-      let updatedBalance = lastBalance;
+      let openingBalance = lastConfirmedBalance;
+      let closingBalance = lastConfirmedBalance;
 
       if (order.status === 'success' && walletCredit) {
-        openingBalance = lastBalance;
+        openingBalance = lastConfirmedBalance;
         closingBalance = walletCredit.balance_after;
-        updatedBalance = walletCredit.balance_after;
+        lastConfirmedBalance = walletCredit.balance_after; // Update only on success!
+      } else {
+        // Pending/failed - both balances = last confirmed
+        openingBalance = lastConfirmedBalance;
+        closingBalance = lastConfirmedBalance;
       }
-      // else in case of pending/failed, balance remains same
 
       addMoneyList.push({
         client_txn_id: order.client_txn_id,
@@ -216,12 +216,8 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
         payment_id: order.payment_id,
         remark: order.remark,
         tax: 0,
-        amount_after_tax: walletCredit ? walletCredit.amount : order.amount,
-        updated_wallet: order.status === 'success' && walletCredit ? updatedBalance : null
+        amount_after_tax: walletCredit ? walletCredit.amount : order.amount
       });
-
-      // Update lastBalance if success
-      if (order.status === 'success' && walletCredit) lastBalance = walletCredit.balance_after;
     }
 
     return res.json(addMoneyList);
@@ -230,6 +226,7 @@ exports.getAddMoneyListAllStatus = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 
