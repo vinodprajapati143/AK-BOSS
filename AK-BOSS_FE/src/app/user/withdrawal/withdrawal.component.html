@@ -104,6 +104,15 @@
         name="bankName"
         class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
       />
+      <label for="bankName" class="pl-[20px]">Bank Name</label>
+      <input
+        type="text"
+        placeholder="Enter Account Holder Name"
+        [(ngModel)]="withdraw.bank_name"
+        [disabled]="inputsDisabled"
+        name="bankName"
+        class="w-full rounded-full border border-gray-300 px-4 py-3 mb-[5px] focus:outline-none focus:ring-2"
+      />
       <label for="accountNumber" class="pl-[20px]">Account Number</label>
       <input
         type="text"

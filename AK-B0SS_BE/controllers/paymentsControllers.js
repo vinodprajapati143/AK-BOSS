@@ -8,30 +8,30 @@ exports.savePaymentDetails = async (req, res) => {
       bank_account_holder_name,
       bank_account_number,
       bank_ifsc_code,
+      bank_name, // <-- NEW FIELD
       upi_phone_number,
       upi_account_holder_name,
       upi_id
     } = req.body;
 
-    // Check if user already has record
     const [existingRows] = await db.query(
       `SELECT * FROM user_payment_details WHERE user_id = ?`,
       [userId]
     );
 
-    // No record exists, insert new
     if (!existingRows.length) {
       await db.query(
         `INSERT INTO user_payment_details 
-          (user_id, bank_phone_number, bank_account_holder_name, bank_account_number, bank_ifsc_code,
+          (user_id, bank_phone_number, bank_account_holder_name, bank_account_number, bank_ifsc_code, bank_name,
            upi_phone_number, upi_account_holder_name, upi_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           userId,
           bank_phone_number || null,
           bank_account_holder_name || null,
           bank_account_number || null,
           bank_ifsc_code || null,
+          bank_name || null, // <-- NEW FIELD
           upi_phone_number || null,
           upi_account_holder_name || null,
           upi_id || null
@@ -43,25 +43,26 @@ exports.savePaymentDetails = async (req, res) => {
       });
     }
 
-    // Record exists -- check which part is missing
     const existing = existingRows[0];
-    // Bank details save allowed only if all are null
+
+    // Bank details save allowed only if any relevant field is missing
     if (
       (bank_account_number && !existing.bank_account_number)
       || (bank_ifsc_code && !existing.bank_ifsc_code)
       || (bank_account_holder_name && !existing.bank_account_holder_name)
       || (bank_phone_number && !existing.bank_phone_number)
+      || (bank_name && !existing.bank_name)
     ) {
-      // Only allow update if bank fields are still missing for this user
       await db.query(
         `UPDATE user_payment_details 
-         SET bank_phone_number = ?, bank_account_holder_name = ?, bank_account_number = ?, bank_ifsc_code = ?
+         SET bank_phone_number = ?, bank_account_holder_name = ?, bank_account_number = ?, bank_ifsc_code = ?, bank_name = ?
          WHERE user_id = ?`,
         [
           bank_phone_number || existing.bank_phone_number,
           bank_account_holder_name || existing.bank_account_holder_name,
           bank_account_number || existing.bank_account_number,
           bank_ifsc_code || existing.bank_ifsc_code,
+          bank_name || existing.bank_name,   // <-- NEW FIELD
           userId
         ]
       );
@@ -70,7 +71,8 @@ exports.savePaymentDetails = async (req, res) => {
         message: "Bank details added successfully"
       });
     }
-    // UPI details save allowed only if all are null
+
+    // UPI details save allowed only if any relevant field is missing
     if (
       (upi_id && !existing.upi_id)
       || (upi_account_holder_name && !existing.upi_account_holder_name)
@@ -93,7 +95,6 @@ exports.savePaymentDetails = async (req, res) => {
       });
     }
 
-    // Har field already filled, not allowed to edit!
     return res.status(400).json({
       success: false,
       message: "Both Bank and UPI payment details already saved. For changes, please contact support."
@@ -109,6 +110,7 @@ exports.savePaymentDetails = async (req, res) => {
 };
 
 
+
 exports.getPaymentDetails = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -119,6 +121,7 @@ exports.getPaymentDetails = async (req, res) => {
          bank_phone_number,
          bank_account_holder_name,
          bank_account_number,
+         bank_name,
          bank_ifsc_code,
          upi_phone_number,
          upi_account_holder_name,

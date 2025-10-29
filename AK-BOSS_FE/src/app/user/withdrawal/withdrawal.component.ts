@@ -46,7 +46,6 @@ export class WithdrawalComponent implements OnInit{
 
   getuseerandwalletbalnce(){
     this.withdrawalService.userSubject.subscribe((val:any)=>{
-
       this.userdata = val
 
     })
@@ -87,6 +86,8 @@ export class WithdrawalComponent implements OnInit{
       this.withdraw.name = this.savedDetails.bank_account_holder_name;
       this.withdraw.accountNumber = this.savedDetails.bank_account_number;
       this.withdraw.ifsc = this.savedDetails.bank_ifsc_code;
+      this.withdraw.bank_name = this.savedDetails.bank_name;
+
       this.withdraw.upiId = '';
     } else {
       // Mode change, allow new fields entry
@@ -132,7 +133,7 @@ export class WithdrawalComponent implements OnInit{
       upi_id: this.withdraw.upiId,
     };
   } else if (this.withdraw.mode === 'bank') {
-    if (!this.withdraw.phone || !this.withdraw.name || !this.withdraw.accountNumber || !this.withdraw.ifsc) {
+    if (!this.withdraw.phone || !this.withdraw.name || !this.withdraw.accountNumber || !this.withdraw.ifsc || !this.withdraw.bank_name) {
       this.toastr.error('All bank details required');
       return;
     }
@@ -141,6 +142,9 @@ export class WithdrawalComponent implements OnInit{
       bank_account_holder_name: this.withdraw.name,
       bank_account_number: this.withdraw.accountNumber,
       bank_ifsc_code: this.withdraw.ifsc,
+      bank_name: this.withdraw.bank_name,
+
+
     };
   }
 
