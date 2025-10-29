@@ -1753,69 +1753,75 @@ exports.addSinglePannaAnk = async (req, res) => {
 exports.getAllPlayingRecords = async (req, res) => {
   const user_id = req.user.id;
   try {
-    // Get all tables ending with '_entries'
-      const entryTables = [
+    const entryTables = [
       'single_ank_entries',
       'jodi_ank_entries',
       'singlepanna_ank_entries',
-      // Add other tables like 'doublepanna_ank_entries', etc. here
+      // Add other game tables here
     ];
 
-    // Fetch all user wallet DEBITs at once
+    // Fetch all DEBIT wallet txns
     const [allWalletTxns] = await db.query(
       `SELECT * FROM user_wallet WHERE user_id=? AND transaction_type='DEBIT' ORDER BY id DESC`,
       [user_id]
     );
 
-    // Prepare wallet lookup map: "amount|game_id" = txn
-    const walletMap = new Map();
+    // Group transactions by game_id for quick filtering
+    const walletGrouped = {};
     for (const txn of allWalletTxns) {
-      walletMap.set(`${Number(txn.amount)}|${txn.related_game_id}`, txn);
+      if (!walletGrouped[txn.related_game_id]) walletGrouped[txn.related_game_id] = [];
+      walletGrouped[txn.related_game_id].push(txn);
     }
 
     const result = [];
     for (const tableName of entryTables) {
-      // Fetch all entries once, for grouping
       const [entries] = await db.query(
         `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
         [user_id]
       );
-      // Group entries by batch_id
       const batches = {};
       for (const entry of entries) {
         if (!batches[entry.batch_id]) {
-          // Initialize new batch group
           batches[entry.batch_id] = {
             batch_id: entry.batch_id,
             created_at: entry.created_at,
             game_id: entry.game_id,
             game_name: entry.name,
-            game_time_type:entry.game_time_type,
-
+            game_time_type: entry.game_time_type,
             playing_amount: 0,
-            total_amount: entry.total_amount, // Will be same for whole batch
-            // entries: [],
+            total_amount: entry.total_amount,
             selections: []
           };
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
-        // batches[entry.batch_id].entries.push(entry);
-        // For open_select formatting
         if (tableName === 'single_ank_entries')
           batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
         else if (tableName === 'jodi_ank_entries')
           batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
         else if (tableName === 'singlepanna_ank_entries')
           batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
-
-
-        // Add more game tables as needed here
+        // Add more game tables as needed
       }
-      // Prepare the final batch records
+
       for (const batch of Object.values(batches)) {
-        // Wallet match: Use prebuilt map
-        const walletKey = `${Number(batch.total_amount)}|${batch.game_id}`;
-        const txn = walletMap.get(walletKey);
+        // Get all wallet txns for this game
+        const possibleTxns = walletGrouped[batch.game_id] || [];
+        // Find the txn matching amount, and closest before batch.created_at
+        let txn = null;
+        let minDelta = Number.POSITIVE_INFINITY;
+        const batchTime = new Date(batch.created_at).getTime();
+
+        for (const t of possibleTxns) {
+          if (Number(t.amount) === Number(batch.total_amount)) {
+            const txnTime = new Date(t.created_at || t.txn_time).getTime();
+            const delta = batchTime - txnTime;
+            // Transaction must occur at or before batch (not after!)
+            if (delta >= 0 && delta < minDelta) {
+              txn = t;
+              minDelta = delta;
+            }
+          }
+        }
 
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
         const closing_balance = txn ? Number(txn.balance_after) : null;
@@ -1826,7 +1832,6 @@ exports.getAllPlayingRecords = async (req, res) => {
           batch_id: batch.batch_id,
           game_id: batch.game_id,
           game_name: batch.game_name,
-
           created_at: batch.created_at,
           opening_balance,
           closing_balance,
@@ -1835,13 +1840,12 @@ exports.getAllPlayingRecords = async (req, res) => {
           tax,
           selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
-          game_time_type:batch.game_time_type,
+          game_time_type: batch.game_time_type,
           // entries: batch.entries
         });
       }
     }
-
-    // Optionally, order by created_at descending for all records
+    // Order newest-to-oldest
     result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json(result);
   } catch (error) {
@@ -1849,6 +1853,7 @@ exports.getAllPlayingRecords = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
 //   const user_id = req.user.id;
