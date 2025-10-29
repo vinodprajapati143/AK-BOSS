@@ -59,12 +59,13 @@ export class WithdrawalModalComponent {
 
   
 onSubmit() {
-  if (
-    this.withdrawForm.value.password &&
-    this.withdrawForm.value.remark &&
-    this.withdrawForm.value.action
-  ) {
-    // All required fields are filled, proceed as normal
+  const missingFields: string[] = [];
+  if (!this.withdrawForm.value.password) missingFields.push('Password');
+  if (!this.withdrawForm.value.remark) missingFields.push('Remark');
+  if (!this.withdrawForm.value.action) missingFields.push('Action');
+
+  if (missingFields.length === 0) {
+    // All fields exist, proceed
     this.isProcessing = true;
     const payload = {
       user_id: this.user.user_id,
@@ -77,21 +78,23 @@ onSubmit() {
       next: (res) => {
         this.isProcessing = false;
         this.message = res.message || 'Success';
-        this.toastr.success(this.message)
+        this.toastr.success(this.message);
         setTimeout(() => this.dialogRef.close(true), 1000);
       },
       error: (err) => {
+        console.log('err: ', err);
         this.isProcessing = false;
-        this.message = err.error?.message || 'Failed to process request';
-        this.toastr.error(this.message)
-
+        this.message = err.data?.message || 'Failed to process request';
+        this.toastr.error(this.message);
       }
     });
   } else {
-    // At least one field is missing, show error
-    this.message = 'Please fill all required fields: Password, Remark, Action.';
+    // Show which fields are missing, comma separated:
+    this.message = `Please fill required fields: ${missingFields.join(', ')}`;
+    this.toastr.error(this.message); // Or your preferred error display
   }
 }
+
 
   closeModal() {
     this.dialogRef.close();
