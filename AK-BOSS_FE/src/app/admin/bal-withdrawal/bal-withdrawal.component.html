@@ -41,7 +41,7 @@
                 <td class="px-4 py-2">{{ user.amount }}</td>
                 <td class="px-4 py-2">{{ user.upi_id }}</td>
                 <td class="px-4 py-2" [ngClass]="{
-                  'text-green-600': user.status === 'success',
+                  'text-green-600': user.status === 'approved',
                   'text-red-600': user.status === 'reject',
                   'text-orange-500': user.status === 'pending'
                 }">{{ user.status | uppercase}}</td>

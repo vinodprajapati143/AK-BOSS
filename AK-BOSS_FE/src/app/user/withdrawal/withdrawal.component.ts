@@ -176,6 +176,7 @@ postWithdrawal() {
       if (res.success) {
         this.toastr.success(res.message || 'Withdrawal request placed successfully!');
         this.withdraw.amount = null;
+        this.walletservice.refreshWallet()
       } else {
         this.toastr.error(res.message || 'Withdrawal could not be placed');
       }

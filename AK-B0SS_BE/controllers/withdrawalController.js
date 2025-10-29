@@ -57,6 +57,7 @@ exports.createWithdrawalRequest = async (req, res) => {
         return res.status(400).json({ message: 'Bank details missing. Contact support.' });
       }
       phone_number = d.bank_phone_number;
+      bank_name=d.bank_name;
       account_holder_name = d.bank_account_holder_name;
       account_number = d.bank_account_number;   
       ifsc_code = d.bank_ifsc_code;
@@ -79,8 +80,8 @@ exports.createWithdrawalRequest = async (req, res) => {
     // 6. Save withdrawal request
     await db.query(
       `INSERT INTO withdrawal_requests
-        (user_id, amount, payment_method, phone_number, account_holder_name, account_number, ifsc_code, upi_id, batch_id, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+        (user_id, amount, payment_method, phone_number, account_holder_name, account_number, ifsc_code,bank_name, upi_id, batch_id, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?,?, ?, ?, 'pending')`,
       [
         userId,
         amount,
@@ -89,6 +90,7 @@ exports.createWithdrawalRequest = async (req, res) => {
         account_holder_name,
         account_number,
         ifsc_code,
+        bank_name,
         upi_id,
         batchId
       ]
