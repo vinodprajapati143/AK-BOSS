@@ -201,6 +201,7 @@ exports.getAllWithdrawalRequests = async (req, res) => {
 };
 
 
+
 exports.adminProcessWithdrawal = async (req, res) => {
   try {
     const {
@@ -211,17 +212,27 @@ exports.adminProcessWithdrawal = async (req, res) => {
       password        // Admin password, sent by frontend for validation
     } = req.body;
 
-    // Use current logged-in admin's ID from token/session
-    const operator_id = req.user.id;
+    const operator_id = req.user.id; // Logged-in admin
 
     // === Input Validation ===
     if (!user_id || !action || typeof amount !== 'number' || amount <= 0) {
       return res.status(400).json({ success: false, message: "Missing or invalid required fields." });
     }
-    if (!['success', 'pending', 'rejected'].includes(action.toLowerCase())) {
+
+    // Status field mapping: API -> DB ENUM
+    const statusMap = {
+      success: 'approved',
+      rejected: 'rejected',
+      pending: 'pending'
+    };
+    const newStatus = statusMap[action.toLowerCase()];
+    if (!newStatus) {
       return res.status(400).json({ success: false, message: "Invalid action value. Must be Success, Pending, or Rejected." });
     }
-  
+
+    if (!password || password.length < 6) {
+      return res.status(401).json({ success: false, message: "Admin password required." });
+    }
 
     // === Operator password hash check ===
     const [adminRows] = await db.query('SELECT pwd FROM users WHERE id = ?', [operator_id]);
@@ -230,7 +241,7 @@ exports.adminProcessWithdrawal = async (req, res) => {
     }
     const validPass = await bcrypt.compare(password, adminRows[0].pwd);
     if (!validPass) {
-      return res.status(400).json({ success: false, message: 'Incorrect admin password.' });
+      return res.status(401).json({ success: false, message: 'Incorrect admin password.' });
     }
 
     // === Fetch withdrawal request ===
@@ -246,15 +257,19 @@ exports.adminProcessWithdrawal = async (req, res) => {
     }
 
     // === Update withdrawal record with admin info ===
-    await db.query(
+    const [updateResult] = await db.query(
       `UPDATE withdrawal_requests
        SET status = ?, admin_remarks = ?, processed_by = ?, processed_at = NOW()
        WHERE id = ?`,
-      [action.toLowerCase(), remark, operator_id, withdrawal.id]
+      [newStatus, remark, operator_id, withdrawal.id]
     );
 
+    if (updateResult.affectedRows === 0) {
+      return res.status(500).json({ success: false, message: 'Status update failed.' });
+    }
+
     // === Refund wallet if rejected ===
-    if (action.toLowerCase() === 'rejected') {
+    if (newStatus === 'rejected') {
       const [[wallet]] = await db.query(
         "SELECT balance_after FROM user_wallet WHERE user_id = ? ORDER BY id DESC LIMIT 1",
         [user_id]
@@ -270,14 +285,13 @@ exports.adminProcessWithdrawal = async (req, res) => {
       );
     }
 
-    // === Success: wallet already debited at request time ===
-
-    return res.status(200).json({ success: true, message: "Withdrawal request processed.", status: action.toLowerCase() });
+    return res.status(200).json({ success: true, message: "Withdrawal request processed.", status: newStatus });
   } catch (error) {
     console.error('Admin withdrawal process error:', error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 
