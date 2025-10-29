@@ -2,18 +2,20 @@
 
 import { HttpErrorResponse, HttpResponse, HttpInterceptorFn } from '@angular/common/http';
 import { throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { inject } from '@angular/core';
 import { StorageService } from '../services/storage.service';
 import { CustomError } from '../module/models';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { LoaderService } from '../services/loader.service';
 
 
 export const AppInterceptor: HttpInterceptorFn = (request, next) => {
   // Get the JWT token from wherever you store it (localStorage, cookies, etc.)
   const toastr = inject(ToastrService)
   const router = inject(Router)
+  const loaderService = inject(LoaderService);
   const sessionStorageService = inject(StorageService);
   const jwtToken = sessionStorageService.getItem('authToken'); // Example: Retrieve from localStorage
   // Clone the request and add the Authorization header with the JWT
@@ -37,6 +39,7 @@ export const AppInterceptor: HttpInterceptorFn = (request, next) => {
       }
     });
 
+    loaderService.show();
   return next(modifiedRequest).pipe(
     tap((response) => {
       if (response instanceof HttpResponse) {
@@ -75,6 +78,9 @@ export const AppInterceptor: HttpInterceptorFn = (request, next) => {
       } else {
         return throwError(() => new CustomError(error.statusText ?? "Server-side error", error.status, error.error));
       }
+    }),
+     finalize(() => {
+      loaderService.hide();
     })
   );
 

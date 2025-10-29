@@ -3,11 +3,12 @@ import { Router, RouterOutlet } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from './core/services/api.service';
 import { StorageService } from './core/services/storage.service';
+import { LoaderComponent } from "./shared/loader/loader.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, LoaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
