@@ -222,7 +222,7 @@ exports.adminProcessWithdrawal = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid action value. Must be Success, Pending, or Rejected." });
     }
     if (!password || password.length < 6) {
-      return res.status(401).json({ success: false, message: "Admin password required." });
+      return res.status(400).json({ success: false, message: "Admin password required." });
     }
 
     // === Operator password hash check ===
@@ -232,7 +232,7 @@ exports.adminProcessWithdrawal = async (req, res) => {
     }
     const validPass = await bcrypt.compare(password, adminRows[0].pwd);
     if (!validPass) {
-      return res.status(401).json({ success: false, message: 'Incorrect admin password.' });
+      return res.status(400).json({ success: false, message: 'Incorrect admin password.' });
     }
 
     // === Fetch withdrawal request ===

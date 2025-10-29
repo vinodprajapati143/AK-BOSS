@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
+import { LoaderComponent } from "../../shared/loader/loader.component";
 
 @Component({
   selector: 'app-withdrawal-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, LoaderComponent],
   templateUrl: './withdrawal-modal.component.html',
   styleUrls: ['./withdrawal-modal.component.scss']
 })
