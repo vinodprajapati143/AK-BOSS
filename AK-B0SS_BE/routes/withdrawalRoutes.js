@@ -6,6 +6,8 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 router.post('/create', verifyToken, withdrawalController.createWithdrawalRequest);
 router.get('/withdrawl-req',verifyToken, withdrawalController.getWithdrawalsWithBalance);
 router.get('/withdrawllist',verifyToken, withdrawalController.getAllWithdrawalRequests);
+router.post('/adminProcessWithdrawal', verifyToken, withdrawalController.adminProcessWithdrawal);
+
 
 
 

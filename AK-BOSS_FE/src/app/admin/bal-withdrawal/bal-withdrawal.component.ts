@@ -156,12 +156,7 @@ export class BalWithdrawalComponent implements OnInit {
     this.dialog.open(WithdrawalModalComponent, {
       width: '400px',
       panelClass: 'custom-dialog',
-      data: {
-        name: user.username, // ya user.name
-        phone: user.phone,
-        balance: user.normal_balance,
-        userId: user.user_id // id bhi bhejna zaroori
-      }
+      data: user
     });
   }
 

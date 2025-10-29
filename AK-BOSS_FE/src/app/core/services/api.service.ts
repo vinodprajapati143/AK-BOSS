@@ -175,5 +175,10 @@ updateUserProfile(data:any) {
       return this.http.get(`${this.baseUrl}/api/withdrawal/withdrawllist`, { withCredentials: true });
 }
 
+  processWithdrawalRequest(payload: any): Observable<any> {
+    // API endpoint (update as per your backend URL)
+    return this.http.post(`${this.baseUrl}/api/withdrawal/adminProcessWithdrawal`, payload);
+  }
+
 
 }

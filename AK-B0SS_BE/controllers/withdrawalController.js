@@ -1,4 +1,6 @@
 const db = require("../config/db");
+const bcrypt = require('bcrypt');
+
 
 exports.createWithdrawalRequest = async (req, res) => {
   try {
@@ -197,6 +199,89 @@ exports.getAllWithdrawalRequests = async (req, res) => {
     res.status(500).json({message: 'Failed to fetch withdrawal requests'});
   }
 };
+
+
+exports.adminProcessWithdrawal = async (req, res) => {
+  try {
+    const {
+      user_id,        // User whose withdrawal is processed
+      action,         // "Success", "Rejected", "Pending"
+      amount,
+      remark,
+      password        // Admin password, sent by frontend for validation
+    } = req.body;
+
+    // Use current logged-in admin's ID from token/session
+    const operator_id = req.user.id;
+
+    // === Input Validation ===
+    if (!user_id || !action || typeof amount !== 'number' || amount <= 0) {
+      return res.status(400).json({ success: false, message: "Missing or invalid required fields." });
+    }
+    if (!['success', 'pending', 'rejected'].includes(action.toLowerCase())) {
+      return res.status(400).json({ success: false, message: "Invalid action value. Must be Success, Pending, or Rejected." });
+    }
+    if (!password || password.length < 6) {
+      return res.status(401).json({ success: false, message: "Admin password required." });
+    }
+
+    // === Operator password hash check ===
+    const [adminRows] = await db.query('SELECT pwd FROM users WHERE id = ?', [operator_id]);
+    if (!adminRows.length) {
+      return res.status(400).json({ success: false, message: 'Admin not found.' });
+    }
+    const validPass = await bcrypt.compare(password, adminRows[0].pwd);
+    if (!validPass) {
+      return res.status(401).json({ success: false, message: 'Incorrect admin password.' });
+    }
+
+    // === Fetch withdrawal request ===
+    const [[withdrawal]] = await db.query(
+      `SELECT id, user_id, amount, status FROM withdrawal_requests WHERE user_id = ? AND status = 'pending' ORDER BY requested_at DESC LIMIT 1`,
+      [user_id]
+    );
+    if (!withdrawal) {
+      return res.status(404).json({ success: false, message: "Withdrawal request not found or already processed." });
+    }
+    if (Math.abs(withdrawal.amount - amount) > 0.001) {
+      return res.status(400).json({ success: false, message: "Withdrawal amount mismatch." });
+    }
+
+    // === Update withdrawal record with admin info ===
+    await db.query(
+      `UPDATE withdrawal_requests
+       SET status = ?, admin_remarks = ?, processed_by = ?, processed_at = NOW()
+       WHERE id = ?`,
+      [action.toLowerCase(), remark, operator_id, withdrawal.id]
+    );
+
+    // === Refund wallet if rejected ===
+    if (action.toLowerCase() === 'rejected') {
+      const [[wallet]] = await db.query(
+        "SELECT balance_after FROM user_wallet WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+        [user_id]
+      );
+      const oldBalance = wallet ? Number(wallet.balance_after) : 0;
+      const newBalance = oldBalance + Number(amount);
+
+      await db.query(
+        `INSERT INTO user_wallet (
+            user_id, amount, transaction_type, description, balance_after, created_at
+         ) VALUES (?, ?, 'CREDIT', 'Withdrawal Rejected: Refund', ?, NOW())`,
+        [user_id, amount, newBalance]
+      );
+    }
+
+    // === Success: wallet already debited at request time ===
+
+    return res.status(200).json({ success: true, message: "Withdrawal request processed.", status: action.toLowerCase() });
+  } catch (error) {
+    console.error('Admin withdrawal process error:', error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 
 
 

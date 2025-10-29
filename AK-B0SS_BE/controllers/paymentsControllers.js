@@ -121,7 +121,7 @@ exports.getPaymentDetails = async (req, res) => {
          bank_phone_number,
          bank_account_holder_name,
          bank_account_number,
-         bank_name,
+         bank_name,   
          bank_ifsc_code,
          upi_phone_number,
          upi_account_holder_name,

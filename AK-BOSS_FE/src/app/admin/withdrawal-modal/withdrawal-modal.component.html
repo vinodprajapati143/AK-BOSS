@@ -12,6 +12,8 @@
 
         <!-- Form -->
         <!-- <form [formGroup]="transferForm" (ngSubmit)="submitForm()" class="space-y-4"> -->
+            <form [formGroup]="withdrawForm" (ngSubmit)="onSubmit()">
+
         <!-- Row 1 -->
         <div class="grid grid-cols-2 gap-4">
             <div>
@@ -20,30 +22,75 @@
                     readonly />
             </div>
             <div>
-                <label class="text-sm">Payment Date</label>
-                <input type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="paymentDate"/>
+                <label class="text-sm">Payment Requested Date</label>
+                <input readonly type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="paymentDate"/>
             </div>
         </div>
 
         <!-- Row 2 -->
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="text-sm">Method</label>
-                <input type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="method"/>
-            </div>
-            <div>
-                <label class="text-sm">Bank</label>
-                <input type="text" class="w-full border rounded px-3 py-2" formControlName="bank" name="bank" />
+           <div *ngIf="withdrawForm.get('upi_id')?.value; else bankBlock">
+               <div class="grid grid-cols-2 gap-4" >
+                   <div>
+                       <label class="text-sm">Method</label>
+                       <input readonly type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="method"/>
+                   </div>
+                   <div>
+                       <label class="text-sm">Phone Number</label>
+                       <input readonly type="text" class="w-full border rounded px-3 py-2" formControlName="upi_phone_number" name="bank" />
+                   </div>
+       
+                    <div>
+                       <label class="text-sm">Account Holder Name</label>
+                       <input readonly type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="upi_account_holder_name"/>
+                   </div>
+                   <div>
+                       <label class="text-sm">UPI ID</label>
+                       <input readonly type="text" class="w-full border rounded px-3 py-2" formControlName="upi_id" name="bank" />
+                   </div>
+       
+               </div>
+
+           </div>
+           <ng-template #bankBlock>
+               <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm">Method</label>
+                    <input readonly type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="method"/>
+                </div>
+                <div>
+                    <label class="text-sm">Phone Number</label>
+                    <input readonly type="text" class="w-full border rounded px-3 py-2" formControlName="bank_phone_number" name="bank" />
+                </div>
+    
+                 <div>
+                    <label class="text-sm">Account Holder Name</label>
+                    <input readonly type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="bank_account_holder_name"/>
+                </div>
+                <div>
+                    <label class="text-sm">Bank Name</label>
+                    <input readonly type="text" class="w-full border rounded px-3 py-2" formControlName="bank_name" name="bank" />
+                </div>
+    
+                      <div>
+                    <label class="text-sm">Account Number</label>
+                    <input readonly type="text" class="w-full border rounded px-3 py-2 bg-gray-100" formControlName="bank_account_number"/>
+                </div>
+                <div>
+                    <label class="text-sm">IFSC Code</label>
+                    <input readonly type="text" class="w-full border rounded px-3 py-2" formControlName="bank_ifsc_code" name="bank" />
+                </div>
+    
             </div>
 
-        </div>
+           </ng-template>
+
 
         <!-- Row 3 -->
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label class="text-sm">Amount</label>
                 <input type="number" class="w-full border rounded px-3 py-2" formControlName="amount" maxlength="6"
-                    name="amount" />
+                    readonly name="amount" />
             </div>
             <div>
                 <label class="text-sm">Remark</label>
@@ -62,11 +109,12 @@
                 <label class="text-sm">Action</label>
                  <select
                 name="mode"
-                class="w-full rounded border rounded px-3 py-2"
+                formControlName="action"
+                class="w-full rounded border px-3 py-2"
                 >
-                <option >Success</option>
-                <option >Pending</option>
-                <option >Rejected</option>
+                <option value="Success">Success</option>
+                <!-- <option value="Pending">Pending</option> -->
+                <option value="Rejected">Rejected</option>
                 </select>
               </div>
         </div>
@@ -82,6 +130,6 @@
                 Transfer Now
             </button>
         </div>
-        <!-- </form> -->
+        </form>
     </div>
 </div>
