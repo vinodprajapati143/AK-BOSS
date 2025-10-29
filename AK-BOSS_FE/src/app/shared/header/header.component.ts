@@ -12,7 +12,6 @@ export class HeaderComponent {
   constructor(private router: Router) { }
 
   login() {
-    // Implement login functionality here
     this.router.navigate(['/auth/login']);
   }
 

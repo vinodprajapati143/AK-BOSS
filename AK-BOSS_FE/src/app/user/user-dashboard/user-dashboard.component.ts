@@ -69,7 +69,6 @@ export class UserDashboardComponent implements OnInit,OnDestroy{
     }
   }
   playGame(game:any) {
-    console.log('game: ', game);
     this.gameDataService.setGameData(game);
     this.router.navigate(['/user/all-games']);
   }

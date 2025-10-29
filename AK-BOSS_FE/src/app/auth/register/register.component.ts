@@ -127,7 +127,6 @@ export class RegisterComponent {
       next: (res) => {
         if(res){
           const response = res as { message: string }; // Type assertion
-          console.log('response: ', response);
           if (response) {
             this.toaster.success(response.message);
             this.registerForm.reset();

@@ -111,7 +111,6 @@ loadPanelRecords() {
 
       this.weekCells = weekCells;
       this.weekRows = this.chunkArray(this.weekCells, 7);
-      console.log(this.weekCells);
 }
     )}
 

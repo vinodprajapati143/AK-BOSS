@@ -376,7 +376,6 @@ export class AllGameComponent implements OnInit, OnDestroy {
   submitGame(game: any) {
 
     const todayDate = new Date().toISOString().split('T')[0];
-    console.log('todayDate: ', todayDate);
 
     // Agar open abhi fill ho raha hai (close missing hai)
     // toh aaj ki date bhejo
@@ -387,7 +386,6 @@ export class AllGameComponent implements OnInit, OnDestroy {
       // Agar open already filled tha, toh wahi date use karo jo backend se aayi thi
       finalInputDate = game.formattedInputDate || todayDate;
     }
-    console.log('finalInputDate: ', finalInputDate);
     const payload = {
       id: game.id,
       patte1: game.patte1,
@@ -397,10 +395,8 @@ export class AllGameComponent implements OnInit, OnDestroy {
       input_date: finalInputDate
     };
 
-    console.log('payload: ', payload);
     this.apiService.saveGameInput(payload).subscribe({
-      next: (res) => {
-        console.log('res: ', res);
+        next: (res) => {
         alert('Game input saved successfully!');
         this.loadGames(); // Reload games list after successful save
       },

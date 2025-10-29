@@ -127,7 +127,6 @@ export class AddGameComponent implements OnInit {
 
 
   togglePopup(gameId?:any) {
-    console.log('gameId: ', gameId);
       if (gameId) {
     // Fetch game data from backend by ID
     this.loadGameData(gameId);

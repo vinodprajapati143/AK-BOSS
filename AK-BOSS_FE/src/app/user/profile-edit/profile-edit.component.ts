@@ -30,7 +30,6 @@ dialog: any;
 
     // signal se value patch
      this.backendService.user$.subscribe(user => {
-      console.log('user: ', user);
       this.user = user
             if (this.user) {
       this.profileForm.patchValue({
@@ -58,7 +57,6 @@ saveProfile() {
     this.backendService.updateUserProfile(payload).subscribe({
       next: (res: any) => {
         if (res.success) {
-          console.log('Profile updated:', res.message);
           this.backendService.getUserProfile();
           this.router.navigate(['/user/profile'])  
           this.toastr.success(res.message);

@@ -30,7 +30,6 @@ export class BalanceReturnComponent {
  
    viewUser() {
      // Logic to view user details
-     // console.log('Viewing user with ID:', id);
         this.dialog.open(BalanceModalComponent, {
                width: '100%',
                panelClass: 'custom-dialog'

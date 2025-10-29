@@ -315,9 +315,7 @@ pad(num: number): string {
     loadpubligamesResult(){
     this.gameService.getpublicGamesResult().subscribe({
     next: (res) => {
-      console.log('res: ', res);
       this.gamesResult = res.games;
-      console.log('this.gamesResult: ', this.gamesResult);
     },
     error: (err) => {
       console.error('Failed to fetch games', err);

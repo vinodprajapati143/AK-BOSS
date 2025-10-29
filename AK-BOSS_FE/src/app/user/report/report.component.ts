@@ -9,7 +9,7 @@ import { LoaderComponent } from "../../shared/loader/loader.component";
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle, DatePipe, TitleCasePipe, LoaderComponent,CommonModule],
+  imports: [HeaderComponent, FooterComponent, NgIf, NgFor, NgStyle, DatePipe, TitleCasePipe, LoaderComponent, CommonModule],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })
@@ -105,7 +105,7 @@ export class ReportsComponent implements OnInit, AfterViewInit{
   addMoneyList: any;
   mergedTransactions: any[] | undefined;
 
-    ngOnInit() {
+  ngOnInit() {
     this.isLoading = true;
     this.reportservice.getAllPlayingRecords().subscribe({
       next: (data) => {
@@ -222,19 +222,21 @@ getMatchingSelection(transaction: any) {
   
   
 
-  getSelectLabel(entryType: string,game_time_type:string): string {
-  switch(entryType) {
-    case 'single_ank':
-      return `${game_time_type} Select`;
-    case 'jodi_ank':
-      return 'Jodi Select';
-    case 'singlepanna_ank':
-      return `${game_time_type} Select`;
 
-    // Add more cases if needed
-    default:
-      return 'Select';
+
+  getSelectLabel(entryType: string, game_time_type: string): string {
+    switch (entryType) {
+      case 'single_ank':
+        return `${game_time_type} Select`;
+      case 'jodi_ank':
+        return 'Jodi Select';
+      case 'singlepanna_ank':
+        return `${game_time_type} Select`;
+
+      // Add more cases if needed
+      default:
+        return 'Select';
+    }
   }
-}
 
 }

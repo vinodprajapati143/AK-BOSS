@@ -57,7 +57,6 @@ password: boolean = false;
           }
         },
         error: (err) => {
-          console.log('err: ', err);
           this.toastr.error(err.data.message)
         }
       });
@@ -158,7 +157,6 @@ submit() {
 
   this.backendservice.resetPass(payload).subscribe({
       next: (res: any) => {
-        console.log('res: ', res);
         if (res.success) {
           this.toastr.success(res.message)
           this.router.navigate(['/auth/login']);

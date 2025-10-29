@@ -150,7 +150,6 @@ export class WithdrawalComponent implements OnInit{
 
   this.withdrawalService.savePaymentDetails(saveObj).subscribe({
     next: (res: any) => {
-      console.log('res: ', res);
       if (res.success) {
         this.savedDetails = saveObj; // so form disables next time
         this.toastr.success(res.message);
@@ -182,7 +181,6 @@ postWithdrawal() {
       }
     },
     error: (err: any) => {
-      console.log('err: ', err);
       // Proper error parsing
       const msg = err?.data?.message || 'Withdrawal failed, please try again or contact support.';
       this.toastr.error(msg);

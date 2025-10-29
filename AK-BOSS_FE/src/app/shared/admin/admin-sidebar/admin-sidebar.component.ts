@@ -296,7 +296,6 @@ export class AdminSidebarComponent {
   handleNavItemClick(link: any) {
     if (link.href) {
       this.router.navigateByUrl(link.href);
-      // console.log(link.href)
     }
     link.isOpen = !link.isOpen;
   }

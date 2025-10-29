@@ -55,7 +55,6 @@ export class BalanceModalComponent {
       remark: this.transferForm.get('remark')?.value,
       password: this.transferForm.get('password')?.value
     };
-    console.log('payload: ', payload);
     this.walletService.transferToUser(payload).subscribe({
       next: () => {
         this.isSubmitting = false;
@@ -65,7 +64,6 @@ export class BalanceModalComponent {
         window.location.reload()
       },
       error: (err: any) => {
-        console.log('err: ', err);
         this.isSubmitting = false;
         this.errorMsg = err.data.message || 'Transaction failed, try again.';
         this.toastr.error(this.errorMsg)
