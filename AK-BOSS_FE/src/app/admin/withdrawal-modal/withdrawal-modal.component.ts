@@ -36,7 +36,7 @@ export class WithdrawalModalComponent {
 
       name: [{ value: this.user?.user_name || '', disabled: true }],
       paymentDate: [{ value: istDate || '', disabled: true }],
-      method: [{ value: this.user?.payment_method || '', disabled: true }],
+      method: [{ value: this.toTitleCase(this.user?.payment_method || ''), disabled: true }],
 
       // UPI fields (conditionally shown)
       upi_phone_number: [{ value: this.user?.phone_number || '', disabled: true }],
@@ -45,10 +45,10 @@ export class WithdrawalModalComponent {
 
       // Bank fields (conditionally shown)
       bank_phone_number: [{ value: this.user?.phone_number || '', disabled: true }],
-      bank_account_holder_name: [{ value: this.user?.bank_account_holder_name || '', disabled: true }],
+      bank_account_holder_name: [{ value: this.user?.account_holder_name || '', disabled: true }],
       bank_name: [{ value: this.user?.bank_name || '', disabled: true }],
-      bank_account_number: [{ value: this.user?.bank_account_number || '', disabled: true }],
-      bank_ifsc_code: [{ value: this.user?.bank_ifsc_code || '', disabled: true }],
+      bank_account_number: [{ value: this.user?.account_number || '', disabled: true }],
+      bank_ifsc_code: [{ value: this.user?.ifsc_code || '', disabled: true }],
 
       // Rest fields
       amount: [{ value: this.user?.amount || '', disabled: true }],
@@ -57,6 +57,17 @@ export class WithdrawalModalComponent {
       action: ['Success']
     });
   }
+
+
+
+
+toTitleCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
   
 onSubmit() {

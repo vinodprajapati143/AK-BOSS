@@ -114,6 +114,12 @@
                     <span class="text-[#00D457]">₹{{ transaction.opening_balance }}</span>
                 </div>
 
+                 <div *ngIf="transaction.amount"
+                    class="flex items-center justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Withdrawal Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.amount }}</span>
+                </div>
+
                 <div *ngIf="transaction.txn_type === 'addmoney'"
                     class="flex justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium flex items-center">Purchase Amount</span>
@@ -132,10 +138,41 @@
                     <span class="font-bold">₹{{ transaction.amount_after_tax }}</span>
                 </div> -->
 
-                <div class="flex justify-between items-center px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                <div *ngIf="transaction.tax" class="flex justify-between items-center px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium flex items-center">Tax</span>
                     <span class="font-bold">₹{{ transaction.tax }}</span>
                 </div>
+
+                   <div  *ngIf="transaction.account_holder_name"
+                    class="flex items-center justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Account Holder name</span>
+                    <span class="font-bold">{{ transaction.account_holder_name }}</span>
+                </div>
+
+                  <div  *ngIf="transaction.account_number"
+                    class="flex items-center justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Account Number</span>
+                    <span class="font-bold">{{ transaction.account_number }}</span>
+                </div>
+
+                 <div  *ngIf="transaction.bank_name"
+                    class="flex items-center justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Bank Name</span>
+                    <span class="font-bold">{{ transaction.bank_name }}</span>
+                </div>
+
+                   <div  *ngIf="transaction.ifsc_code"
+                    class="flex items-center justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">IFSC Code</span>
+                    <span class="font-bold">{{ transaction.ifsc_code }}</span>
+                </div>
+                <div *ngIf="transaction.upi_id"
+                    class="flex items-center justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Upi ID</span>
+                    <span class="font-bold">{{ transaction.upi_id }}</span>
+                </div>
+
+                
 
                 <div *ngIf="
             transaction.selections?.length && transaction.type !== 'withdrawal'
@@ -196,6 +233,19 @@
                 <div class="flex justify-between items-center px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
                     <span class="font-semibold flex items-center">Closing Balance</span>
                     <span class="font-semibold">₹{{ transaction.closing_balance }}</span>
+                </div>
+
+                   <div *ngIf="transaction.payment_method" class="flex items-center justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Payment Mode</span>
+                    <span class="font-semibold">{{
+                        transaction.payment_method | uppercase
+                        }}</span>
+                </div>
+
+                <div *ngIf="transaction.admin_remarks"
+                    class="flex items-center justify-between px-3 py-2 my-2 border-2 rounded-sm border-[#20A2A0]">
+                    <span class="font-semibold">Remark</span>
+                    <span class="font-semibold">{{ transaction.admin_remarks }}</span>
                 </div>
             </div>
         </div>
@@ -370,13 +420,8 @@
                     <span class="font-bold">₹{{ transaction.amount_after_tax }}</span>
                 </div>
 
-<<<<<<< Updated upstream
-                <div  
-                    class="flex justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
-=======
                 <div *ngIf="transaction.tax"
                     class="flex items-center justify-between px-3 py-2 my-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
->>>>>>> Stashed changes
                     <span class="font-medium">Tax</span>
                     <span class="font-bold">₹{{ transaction.tax }}</span>
                 </div>

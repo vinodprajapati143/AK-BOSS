@@ -152,16 +152,29 @@ export class BalWithdrawalComponent implements OnInit {
   error: string | undefined;
   users: any;
 
-  viewUser(user: any) {
-    this.dialog.open(WithdrawalModalComponent, {
-      width: '400px',
-      panelClass: 'custom-dialog',
-      data: user
-    });
-  }
+viewUser(user: any) {
+  const dialogRef = this.dialog.open(WithdrawalModalComponent, {
+    width: '400px',
+    panelClass: 'custom-dialog',
+    data: user
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+   this.loadwithdrawlist()
+
+    }
+  });
+}
+
 
   ngOnInit(): void {
-      this.isLoading = true;
+   this.loadwithdrawlist()
+  }
+
+
+  loadwithdrawlist(){
+   this.isLoading = true;
     this.apiservice.getallwithdrawllist().subscribe({
       next: (data) => {
         this.users = data;
