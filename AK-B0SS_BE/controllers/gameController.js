@@ -1766,11 +1766,10 @@ exports.getAllPlayingRecords = async (req, res) => {
       [user_id]
     );
 
-    // Group transactions by game_id for quick filtering
-    const walletGrouped = {};
+    // Build wallet txn map by batch_id
+    const walletMap = new Map();
     for (const txn of allWalletTxns) {
-      if (!walletGrouped[txn.related_game_id]) walletGrouped[txn.related_game_id] = [];
-      walletGrouped[txn.related_game_id].push(txn);
+      if (txn.batch_id) walletMap.set(String(txn.batch_id), txn);
     }
 
     const result = [];
@@ -1794,35 +1793,12 @@ exports.getAllPlayingRecords = async (req, res) => {
           };
         }
         batches[entry.batch_id].playing_amount += Number(entry.amount);
-        if (tableName === 'single_ank_entries')
-          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
-        else if (tableName === 'jodi_ank_entries')
-          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
-        else if (tableName === 'singlepanna_ank_entries')
-          batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
-        // Add more game tables as needed
+        batches[entry.batch_id].selections.push(`${entry.digit} X ${entry.amount}`);
       }
 
       for (const batch of Object.values(batches)) {
-        // Get all wallet txns for this game
-        const possibleTxns = walletGrouped[batch.game_id] || [];
-        // Find the txn matching amount, and closest before batch.created_at
-        let txn = null;
-        let minDelta = Number.POSITIVE_INFINITY;
-        const batchTime = new Date(batch.created_at).getTime();
-
-        for (const t of possibleTxns) {
-          if (Number(t.amount) === Number(batch.total_amount)) {
-            const txnTime = new Date(t.created_at || t.txn_time).getTime();
-            const delta = batchTime - txnTime;
-            // Transaction must occur at or before batch (not after!)
-            if (delta >= 0 && delta < minDelta) {
-              txn = t;
-              minDelta = delta;
-            }
-          }
-        }
-
+        // Direct batch_id lookup
+        const txn = walletMap.get(String(batch.batch_id));
         const opening_balance = txn ? Number(txn.balance_after) + Number(txn.amount) : null;
         const closing_balance = txn ? Number(txn.balance_after) : null;
         const tax = 0;
@@ -1841,11 +1817,10 @@ exports.getAllPlayingRecords = async (req, res) => {
           selections: batch.selections,
           status: txn ? "SUCCEED" : "UNKNOWN",
           game_time_type: batch.game_time_type,
-          // entries: batch.entries
         });
       }
     }
-    // Order newest-to-oldest
+
     result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json(result);
   } catch (error) {
@@ -1853,6 +1828,7 @@ exports.getAllPlayingRecords = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 // exports.getAllPlayingRecordsWithWinToday = async (req, res) => {
