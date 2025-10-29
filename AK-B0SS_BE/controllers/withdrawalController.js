@@ -221,9 +221,7 @@ exports.adminProcessWithdrawal = async (req, res) => {
     if (!['success', 'pending', 'rejected'].includes(action.toLowerCase())) {
       return res.status(400).json({ success: false, message: "Invalid action value. Must be Success, Pending, or Rejected." });
     }
-    if (!password || password.length < 6) {
-      return res.status(400).json({ success: false, message: "Admin password required." });
-    }
+  
 
     // === Operator password hash check ===
     const [adminRows] = await db.query('SELECT pwd FROM users WHERE id = ?', [operator_id]);
