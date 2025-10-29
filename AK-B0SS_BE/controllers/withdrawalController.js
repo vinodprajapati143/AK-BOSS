@@ -165,7 +165,7 @@ exports.getAllWithdrawalRequests = async (req, res) => {
         wr.user_id,
         u.username   AS user_name,
         wr.amount,
-        wr.bank,
+        wr.bank_name,
         wr.payment_method,
         wr.requested_at,
         wr.processed_at,
