@@ -191,6 +191,34 @@ resolveTxnLabel(type: string) {
          type === 'withdrawal' ? 'Withdrawal' :
          type === 'playing' ? 'Playing' : '';
 }
+
+getMatchingSelection(transaction: any) {
+  // Only filter selections for WIN status
+  if (transaction.status === 'WIN') {
+    let matchValue = null;
+
+    if (transaction.game_type === 'single_ank') {
+      // Use close digit
+      matchValue = transaction.result[2]?.toString();
+    } else if (transaction.game_type === 'jodi_ank') {
+      // Use jodi digits combination, e.g. "11"
+      matchValue = transaction.result[1]?.toString() + transaction.result[2]?.toString();
+    } else if (transaction.game_type === 'singlepanna_ank') {
+      // Use panna number, e.g. "109"
+      matchValue = transaction.result[0]?.toString();
+    } else {
+      // Other win cases: show all
+      return transaction.selections;
+    }
+
+    // Filter only the winning selection(s)
+    return transaction.selections.filter((sel: string) => sel.startsWith(matchValue + ' X '));
+  }
+
+  // For any NON-WIN (FAILED/SUCCEED/other): Show all selections
+  return transaction.selections;
+}
+
   
   
 
