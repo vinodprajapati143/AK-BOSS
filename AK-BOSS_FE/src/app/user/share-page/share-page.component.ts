@@ -4,11 +4,12 @@ import { CommonModule, isPlatformBrowser, NgFor } from '@angular/common';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
+import { FormsModule } from "@angular/forms";
 
 @Component({
   selector: 'app-share-page',
   standalone: true,
-  imports: [HeaderComponent, NgFor, CommonModule, FooterComponent],
+  imports: [HeaderComponent, NgFor, CommonModule, FooterComponent, FormsModule],
   templateUrl: './share-page.component.html',
   styleUrl: './share-page.component.scss'
 })

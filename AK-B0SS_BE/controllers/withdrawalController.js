@@ -156,4 +156,50 @@ exports.getWithdrawalsWithBalance = async (req, res) => {
   }
 };
 
+// GET /api/admin/withdrawals
+exports.getAllWithdrawalRequests = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT 
+        wr.id,
+        wr.user_id,
+        u.name AS user_name,
+        wr.amount,
+        wr.bank,
+        wr.payment_method,
+        wr.requested_at,
+        wr.processed_at,
+        wr.status,
+        wr.admin_remarks,
+        wr.account_holder_name,
+        wr.account_number,
+        wr.upi_id,
+        wr.ifsc_code,
+        wr.phone_number,
+        wr.batch_id
+       FROM withdrawal_requests wr
+       LEFT JOIN users u ON wr.user_id = u.id
+       ORDER BY wr.requested_at DESC`
+    );
+
+    // Optional: sanitize output, format dates, add missing defaults
+    const formattedRows = rows.map(row => ({
+      ...row,
+      requested_at: row.requested_at ? new Date(row.requested_at).toISOString() : null,
+      processed_at: row.processed_at ? new Date(row.processed_at).toISOString() : null,
+      amount: Number(row.amount),
+      status: row.status || 'pending'
+    }));
+
+    res.status(200).json(formattedRows);
+  } catch (error) {
+    console.error('Withdrawal fetch error:', error);
+    res.status(500).json({message: 'Failed to fetch withdrawal requests'});
+  }
+};
+
+
+
+
+
 

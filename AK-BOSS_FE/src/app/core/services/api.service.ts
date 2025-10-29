@@ -171,5 +171,9 @@ updateUserProfile(data:any) {
 
 }
 
+  getallwithdrawllist(): Observable<any> {
+      return this.http.get(`${this.baseUrl}/api/withdrawal/withdrawllist`, { withCredentials: true });
+}
+
 
 }

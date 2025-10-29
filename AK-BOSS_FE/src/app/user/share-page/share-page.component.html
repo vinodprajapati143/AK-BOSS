@@ -32,7 +32,7 @@
   <div class="px-4 mt-6">
     <h2 class="text-center mb-2 referral-text">All Referral List</h2>
 
-    <div *ngFor="let transaction of transactions" class="bg-white rounded-lg shadow border border-gray-200 mb-1">
+    <div class="bg-white rounded-lg shadow border border-gray-200 mb-1">
       <!-- Header Row -->
       <div class="grid grid-cols-4 text-white text-sm font-semibold header-bg rounded-t-lg">
         <div class="px-2 py-2 text-center">S.No.</div>
@@ -42,46 +42,50 @@
       </div>
 
       <!-- Data Row -->
+       <ng-container  *ngFor="let transaction of referralList">
+
       <div
+      
         (click)="transaction.active = !transaction.active"
         class="grid grid-cols-4 text-center text-sm border-t cursor-pointer hover:bg-gray-100"
       >
-        <div class="px-2 py-2">{{ transaction.invitee_id }}</div>
+        <div class="px-2 py-2">{{ transaction.id }}</div>
         <div class="px-2 py-2">{{ transaction.invitee_code }}</div>
         <div class="px-2 py-2">{{ transaction.invitee_username }}</div>
         <div class="px-2 py-2">{{ transaction.invitee_phone }}</div>
+        <!-- Expanded Details -->
       </div>
-
-      <!-- Expanded Details -->
       <div *ngIf="transaction.active" class="bg-[#D9D9D94D] border-t border-[#20A2A0] rounded-b-lg text-sm">
-        <div class="flex flex-col space-y-1 justify-between  w-full h-[50px] overflow-y-auto mt-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+        <div class="flex flex-col space-y-1 justify-between  w-full h-[130px] overflow-y-auto mt-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]" *ngFor="let item of transaction.invitee_bid_commision">
         <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Invite Code</span>
-          <span class="text-[#00D457] font-semibold">{{ transaction.invitee_code }}</span>
+          <span class="font-medium">Batch Id</span>
+          <span class="font-semibold">{{ item.batch_id }}</span>
+        </div>
+        
+        <div class="flex justify-between px-2 border-b border-gray-200">
+          <span class="font-medium">Bid Amount</span>
+          <span class="text-[#00D457] font-semibold">{{ item.bid_amount }}</span>
         </div>
         <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Opening Balance</span>
-          <span class="text-[#00D457] font-semibold">₹{{ transaction.invitee_phone }}</span>
+          <span class="font-medium">Commission</span>
+          <span class="text-[#00D457] font-semibold">₹{{ item.commission }}</span>
         </div>
+        
         <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Status</span>
-          <span
-            [ngClass]="{
-              'text-green-600': transaction.status === 'success',
-              'text-red-600': transaction.status === 'reject',
-              'text-orange-500': transaction.status === 'pending'
-            }"
-            class="font-bold"
-          >
-            {{ transaction.status }}
-          </span>
+          <span class="font-medium">Game Name</span>
+          <span class="font-semibold">{{ item.game_name }}</span>
         </div>
+
         <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Closing Balance</span>
-          <span class="font-semibold">₹{{ transaction.invitee_phone }}</span>
+          <span class="font-medium">Bet Date</span>
+          <span class="font-semibold">{{ item.bet_date | date: 'dd-MM-yyyy hh:mm a':'IST'}}</span>
         </div>
+       
       </div>
       </div>
+       </ng-container>
+
+
     </div>
   </div>
 </div>
