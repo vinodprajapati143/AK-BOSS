@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { NgFor, NgIf, NgStyle, CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
@@ -13,7 +13,7 @@ import { LoaderComponent } from "../../shared/loader/loader.component";
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss'
 })
-export class ReportsComponent {
+export class ReportsComponent implements OnInit, AfterViewInit{
 
   router = inject(Router)
   reportservice = inject(ApiService)
@@ -37,20 +37,20 @@ export class ReportsComponent {
     //   winLoss: 500,
     //   active: false,
     // },
-    {
-      type: 'Add Money',
-      route: '/add-amount',
-      date: '2025-03-31 18:03:14',
-      status: 'SUCCEED',
-      color: '#D76B00',
-      openingBalance: 500,
-      purchaseAmount: 500,
-      amountAfterTax: 2000,
-      tax: 10000,
-      closingBalance: 10000,
-      winLoss: 500,
-      active: false,
-    },
+    // {
+    //   type: 'Add Money',
+    //   route: '/add-amount',
+    //   date: '2025-03-31 18:03:14',
+    //   status: 'SUCCEED',
+    //   color: '#D76B00',
+    //   openingBalance: 500,
+    //   purchaseAmount: 500,
+    //   amountAfterTax: 2000,
+    //   tax: 10000,
+    //   closingBalance: 10000,
+    //   winLoss: 500,
+    //   active: false,
+    // },
   
     // {
     //   type: 'Playing',
@@ -103,13 +103,14 @@ export class ReportsComponent {
   winrecords: any;
   withdrawals: any;
   addMoneyList: any;
+  mergedTransactions: any[] | undefined;
 
     ngOnInit() {
     this.isLoading = true;
     this.reportservice.getAllPlayingRecords().subscribe({
       next: (data) => {
         this.playingrecords = data;
-        console.log('this.playingrecords: ', this.playingrecords);
+        this.checkAndMerge();
         this.isLoading = false;
       },
       error: () => {
@@ -120,7 +121,7 @@ export class ReportsComponent {
     this.reportservice.getAllWinRecords().subscribe({
       next: (data) => {
         this.winrecords = data;
-        console.log('this.this.winrecords: ', this.winrecords);
+        this.checkAndMerge();
         this.isLoading = false;
       },
       error: () => {
@@ -131,6 +132,7 @@ export class ReportsComponent {
     this.reportservice.getWithdrawalsWithBalance().subscribe({
       next: list => {
         this.withdrawals = list;
+        this.checkAndMerge();
         this.isLoading = false;
       },
       error: err => {
@@ -138,9 +140,10 @@ export class ReportsComponent {
         this.isLoading = false;
       }
     });
-       this.reportservice.getAddMoneyList().subscribe({
+    this.reportservice.getAddMoneyList().subscribe({
       next: (data) => {
         this.addMoneyList = data;
+        this.checkAndMerge();
         this.isLoading = false;
       },
       error: (err) => {
@@ -148,7 +151,46 @@ export class ReportsComponent {
         this.isLoading = false;
       }
     });
+
+
+
+
   }
+
+  ngAfterViewInit(): void {
+    // this.mergerArray()
+  }
+
+  mergerArray(){
+ 
+    if(this.playingrecords && this.winrecords && this.withdrawals && this.addMoneyList){
+
+          const allTxns: any[] = [
+            ...this.playingrecords.map((txn: { created_at: any; }) => ({ ...txn, txn_type: 'playing', txn_time: txn.created_at })),
+            ...this.winrecords.map((txn: { created_at: any; }) => ({ ...txn, txn_type: 'win', txn_time: txn.created_at })),
+            ...this.withdrawals.map((txn: { requested_at: any; }) => ({ ...txn, txn_type: 'withdrawal', txn_time: txn.requested_at })),
+            ...this.addMoneyList.map((txn: { added_at: any; }) => ({ ...txn, txn_type: 'addmoney', txn_time: txn.added_at })),
+          ];
+
+      // Sort by txn_time descending (newest on top)
+      allTxns.sort((a, b) => new Date(b.txn_time).getTime() - new Date(a.txn_time).getTime());
+
+      this.mergedTransactions = allTxns;
+      console.log('this.mergedTransactions: ', this.mergedTransactions);
+    }
+  }
+
+  checkAndMerge() {
+  if (this.playingrecords && this.winrecords && this.withdrawals && this.addMoneyList) {
+    this.mergerArray();
+  }
+}
+resolveTxnLabel(type: string) {
+  return type === 'win' ? 'Win' :
+         type === 'addmoney' ? 'Add Money' :
+         type === 'withdrawal' ? 'Withdrawal' :
+         type === 'playing' ? 'Playing' : '';
+}
   
   
 
