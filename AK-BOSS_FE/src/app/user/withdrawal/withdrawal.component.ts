@@ -107,7 +107,12 @@ export class WithdrawalComponent implements OnInit{
   submitWithdrawal() {
   // Validation
   if (!this.withdraw.amount || this.withdraw.amount < 100 || !this.withdraw.mode) {
-    this.toastr.error('Enter all required details and minimum ₹100 amount');
+    this.toastr.error('withdraw limit minimum ₹100 amount');
+    return;
+  }
+
+   if (!this.withdraw.amount || this.withdraw.amount > 20000 || !this.withdraw.mode) {
+    this.toastr.error('withdraw limit maximum ₹20,000 amount');
     return;
   }
 
