@@ -2098,7 +2098,7 @@ exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
             game_id: entry.game_id,
             game_name: entry.name,
             input_date: entry.input_date,
-            updated_at:entry.input_date,
+            updated_at:entry.updated_at,
             game_time_type: entry.game_time_type,
             playing_amount: 0,
             total_amount: entry.total_amount,
