@@ -52,7 +52,7 @@
                   ? '#0A7E8D'
                   : '#57A6FE'
             }">
-                        {{ resolveTxnLabel(transaction.txn_type) }}
+                        {{transaction.txn_type === 'win'?transaction.game_name  :transaction.txn_type === 'playing'?transaction.game_name: resolveTxnLabel(transaction.txn_type) }}
                     </div>
                     <div class="text-left text-[12px]">
                         <p class="font-medium flex items-center text-gray-800">

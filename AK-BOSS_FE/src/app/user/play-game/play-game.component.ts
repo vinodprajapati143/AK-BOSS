@@ -74,20 +74,53 @@ export class PlayGameComponent implements OnInit {
     this.selectedGameTimeType = type;
   }
 
-  isDigitValid(): boolean {
+  isDigitValidjodi(): boolean {
   if (!this.digit) return false;
   const val = this.digit.toString();
   return val.length === 2 && !isNaN(Number(val));
 }
 
-  addNumber() {
-    if (this.digit !== null && this.amount !== null) {
-      this.numbers.push({ digit: this.digit, amount: this.amount });
-      this.calculateTotal();
-      this.digit = null;
-      this.amount = null;
-    }
+  isDigitValidsingleank(): boolean {
+  if (!this.digit) return false;
+  const val = this.digit.toString();
+  return val.length === 1 && !isNaN(Number(val));
+}
+
+  isDigitValidsinglepanna(): boolean {
+  if (!this.digit) return false;
+  const val = this.digit.toString();
+  return val.length === 3 && !isNaN(Number(val));
+}
+
+addNumber() {
+  let minamount = 10;
+  let maxamount = 10000;
+
+  
+  
+  if (this.digit === null) {
+    this.toastr.error('Digit is required');
+    return;
   }
+  if (this.amount === null) {
+    this.toastr.error('Amount is required');
+    return;
+  }
+  if (this.amount < minamount) {
+    this.toastr.error(`Amount cannot be less than ${minamount}`);
+    return;
+  }
+  if (this.amount > maxamount) {
+    this.toastr.error(`Amount cannot be more than ${maxamount}`);
+    return;
+  }
+
+  this.numbers.push({ digit: this.digit, amount: this.amount });
+  this.calculateTotal();
+  this.digit = null;
+  this.amount = null;
+}
+
 
 
   calculateTotal() {
