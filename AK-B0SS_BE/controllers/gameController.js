@@ -1404,7 +1404,7 @@ async function creditReferralCommission(invitee_id, bet_amount, batch_id) {
     }
 
     const referrer_id = referralRelation[0].referrer_id;
-    const commission_rate = 0.10; // 10%
+    const commission_rate = 0.05; // 10%
     const commission_amount = Number(bet_amount) * commission_rate;
 
     // Get referrer's latest balance
@@ -2020,8 +2020,8 @@ exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
     // Define win rates for each game type
     const winRates = {
       single_ank: 9,
-      jodi_ank: 100,
-      singlepanna_ank: 10
+      jodi_ank: 90,
+      singlepanna_ank: 150
     };
 
     // --- Date Logic for RANGE (e.g. 7 days) ---
@@ -2098,6 +2098,7 @@ exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
             game_id: entry.game_id,
             game_name: entry.name,
             input_date: entry.input_date,
+            updated_at:entry.input_date,
             game_time_type: entry.game_time_type,
             playing_amount: 0,
             total_amount: entry.total_amount,
@@ -2209,6 +2210,8 @@ exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
           game_name: batch.game_name,
           created_at: batch.created_at,
           input_date: batch.input_date,
+          updated_at: batch.updated_at,
+
           game_time_type: batch.game_time_type,
           opening_balance,
           closing_balance,
