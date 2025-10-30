@@ -2116,8 +2116,9 @@ exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
         const resultRow = gameResults.find(
           gr =>
             Number(gr.game_id) === Number(batch.game_id) &&
-            String(gr.input_date).slice(0, 10) === String(batch.input_date).slice(0, 10)
+          String(gr.input_date).slice(0, 10) === String(batch.input_date).slice(0, 10)
         );
+        console.log('resultRow: ', resultRow);
 
         let totalWinAmount = 0;
         let isAnyWin = false;
