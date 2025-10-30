@@ -9,6 +9,8 @@ import { interval, Subscription } from 'rxjs';
 import { EditgameModuleComponent } from '../editgame-module/editgame-module.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FooterComponent } from '../../shared/footer/footer.component';
+import Swal from 'sweetalert2';
+
 export interface User {
   name: string;
   enabled: boolean;
@@ -397,8 +399,20 @@ export class AllGameComponent implements OnInit, OnDestroy {
 
     this.apiService.saveGameInput(payload).subscribe({
         next: (res) => {
-        alert('Game input saved successfully!');
-        this.loadGames(); // Reload games list after successful save
+            Swal.fire({
+                      icon: 'success',
+                      title: 'Game Saved',
+                      html: `'<strong>'Game input saved successfully!</strong>`,
+                      confirmButtonText: 'OK',
+                      confirmButtonColor: '#0A7E8D',
+                    });
+        this.loadGames();
+            if (!window.hasReloaded) {
+        window.hasReloaded = true;
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
       },
       error: (err) => {
         console.error(err);
@@ -440,5 +454,11 @@ export class AllGameComponent implements OnInit, OnDestroy {
     if (!/^\d+$/.test(pastedText)) {
       event.preventDefault(); // Prevent pasting non-digit text
     }
+  }
+}
+
+declare global {
+  interface Window {
+    hasReloaded?: boolean; // Optional property to track if reload has occurred
   }
 }

@@ -42,7 +42,6 @@ export class PlayGameComponent implements OnInit {
     this.gameDataService.getGameData().subscribe(game => {
       if (game) {
         this.game = game;
-        console.log('this.game: ', this.game);
         this.evaluateGameTime()
         // Setup UI accordingly
       } else {
