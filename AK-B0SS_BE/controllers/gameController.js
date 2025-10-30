@@ -2220,7 +2220,8 @@ exports.getAllPlayingRecordsWithWinForRange = async (req, res) => {
           selections: batch.selections,
           result: getResultEntry(resultRow),
           win_amount: totalWinAmount,
-          status
+          status,
+           result_updated_at: resultRow?.updated_date || null
         });
       }
     }
