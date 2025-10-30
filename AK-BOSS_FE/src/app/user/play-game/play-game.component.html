@@ -75,7 +75,7 @@
         [value]="totalAmount | currency:'INR':'symbol':'1.0-0'" readonly />
     </div>
     <!-- Submit -->
-    <button
+    <button [disabled]="isLoading"
       class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
       (click)="submit()">
       SUBMIT
@@ -137,7 +137,7 @@
     <input type="text" class="w-full border rounded-md px-3 py-2 font-semibold text-gray-800"
       [value]="totalAmount | currency:'INR':'symbol':'1.0-0'" readonly />
   </div>
-  <button
+  <button [disabled]="isLoading"
     class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
     (click)="submit()">
     SUBMIT
@@ -224,7 +224,7 @@
       [value]="totalAmount | currency:'INR':'symbol':'1.0-0'" readonly />
   </div>
   <!-- Submit -->
-  <button
+  <button [disabled]="isLoading"
     class="w-full btn-bg-color from-teal-500 to-indigo-600 text-white font-semibold mb-1 py-2 rounded-md mt-4 hover:opacity-90"
     (click)="submit()">
     SUBMIT

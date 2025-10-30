@@ -143,6 +143,7 @@ export class PlayGameComponent implements OnInit {
   }
 
   submit() {
+     if (this.isLoading) return;
     if (!this.numbers.length) {
       this.toastr.error('Please add at least one entry before submitting.');
       return;
