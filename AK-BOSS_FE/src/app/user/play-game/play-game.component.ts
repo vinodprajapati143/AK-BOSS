@@ -1,4 +1,11 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
 import { CommonModule, Location } from '@angular/common';
@@ -14,9 +21,15 @@ import { LoaderComponent } from '../../shared/loader/loader.component';
 @Component({
   selector: 'app-play-game',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent, CommonModule, LoaderComponent, FormsModule],
+  imports: [
+    FooterComponent,
+    HeaderComponent,
+    CommonModule,
+    LoaderComponent,
+    FormsModule,
+  ],
   templateUrl: './play-game.component.html',
-  styleUrl: './play-game.component.scss'
+  styleUrl: './play-game.component.scss',
 })
 export class PlayGameComponent implements OnInit {
   @Input() game: any;
@@ -34,17 +47,14 @@ export class PlayGameComponent implements OnInit {
   toastr = inject(ToastrService);
   router = inject(Router);
   selectedGameTimeType: any;
-    isOpenDisabled = false;
+  isOpenDisabled = false;
   isCloseDisabled = false;
 
-
-
-
   ngOnInit() {
-    this.gameDataService.getGameData().subscribe(game => {
+    this.gameDataService.getGameData().subscribe((game) => {
       if (game) {
         this.game = game;
-        this.evaluateGameTime()
+        this.evaluateGameTime();
         // Setup UI accordingly
       } else {
         // Redirect or show message
@@ -76,56 +86,55 @@ export class PlayGameComponent implements OnInit {
   }
 
   isDigitValidjodi(): boolean {
-  if (!this.digit) return false;
-  const val = this.digit.toString();
-  return val.length === 2 && !isNaN(Number(val));
-}
+    if (!this.digit) return false;
+    const val = this.digit.toString();
+    return val.length === 2 && !isNaN(Number(val));
+  }
 
   isDigitValidsingleank(): boolean {
-  if (!this.digit) return false;
-  const val = this.digit.toString();
-  return val.length === 1 && !isNaN(Number(val));
-}
+    if (!this.digit) return false;
+    const val = this.digit.toString();
+    return val.length === 1 && !isNaN(Number(val));
+  }
 
   isDigitValidsinglepanna(): boolean {
-  if (!this.digit) return false;
-  const val = this.digit.toString();
-  return val.length === 3 && !isNaN(Number(val));
-}
-
-addNumber() {
-  let minamount = 10;
-  let maxamount = 10000;
-
-  
-  
-  if (this.digit === null) {
-    this.toastr.error('Digit is required');
-    return;
-  }
-  if (this.amount === null) {
-    this.toastr.error('Amount is required');
-    return;
-  }
-  if (this.amount < minamount) {
-    this.toastr.error(`Amount cannot be less than ${minamount}`);
-    return;
-  }
-  if (this.amount > maxamount) {
-    this.toastr.error(`Amount cannot be more than ${maxamount}`);
-    return;
+    if (!this.digit) return false;
+    const val = this.digit.toString();
+    return val.length === 3 && !isNaN(Number(val));
   }
 
-  this.numbers.push({ digit: this.digit, amount: this.amount });
-  this.calculateTotal();
-  this.digit = null;
-  this.amount = null;
-}
+  addNumber() {
+    let minamount = 10;
+    let maxamount = 10000;
 
+    if (this.digit === null) {
+      this.toastr.error('Digit is required');
+      return;
+    }
+    if (this.amount === null) {
+      this.toastr.error('Amount is required');
+      return;
+    }
+    if (this.amount < minamount) {
+      this.toastr.error(`Amount cannot be less than ${minamount}`);
+      return;
+    }
+    if (this.amount > maxamount) {
+      this.toastr.error(`Amount cannot be more than ${maxamount}`);
+      return;
+    }
 
+    this.numbers.push({ digit: this.digit, amount: this.amount });
+    this.calculateTotal();
+    this.digit = null;
+    this.amount = null;
+  }
 
   calculateTotal() {
-    this.totalAmount = this.numbers.reduce((sum, item) => sum + Number(item.amount), 0);
+    this.totalAmount = this.numbers.reduce(
+      (sum, item) => sum + Number(item.amount),
+      0
+    );
   }
 
   removeNumber(index: number) {
@@ -134,88 +143,76 @@ addNumber() {
   }
 
   submit() {
+    if (!this.numbers.length) {
+      this.toastr.error('Please add at least one entry before submitting.');
+      return;
+    }
 
     const todayDate = new Date().toISOString().split('T')[0];
-    console.log('todayDate: ', todayDate);
-
 
     const payload = {
-
       game_id: this.game.id,
       input_date: todayDate,
       name: this.game.name,
       total_amount: this.totalAmount,
       entrytype: this.game.entrytype,
       game_time_type: this.selectedGameTimeType,
-      entries: this.numbers.map(item => ({
+      entries: this.numbers.map((item) => ({
         digit: Number(item.digit),
-        amount: item.amount
-      }))
+        amount: item.amount,
+      })),
     };
 
-    console.log("Payload for submission:", payload);
+    this.isLoading = true; // ✅ Start loader
 
-switch(this.game.entrytype) {
-    case 'singleank':
-      this.apiservice.saveEntries(payload, 'single').subscribe({
-        next: (response) => {
-          console.log('Single Ank saved', response);
-          this.handleSuccess(response);
-        },
-        error: (err) => {
-          console.error('Error saving Single Ank', err);
-          this.handleError(err);
-        }
-      });
-      break;
+    const handleResponse = (response: any) => {
+      this.isLoading = false; // ✅ Stop loader
+      this.handleSuccess(response);
+    };
 
-    case 'jodi':
-      this.apiservice.saveEntries(payload, 'jodi').subscribe({
-        next: (response) => {
-          console.log('Jodi saved', response);
-          this.handleSuccess(response);
-        },
-        error: (err) => {
-          console.error('Error saving Jodi', err);
-          this.handleError(err);
-        }
-      });
-      break;
+    const handleError = (err: any) => {
+      this.isLoading = false; // ✅ Stop loader
+      this.handleError(err);
+    };
+
+    switch (this.game.entrytype) {
+      case 'singleank':
+        this.apiservice.saveEntries(payload, 'single').subscribe({
+          next: handleResponse,
+          error: handleError,
+        });
+        break;
+
+      case 'jodi':
+        this.apiservice.saveEntries(payload, 'jodi').subscribe({
+          next: handleResponse,
+          error: handleError,
+        });
+        break;
 
       case 'singlepanna':
-      this.apiservice.saveEntries(payload, 'singlepanna').subscribe({
-        next: (response) => {
-          console.log('singlepanna Ank saved', response);
-          this.handleSuccess(response);
-        },
-        error: (err) => {
-          console.error('Error saving singlepanna Ank', err);
-          this.handleError(err);
-        }
-      });
-      break;
+        this.apiservice.saveEntries(payload, 'singlepanna').subscribe({
+          next: handleResponse,
+          error: handleError,
+        });
+        break;
 
-    // Add cases for other entry types following similar structure
-    // Note: Make sure backend API and service support these
-
-    default:
-      console.warn('Unsupported entry type:', this.game.entrytype);
-      break;
+      default:
+        this.isLoading = false;
+        console.warn('Unsupported entry type:', this.game.entrytype);
+        break;
+    }
   }
 
-
-
-    // yahan aap HTTP call karke payload backend ko send kar sakte hain
+  handleSuccess(response: any) {
+    this.toastr.success(response.message);
+    this.walletService.refreshWallet();
+    this.router.navigate(['/user/report']);
   }
-    handleSuccess(response: any) {
-  this.toastr.success(response.message);
-  this.walletService.refreshWallet();
-  this.router.navigate(['/user/report']);
-}
 
-handleError(err: any) {
-  this.toastr.error(err.data.message || 'Error occurred');
-}
+  handleError(err: any) {
+    this.toastr.error(err.data.message || 'Error occurred');
+  }
   back() {
     this.location.back();
   }

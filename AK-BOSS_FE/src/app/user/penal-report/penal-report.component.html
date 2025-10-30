@@ -6,7 +6,7 @@
     <app-floating-buttons />
     <app-loader *ngIf="isLoading"></app-loader>
     <!-- Yellow Title Bar -->
-     <div >
+     <div [class.blur-bg]="isLoading">
     <div 
         class="bg-[#EDF0F5] border border-solid border-black flex items-center justify-between px-4 h-14 border-b mt-[65px]">
         <button (click)="goBack()"

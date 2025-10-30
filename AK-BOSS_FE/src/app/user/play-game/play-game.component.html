@@ -1,6 +1,7 @@
 <app-header></app-header>
 <app-loader *ngIf="isLoading"></app-loader>
-<!-- Single Ank -->
+<div [class.blur-bg]="isLoading">
+  <!-- Single Ank -->
 @if(this.game.entrytype == 'singleank'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">
     <h2 class="text-lg font-semibold text-center text-teal-700 uppercase">{{ game.name }} - Single Ank</h2>
@@ -332,5 +333,6 @@
 </div>
 }
 
+</div>
 
 <app-footer></app-footer>

@@ -11,7 +11,7 @@ import { LoaderComponent } from '../../shared/loader/loader.component';
 @Component({
   selector: 'app-penal-report',
   standalone: true,
-  imports: [MarqureeComponent, HeaderComponent, LoaderComponent, FloatingButtonsComponent,CommonModule],
+  imports: [MarqureeComponent, HeaderComponent, LoaderComponent, FloatingButtonsComponent, CommonModule],
   templateUrl: './penal-report.component.html',
   styleUrl: './penal-report.component.scss'
 })
@@ -29,102 +29,110 @@ export class PenalReportComponent {
   weekCells: any;
   weekRows: any;
   weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-formatDate(date: Date): string {
-  const yyyy = date.getFullYear();
-  const mm = (date.getMonth() + 1).toString().padStart(2, '0');
-  const dd = date.getDate().toString().padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-getMonday(dateStr: string): Date {
-  const date = new Date(dateStr);
-  const day = date.getDay(); // 0=Sun, 1=Mon,...6=Sat
-  const diff = (day === 0 ? -6 : 1) - day; // Calculate offset to Monday
-  date.setDate(date.getDate() + diff);
-  return date;
-}
-
- getDayName(date: Date): string {
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  return days[date.getDay()];
-}
-
-chunkArray(arr: any[], chunkSize: number) {
-  const chunks = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    chunks.push(arr.slice(i, i + chunkSize));
+  formatDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0');
+    const dd = date.getDate().toString().padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
-  return chunks;
-}
+
+  getMonday(dateStr: string): Date {
+    const date = new Date(dateStr);
+    const day = date.getDay(); // 0=Sun, 1=Mon,...6=Sat
+    const diff = (day === 0 ? -6 : 1) - day; // Calculate offset to Monday
+    date.setDate(date.getDate() + diff);
+    return date;
+  }
+
+  getDayName(date: Date): string {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return days[date.getDay()];
+  }
+
+  chunkArray(arr: any[], chunkSize: number) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      chunks.push(arr.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
   ngOnInit() {
- 
+    this.isLoading = true;
 
-  // Ya agar query params use kiye to:
-  this.route.queryParamMap.subscribe(queryParams => {
+    this.route.queryParamMap.subscribe(queryParams => {
       const today = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(today.getDate() - 6); // Include today + past 6 days = 7 days
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(today.getDate() - 6); // 7 days (today + past 6)
 
-  this.fromDate = this.formatDate(oneWeekAgo);
-  this.toDate = this.formatDate(today);
-  this.selectedGameId = queryParams.get('gameId');
+      this.fromDate = this.formatDate(oneWeekAgo);
+      this.toDate = this.formatDate(today);
+      this.selectedGameId = queryParams.get('gameId');
 
-  this.loadPanelRecords();
-    // Use gameId
-  });
-}
+      this.loadPanelRecords();
+    });
+  }
 
-loadPanelRecords() {
-  this.apiService.getPanelRecords(this.selectedGameId, this.fromDate, this.toDate)
-    .subscribe(data => {
-      this.records = data.records;
-      this.game_name = data.game_name
-      this.result = data.latestResultString
- // Step 1: Find earliest and latest dates from records
-      const datesList = this.records.map(r => r.input_date).sort();
-      const earliestDateStr = datesList[0];
-      const latestDateStr = datesList[datesList.length - 1];
+  loadPanelRecords() {
+    this.isLoading = true;
 
-      // Step 2: Get Monday for earliest date
-      const weekStart = this.getMonday(earliestDateStr);
+    this.apiService.getPanelRecords(this.selectedGameId, this.fromDate, this.toDate)
+      .subscribe({
+        next: (data) => {
+          this.records = data.records;
+          this.game_name = data.game_name;
+          this.result = data.latestResultString;
 
-      // Step 3: Build days from Monday till latest date (inclusive)
-      const weekCells = [];
-      let currentDate = new Date(weekStart);
+          // Step 1: Find earliest and latest dates
+          const datesList = this.records.map(r => r.input_date).sort();
+          const earliestDateStr = datesList[0];
+          const latestDateStr = datesList[datesList.length - 1];
 
-      while (this.formatDate(currentDate) <= latestDateStr) {
-        const dateStr = this.formatDate(currentDate);
+          // Step 2: Get Monday for earliest date
+          const weekStart = this.getMonday(earliestDateStr);
 
-        // Find record for this date or ** if missing
-        const rec = this.records.find(r => r.input_date === dateStr);
-        // panelLeft = ["1","2","3"];
-        // panelRight = ["6","7","8"];
-        weekCells.push({
-          day: this.getDayName(currentDate),
-          date: dateStr,
-          jodi_value: rec ? rec.jodi : '**',
-          panelLeft: rec ? rec.panelLeft : ["*","*","*"],
-          panelRight: rec ? rec.panelRight : ["*","*","*"]
-        });
+          // Step 3: Build day-wise records
+          const weekCells = [];
+          let currentDate = new Date(weekStart);
 
-        // increment one day
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
+          while (this.formatDate(currentDate) <= latestDateStr) {
+            const dateStr = this.formatDate(currentDate);
+            const rec = this.records.find(r => r.input_date === dateStr);
 
-      this.weekCells = weekCells;
-      this.weekRows = this.chunkArray(this.weekCells, 7);
-}
-    )}
+            weekCells.push({
+              day: this.getDayName(currentDate),
+              date: dateStr,
+              jodi_value: rec ? rec.jodi : '**',
+              panelLeft: rec ? rec.panelLeft : ["*", "*", "*"],
+              panelRight: rec ? rec.panelRight : ["*", "*", "*"]
+            });
 
-   goBack() {
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+
+          this.weekCells = weekCells;
+          this.weekRows = this.chunkArray(this.weekCells, 7);
+          this.isLoading = false; // ✅ Stop loader after success
+        },
+        error: (err) => {
+          console.error('Error loading panel records:', err);
+          this.isLoading = false; // ✅ Stop loader even if error
+        }
+      });
+  }
+
+  refresh() {
+    this.isLoading = true;
+    this.loadPanelRecords(); // ✅ reload data instead of reloading page
+  }
+  goBack() {
     this.router.navigate(['/user/home']);
   }
 
 
   scrollTo(target: string) {
-  const element = document.getElementById(target);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const element = document.getElementById(target);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
-}
 }
