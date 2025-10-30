@@ -1773,10 +1773,13 @@ exports.getAllPlayingRecords = async (req, res) => {
     }
 
     const result = [];
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // last 7 days including today
+    const dateFrom = sevenDaysAgo.toISOString().slice(0, 10);
     for (const tableName of entryTables) {
-      const [entries] = await db.query(
-        `SELECT * FROM ${tableName} WHERE user_id=? ORDER BY created_at DESC`,
-        [user_id]
+       const [entries] = await db.query(
+        `SELECT * FROM ${tableName} WHERE user_id=? AND created_at >= ? ORDER BY created_at DESC`,
+        [user_id, dateFrom]
       );
       const batches = {};
       for (const entry of entries) {
