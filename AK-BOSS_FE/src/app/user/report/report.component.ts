@@ -126,10 +126,10 @@ ngOnInit() {
           txn_type: 'playing',
           txn_time: txn.created_at,
         })),
-        ...this.winrecords.map((txn: { created_at: any }) => ({
+        ...this.winrecords.map((txn: { result_updated_at: any }) => ({
           ...txn,
           txn_type: 'win',
-          txn_time: txn.created_at,
+          txn_time: txn.result_updated_at,
         })),
         ...this.withdrawals.map((txn: { requested_at: any }) => ({
           ...txn,

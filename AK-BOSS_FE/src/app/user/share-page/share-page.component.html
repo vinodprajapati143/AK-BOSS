@@ -56,26 +56,30 @@
 
         <!-- Expanded Details -->
         <div *ngIf="transaction.active" class="p-1 border border-[#20A2A0] rounded-lg bg-white mx-2 my-1 shadow-sm">
-          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 pb-1">
-            <span class="font-semibold">Batch Id</span>
-            <span class="font-semibold text-right">{{ transaction.batch_id }}</span>
-          </div>
-          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
-            <span class="font-semibold">Bid Amount</span>
-            <span class="text-[#00D457] font-semibold text-right">{{ transaction.bid_amount }}</span>
-          </div>
-          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
-            <span class="font-semibold">Commission</span>
-            <span class="text-[#00D457] font-semibold text-right">₹{{ transaction.commission }}</span>
-          </div>
-          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
-            <span class="font-semibold">Game Name</span>
-            <span class="font-semibold text-right">{{ transaction.game_name }}</span>
-          </div>
-          <div class="grid grid-cols-2 text-sm px-2 pt-1">
-            <span class="font-semibold">Bet Date</span>
-            <span class="font-semibold text-right">{{ transaction.bet_date | date:'dd-MM-yyyy hh:mm a':'IST' }}</span>
-          </div>
+            <ng-container *ngFor="let item of transaction.invitee_bid_commision">
+              
+                        <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 pb-1">
+                          <span class="font-semibold">Batch Id</span>
+                          <span class="font-semibold text-right">{{ item.batch_id }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
+                          <span class="font-semibold">Bid Amount</span>
+                          <span class="text-[#00D457] font-semibold text-right">{{ item.bid_amount }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
+                          <span class="font-semibold">Commission</span>
+                          <span class="text-[#00D457] font-semibold text-right">₹{{ item.commission }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
+                          <span class="font-semibold">Game Name</span>
+                          <span class="font-semibold text-right">{{ item.game_name }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 text-sm px-2 pt-1">
+                          <span class="font-semibold">Bet Date</span>
+                          <span class="font-semibold text-right">{{ item.bet_date | date:'dd-MM-yyyy hh:mm a':'IST' }}</span>
+                        </div>
+
+            </ng-container>
         </div>
       </ng-container>
 
