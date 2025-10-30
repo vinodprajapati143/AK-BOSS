@@ -123,42 +123,52 @@ exports.getWithdrawalsWithBalance = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // 1. Withdrawal list (latest first)
+    // Calculate date 7 days ago
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+    const dateFrom = sevenDaysAgo.toISOString();
+
+    // 1. Fetch withdrawals for last 7 days
     const [withdrawals] = await db.query(
-      "SELECT * FROM withdrawal_requests WHERE user_id = ? ORDER BY requested_at DESC",
-      [userId]
+      "SELECT * FROM withdrawal_requests WHERE user_id = ? AND requested_at >= ? ORDER BY requested_at DESC",
+      [userId, dateFrom]
     );
 
-    // 2. Sabhi withdrawals ka time/ID loop karke balances nikaalo
-    const withdrawalWithBalances = [];
-    for (const w of withdrawals) {
-      // Closing balance at/after withdrawal time
-      const [closingWallet] = await db.query(
-        "SELECT balance_after FROM user_wallet WHERE user_id = ? AND created_at <= ? ORDER BY created_at DESC LIMIT 1",
-        [userId, w.requested_at]
-      );
-      const closing = closingWallet.length ? Number(closingWallet[0].balance_after) : 0;
+    if (withdrawals.length === 0) {
+      return res.status(200).json([]);
+    }
 
-      // Opening balance = last wallet entry before this withdrawal
-      const [openingWallet] = await db.query(
-        "SELECT balance_after FROM user_wallet WHERE user_id = ? AND created_at < ? ORDER BY created_at DESC LIMIT 1",
-        [userId, w.requested_at]
-      );
-      const opening = openingWallet.length ? Number(openingWallet[0].balance_after) : 0;
+    // 2. Fetch wallet entries from dateFrom to now (descending order)
+    const [walletEntries] = await db.query(
+      "SELECT balance_after, created_at FROM user_wallet WHERE user_id = ? AND created_at >= ? ORDER BY created_at DESC",
+      [userId, dateFrom]
+    );
 
-      withdrawalWithBalances.push({
+    // 3. Map withdrawals with opening and closing balances using in-memory search
+    const withdrawalWithBalances = withdrawals.map(w => {
+      // Find closest wallet entry <= requested_at (closing balance)
+      const closingEntry = walletEntries.find(e => e.created_at <= w.requested_at);
+      const closing = closingEntry ? Number(closingEntry.balance_after) : 0;
+
+      // Find closest wallet entry < requested_at (opening balance)
+      const openingEntry = walletEntries.find(e => e.created_at < w.requested_at);
+      const opening = openingEntry ? Number(openingEntry.balance_after) : 0;
+
+      return {
         ...w,
         opening_balance: opening,
         closing_balance: closing
-      });
-    }
+      };
+    });
 
+    // Return results
     return res.status(200).json(withdrawalWithBalances);
   } catch (err) {
     console.error("Withdrawal List Error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 // GET /api/admin/withdrawals
 exports.getAllWithdrawalRequests = async (req, res) => {
