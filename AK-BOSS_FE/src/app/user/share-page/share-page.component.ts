@@ -18,20 +18,8 @@ export class SharePageComponent {
   apiService = inject(ApiService)
   toastr = inject(ToastrService)
   platformId = inject(PLATFORM_ID);
- transactions = [
-    {
-      invitee_id: '1',
-      invitee_code: 'AK_111***',
-      invitee_username: 'Ajay Reff',
-      invitee_phone: '987456321',
-      reward_amount: '50',
-      status: 'success',
-      date: '12-08-2023',
-      active: false,
-    },
-  ];
-  
- referralList:any
+  isLoading: boolean = false;  
+  referralList: any
 
   inviteLink: string = '';
     getDomainUrl(): string {
@@ -44,29 +32,34 @@ export class SharePageComponent {
    this.referralCode();
 }
 
-referralCode(){
- this.apiService.getReferralCode().subscribe({
+referralCode() {
+  this.isLoading = true;
+  this.apiService.getReferralCode().subscribe({
     next: (res: any) => {
       if (res && res.inviteCode) {
-        this.inviteLink = ` ${this.getDomainUrl()}/auth/register?ref=${res.inviteCode}`;
-        this.referList()
+        this.inviteLink = `${this.getDomainUrl()}/auth/register?ref=${res.inviteCode}`;
+        this.referList();
+      } else {
+        this.isLoading = false; // stop loader if no referral code found
       }
     },
     error: (err) => {
       console.error('Failed to get referral code', err);
+      this.isLoading = false;
     }
   });
 }
 
-referList(){
- this.apiService.getReferralList().subscribe({
+referList() {
+  this.isLoading = true;
+  this.apiService.getReferralList().subscribe({
     next: (res: any) => {
-      if (res) {
-        this.referralList = res.referrals;
-      }
+      this.referralList = res?.referrals || [];
+      this.isLoading = false; // stop loader after data load
     },
     error: (err) => {
-      console.error('Failed to get referral code', err);
+      console.error('Failed to get referral list', err);
+      this.isLoading = false;
     }
   });
 }

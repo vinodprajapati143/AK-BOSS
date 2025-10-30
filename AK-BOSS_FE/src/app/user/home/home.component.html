@@ -1,12 +1,15 @@
 <!-- akboss.component.html -->
-<div class="bg-white text-gray-800 font-sans relative mt-16">
+<div class="bg-white text-gray-800 font-sans relative mt-16" >
 
   <app-floating-buttons />
 
   <!-- Header -->
   <app-header></app-header>
+  <div *ngIf="isLoading" class="loader-overlay">
+  <div class="loader"></div>
+</div>
 
-  <div class="flex justify-between items-center bg-gray-100 border-y border-y-solid border-y-black shadow py-2 px-4">
+  <div class="flex justify-between items-center bg-gray-100 border-y border-y-solid border-y-black shadow py-2 px-4" [class.blur-bg]="isLoading">
 
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="60"
       viewBox="0 0 84 84" fill="none">
@@ -41,7 +44,7 @@
 
   <!-- Description -->
   <div
-    class="flex flex-col justify-between items-center bg-gray-100 border-y border-y-solid border-y-black shadow mt-2 py-2">
+    class="flex flex-col justify-between items-center bg-gray-100 border-y border-y-solid border-y-black shadow mt-2 py-2" [class.blur-bg]="isLoading">
     <div class="text-center text-[20px] text-[#0A7E8D] font-bold ">
       Satta Matka ak247pro.com Kalyan Matka Result
     </div>
@@ -54,7 +57,7 @@
   </div>
 
   <!-- Golden Ank Section -->
-  <div
+  <div [class.blur-bg]="isLoading"
     class="sm:flex hidden justify-around items-center gap-4 mt-2 px-4 h-[185px] bg-[#0A7E8D] border-y border-y-solid border-y-black shadow">
     <div class="w-[250px] border border-gray-400 rounded overflow-hidden">
       <!-- Header -->
@@ -89,7 +92,7 @@
 
   </div>
 
-    <div
+    <div [class.blur-bg]="isLoading"
     class="flex flex-col sm:hidden justify-center items-center mt-2 h-auto bg-[#0A7E8D] border-y border-y-solid border-y-black shadow">
 
     <div class="bg-[#0A7E8D] text-white rounded shadow text-center w-full h-[40px] flex items-center justify-center">
@@ -137,16 +140,16 @@
   </div>
 
   <!-- Live Result Banner -->
-  <div class="text-[#0A7E8D] border-y border-y-solid border-y-black shadow text-center py-2 mt-2 font-bold live-result">
+  <div [class.blur-bg]="isLoading" class="text-[#0A7E8D] border-y border-y-solid border-y-black shadow text-center py-2 mt-2 font-bold live-result">
     LIVE RESULT
   </div>
-  <div
+  <div [class.blur-bg]="isLoading"
     class="bg-[#0A7E8D] mt-2 border-y border-y-solid shadow text-white text-center py-1 text-sm font-semibold border-b border-gray-300 ">
     Sabse Tezz Live Result Yahi Milega
   </div>
 
   <!-- Result Cards -->
-  <div class="w-full border border-gray-300" *ngFor="let game of games">
+  <div class="w-full border border-gray-300" *ngFor="let game of games" [class.blur-bg]="isLoading">
     <!-- Top Section -->
    <!-- <app-game-display
   [gameName]="'GAGAN DAY'"
@@ -156,7 +159,7 @@
   >
 </app-game-display> -->
 
- <app-game-display
+ <app-game-display 
     [gameName]="game.game_name"
     [stars]="game.starsWithDashes"
     [openHH]="formatTime(game.openCountdown).h"
@@ -176,7 +179,7 @@
 
   </div>
 
-  <div class="bg-gray-100 py-2 text-center mt-2 border-y border-y-solid border-y-black shadow">
+  <div class="bg-gray-100 py-2 text-center mt-2 border-y border-y-solid border-y-black shadow" [class.blur-bg]="isLoading">
     <!-- Heading -->
     <h2 class="text-[#0A7E8D] font-bold text-[30px]">
       ☆ NOTICE ☆
@@ -198,7 +201,7 @@
     </p>
   </div>
 
-  <div class="flex bg-[#0A7E8D] justify-between  items-center border-y border-y-solid border-y-black shadow mt-2 py-2">
+  <div class="flex bg-[#0A7E8D] justify-between  items-center border-y border-y-solid border-y-black shadow mt-2 py-2" [class.blur-bg]="isLoading">
     <p class="px-4 text-center text-white text-sm mt-1">
       KALYAN MATKA | MATKA RESULT | KALYAN MATKA TIPS | SATTA MATKA | MATKA.COM | MATKA PANA JODI TODAY | BATTA SATKA |
       MATKA PATTI JODI NUMBER | MATKA RESULTS | MATKA CHART | MATKA JODI | SATTA COM | FULL RATE GAME | MATKA GAME |
@@ -206,13 +209,13 @@
     </p>
   </div>
 
-  <app-marquree></app-marquree>
+  <app-marquree [class.blur-bg]="isLoading"></app-marquree>
 
-  <div class="text-[#0A7E8D] border-y border-y-solid border-y-black shadow text-center py-2 mt-2 font-bold live-result">
+  <div class="text-[#0A7E8D] border-y border-y-solid border-y-black shadow text-center py-2 mt-2 font-bold live-result" [class.blur-bg]="isLoading">
     WORLD ME SABSE FAST SATTA MATKA RESULT
   </div>
 
-  <div class="space-y-2">
+  <div class="space-y-2" [class.blur-bg]="isLoading">
 
     <!-- Madhur Day Card -->
     <div *ngFor="let game of gamesResult"

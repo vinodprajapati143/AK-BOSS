@@ -1,5 +1,9 @@
 <app-header></app-header>
-<div class="w-full max-w-full px-4 mx-auto mt-16 bg-gray-50 relative">
+<div *ngIf="isLoading" class="loader-overlay">
+  <div class="loader"></div>
+</div>
+
+<div class="w-full max-w-full px-4 mx-auto mt-16 bg-gray-50 relative" [class.blur-bg]="isLoading">
 
     <!-- Header -->
     <h2 class="text-lg pl-4 font-bold text-[#4A628A] mb-2">User Profile</h2>

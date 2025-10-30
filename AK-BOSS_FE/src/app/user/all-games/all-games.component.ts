@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FooterComponent } from "../../shared/footer/footer.component";
 import { NgFor, Location, CommonModule } from '@angular/common';
 import { AdminRoutingModule } from "../../admin/admin-routing.module";
@@ -8,6 +8,8 @@ import { GamedataService } from '../../core/services/gamedata.service';
 import { PlayGameComponent } from '../play-game/play-game.component';
 import { take } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -17,85 +19,101 @@ import { ApiService } from '../../core/services/api.service';
   templateUrl: './all-games.component.html',
   styleUrl: './all-games.component.scss'
 })
-export class AllGamesComponent {
+export class AllGamesComponent implements OnInit, OnDestroy {
+
+  // 🧩 Dependencies
   router = inject(Router);
-  gameDataService = inject(GamedataService);
-  gameService = inject(ApiService); 
   location = inject(Location);
+  gameService = inject(ApiService);
+  gameDataService = inject(GamedataService);
+
+  // 🎮 Data
+  isLoading: boolean = false;
   gameName: string = '';
   selectedGame: any = null;
 
+  private subscription!: Subscription;
 
-menuItems = [
-  { title: 'Single Ank', icon: 'assets/images/dice.png', active: false, entryType: 'singleank' },
-  { title: 'Jodi', icon: 'assets/images/dice.png', active: false, entryType: 'jodi' },
-  { title: 'Single Panna', icon: 'assets/images/dice.png', active: false, entryType: 'singlepanna' },
-  { title: 'Double Panna', icon: 'assets/images/dice.png', active: false, entryType: 'doublepanna' },
-  { title: 'Triple Panna', icon: 'assets/images/dice.png', active: false, entryType: 'triplepanna' },
-  { title: 'Half Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'halfsangama' },
-  { title: 'Full Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'fullsangam' },
-];
+  // 📋 Menu Items
+  menuItems = [
+    { title: 'Single Ank', icon: 'assets/images/dice.png', active: false, entryType: 'singleank' },
+    { title: 'Jodi', icon: 'assets/images/dice.png', active: false, entryType: 'jodi' },
+    { title: 'Single Panna', icon: 'assets/images/dice.png', active: false, entryType: 'singlepanna' },
+    { title: 'Double Panna', icon: 'assets/images/dice.png', active: false, entryType: 'doublepanna' },
+    { title: 'Triple Panna', icon: 'assets/images/dice.png', active: false, entryType: 'triplepanna' },
+    { title: 'Half Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'halfsangama' },
+    { title: 'Full Sangam', icon: 'assets/images/dice.png', active: false, entryType: 'fullsangam' },
+  ];
 
+  // 🧭 Lifecycle
+  ngOnInit(): void {
+    this.subscription = this.gameDataService.getGameData().pipe(take(1)).subscribe((gameData) => {
+      this.gameName = gameData.name;
+    });
+  }
 
-ngOnInit() {
-  this.gameDataService.getGameData().pipe(take(1)).subscribe((gameData) => {
-    this.gameName = gameData.name;
-  });
-}
+  ngOnDestroy(): void {
+    // 🧹 Cleanup
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
 
+  // 🎯 Game Click Logic
+  onGameClick(item: any) {
+    this.isLoading = true;
 
+    this.subscription = this.gameDataService.getGameData().pipe(take(1)).subscribe({
+      next: (gameData) => {
+        console.log('item: ', item);
+        console.log('gameData: ', gameData);
 
-onGameClick(item: any) {
-  console.log('item: ', item);
+        let canProceed = true;
 
-  this.gameDataService.getGameData().pipe(take(1)).subscribe((gameData) => {
-    console.log('gameData: ', gameData);
+        // 🚫 Restrict only Jodi entry after open time
+        if (item.entryType === 'jodi') {
+          const currentTime = new Date();
+          const [hours, minutesPart] = gameData.open_time.split(':');
+          const [minutes, meridian] = minutesPart.split(' ');
 
-    let canProceed = true;
+          let openHour = parseInt(hours, 10);
+          const openMinute = parseInt(minutes, 10);
 
-    // 🚫 Only restrict jodi
-    if (item.entryType === 'jodi') {
-      const currentTime = new Date();
+          if (meridian === 'PM' && openHour !== 12) openHour += 12;
+          if (meridian === 'AM' && openHour === 12) openHour = 0;
 
-      // Parse open_time (e.g., "5:15 PM")
-      const [hours, minutesPart] = gameData.open_time.split(':');
-      const [minutes, meridian] = minutesPart.split(' ');
-      let openHour = parseInt(hours, 10);
-      const openMinute = parseInt(minutes, 10);
+          const openTime = new Date();
+          openTime.setHours(openHour, openMinute, 0, 0);
 
-      if (meridian === 'PM' && openHour !== 12) openHour += 12;
-      if (meridian === 'AM' && openHour === 12) openHour = 0;
+         if (currentTime > openTime) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Entry Closed',
+              html: `You cannot make an entry.<br><b>${gameData.name}</b> open time is already over.<br><br><strong>${gameData.open_time}</strong>`,
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#0A7E8D',
+            });
+            canProceed = false;
+          }
+        }
 
-      const openTime = new Date();
-      openTime.setHours(openHour, openMinute, 0, 0);
+        // ✅ Proceed if allowed
+        if (canProceed) {
+          this.gameDataService.updateEntryType(item.entryType);
+          this.router.navigate(['/user/play']);
+          this.menuItems.forEach(i => (i.active = false));
+          item.active = true;
+          this.selectedGame = item;
+        }
 
-      console.log('Current Time:', currentTime);
-      console.log('Open Time:', openTime);
-
-      if (currentTime > openTime) {
-        alert(`You cannot make an entry. ${gameData.name} open time is already over (${gameData.open_time}).`);
-        canProceed = false;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.isLoading = false;
       }
-    }
-
-    // ✅ Proceed if allowed
-    if (canProceed) {
-      this.gameDataService.updateEntryType(item.entryType);
-      this.router.navigate(['/user/play']);
-      this.menuItems.forEach(i => (i.active = false));
-      item.active = true;
-      this.selectedGame = item;
-    }
-  });
-}
-
-
-
-
- 
- 
-
-
+    });
+  }
 
   back() {
     this.location.back();

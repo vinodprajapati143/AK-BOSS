@@ -17,15 +17,52 @@ import { GamedataService } from '../../core/services/gamedata.service';
   styleUrl: './user-dashboard.component.scss'
 })
 export class UserDashboardComponent implements OnInit,OnDestroy{
-  router = inject(Router);
+    router = inject(Router);
   gameService = inject(ApiService);
   gameDataService = inject(GamedataService);
 
-
   games: UserGame[] = [];
-  loading = true;
+  isLoading: boolean = false;
+  private subscription!: Subscription;
 
-   private subscription!: Subscription;
+  ngOnInit(): void {
+    this.loadGames();
+  }
+
+  loadGames() {
+    this.isLoading = true; // 🔹 Loader start
+
+    this.subscription = this.gameService.getUserGames().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.games = res.data;
+        } else {
+          console.warn('API responded with success=false');
+        }
+        this.isLoading = false; // 🔹 Loader stop
+      },
+      error: (err) => {
+        console.error('API error:', err);
+        this.isLoading = false; // 🔹 Loader stop even if failed
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    // 🔹 Component destroy hone par subscription cleanup
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  playGame(game: any) {
+    this.gameDataService.setGameData(game);
+    this.router.navigate(['/user/all-games']);
+  }
+
+  openChart() {
+    this.router.navigate(['/user/share-page']);
+  }
 
   openWhatsApp() {
     const phoneNumber = "919575259525";
@@ -37,39 +74,5 @@ export class UserDashboardComponent implements OnInit,OnDestroy{
   closeWhatsApp() {
     const url = `https://wa.me/919575259525?text=Goodbye`;
     window.open(url, "_blank");
-  }
-
-  openChart() {
-    this.router.navigate(['/user/share-page']);
-  }
-
-    ngOnInit(): void {
-   this.loadGames()
-  }
-
-  loadGames(){
-   this.subscription=  this.gameService.getUserGames().subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.games = res.data;
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('API error:', err);
-        this.loading = false;
-      }
-    });
-  }
-
-    ngOnDestroy(): void {
-    // 👇 component destroy hote hi API calls band
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-  playGame(game:any) {
-    this.gameDataService.setGameData(game);
-    this.router.navigate(['/user/all-games']);
   }
 }

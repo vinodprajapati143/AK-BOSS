@@ -1,5 +1,8 @@
 <app-header></app-header>
-<div class="w-full mt-16 bg-gray-50 min-h-screen">
+<div *ngIf="isLoading" class="loader-overlay">
+  <div class="loader"></div>
+</div>
+<div class="w-full mt-16 mb-[60px] bg-gray-50 min-h-screen" [class.blur-bg]="isLoading">
 
   <!-- Earnings Section -->
   <div class="grid grid-cols-2 gap-4 p-4 mt-4 card-bg">
@@ -29,61 +32,52 @@
   </div>
 
   <!-- Referral List -->
-  <div class="px-4 mt-6">
+  <div class="px-2 mt-6 ">
     <h2 class="text-center mb-2 referral-text">All Referral List</h2>
 
     <div class="bg-white rounded-lg shadow border border-gray-200 mb-1">
       <!-- Header Row -->
-      <div class="grid grid-cols-4 text-white text-sm font-semibold header-bg rounded-t-lg">
-        <div class="px-2 py-2 text-center">S.No.</div>
-        <div class="px-2 py-2 text-center">Invite Code</div>
-        <div class="px-2 py-2 text-center">Username</div>
-        <div class="px-2 py-2 text-center">Phone</div>
-      </div>
+      <div class="flex justify-around items-center text-left text-white text-[12px] font-semibold header-bg rounded-t-lg">
+        <div class="px-2 py-2 min-w-[30px] text-left flex">S.No.</div>
+        <div class="px-2 py-2 min-w-[50px] text-left flex">Invite Code</div>
+        <div class="px-2 py-2 min-w-[50px] text-left flex">Username</div>
+        <div class="px-2 py-2 min-w-[50px] text-left flex">Phone</div>
+      </div> 
 
       <!-- Data Row -->
-       <ng-container  *ngFor="let transaction of referralList">
+      <ng-container *ngFor="let transaction of referralList">
+        <div (click)="transaction.active = !transaction.active"
+          class="flex justify-around items-center text-left text-[12px] border-t cursor-pointer hover:bg-gray-100">
+          <div class="px-2 py-2 min-w-[30px] text-left flex">{{ transaction.id }}</div>
+          <div class="px-2 py-2 min-w-[50px] text-left flex">{{ transaction.invitee_code }}</div>
+          <div class="px-2 py-2 min-w-[50px] text-left flex">{{ transaction.invitee_username }}</div>
+          <div class="px-2 py-2 min-w-[50px] text-left flex">{{ transaction.invitee_phone }}</div>
+        </div>
 
-      <div
-      
-        (click)="transaction.active = !transaction.active"
-        class="grid grid-cols-4 text-center text-sm border-t cursor-pointer hover:bg-gray-100"
-      >
-        <div class="px-2 py-2">{{ transaction.id }}</div>
-        <div class="px-2 py-2">{{ transaction.invitee_code }}</div>
-        <div class="px-2 py-2">{{ transaction.invitee_username }}</div>
-        <div class="px-2 py-2">{{ transaction.invitee_phone }}</div>
         <!-- Expanded Details -->
-      </div>
-      <div *ngIf="transaction.active" class="bg-[#D9D9D94D] border-t border-[#20A2A0] rounded-b-lg text-sm">
-        <div class="flex flex-col space-y-1 justify-between  w-full h-[130px] overflow-y-auto mt-1 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]" *ngFor="let item of transaction.invitee_bid_commision">
-        <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Batch Id</span>
-          <span class="font-semibold">{{ item.batch_id }}</span>
+        <div *ngIf="transaction.active" class="p-1 border border-[#20A2A0] rounded-lg bg-white mx-2 my-1 shadow-sm">
+          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 pb-1">
+            <span class="font-semibold">Batch Id</span>
+            <span class="font-semibold text-right">{{ transaction.batch_id }}</span>
+          </div>
+          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
+            <span class="font-semibold">Bid Amount</span>
+            <span class="text-[#00D457] font-semibold text-right">{{ transaction.bid_amount }}</span>
+          </div>
+          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
+            <span class="font-semibold">Commission</span>
+            <span class="text-[#00D457] font-semibold text-right">₹{{ transaction.commission }}</span>
+          </div>
+          <div class="grid grid-cols-2 text-sm border-b border-gray-300 px-2 py-1">
+            <span class="font-semibold">Game Name</span>
+            <span class="font-semibold text-right">{{ transaction.game_name }}</span>
+          </div>
+          <div class="grid grid-cols-2 text-sm px-2 pt-1">
+            <span class="font-semibold">Bet Date</span>
+            <span class="font-semibold text-right">{{ transaction.bet_date | date:'dd-MM-yyyy hh:mm a':'IST' }}</span>
+          </div>
         </div>
-        
-        <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Bid Amount</span>
-          <span class="text-[#00D457] font-semibold">{{ item.bid_amount }}</span>
-        </div>
-        <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Commission</span>
-          <span class="text-[#00D457] font-semibold">₹{{ item.commission }}</span>
-        </div>
-        
-        <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Game Name</span>
-          <span class="font-semibold">{{ item.game_name }}</span>
-        </div>
-
-        <div class="flex justify-between px-2 border-b border-gray-200">
-          <span class="font-medium">Bet Date</span>
-          <span class="font-semibold">{{ item.bet_date | date: 'dd-MM-yyyy hh:mm a':'IST'}}</span>
-        </div>
-       
-      </div>
-      </div>
-       </ng-container>
+      </ng-container>
 
 
     </div>
