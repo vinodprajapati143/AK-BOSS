@@ -1,22 +1,33 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, timer } from 'rxjs';
+import { BehaviorSubject, timer, EMPTY } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment.prod';
+import { StorageService } from './storage.service'; // Adjust if different
 
 @Injectable({
   providedIn: 'root'
 })
 export class WalletService {
-   private baseUrl = environment.apiUrl;
-  
+  private baseUrl = environment.apiUrl;
+
   private walletBalanceSubject = new BehaviorSubject<number>(0);
   walletBalance$ = this.walletBalanceSubject.asObservable();
 
+  private sessionStorageService = inject(StorageService);
+
   constructor(private http: HttpClient) {
-    // Automatically poll wallet balance every 30 seconds
     timer(0, 30000).pipe(
-      switchMap(() => this.fetchWalletBalance())
+      switchMap(() => {
+        // Check if token exists to determine logged-in
+        const jwtToken = this.sessionStorageService.getItem('authToken');
+        if (jwtToken) {
+          return this.fetchWalletBalance();
+        } else {
+          // Stop polling if no token (logged out)
+          return EMPTY;
+        }
+      })
     ).subscribe(balance => this.walletBalanceSubject.next(balance));
   }
 
@@ -26,22 +37,25 @@ export class WalletService {
     );
   }
 
-  // Optional: Manual refresh if needed
   refreshWallet() {
+    const jwtToken = this.sessionStorageService.getItem('authToken');
+    if (!jwtToken) return; // Do not refresh if logged out
+
     this.fetchWalletBalance().subscribe(balance => this.walletBalanceSubject.next(balance));
   }
 
-    createAddMoneyOrder(amount: number) {
+  createAddMoneyOrder(amount: number) {
     return this.http.post<any>(
       `${this.baseUrl}/api/wallet/create-order`,
       { amount },
       { withCredentials: true }
     );
   }
-    checkOrderStatus(clientTxnId: string) {
+
+  checkOrderStatus(clientTxnId: string) {
     return this.http.get<{
-      message: any; success: boolean; status: string; data: any 
-}>(
+      message: any; success: boolean; status: string; data: any
+    }>(
       `${this.baseUrl}/api/wallet/check-order-status?client_txn_id=${encodeURIComponent(clientTxnId)}`,
       { withCredentials: true }
     );
