@@ -16,12 +16,13 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
   styleUrl: './add-amount.component.scss'
 })
 export class AddAmountComponent implements OnInit {
-    amount: number = 0; // for bound input
+  amount: number = 0; // for bound input
   userdata: any;
   walletblance: any;
   paymentStatus: any;
   paymentData: any;
   errorMessage: any;
+  isLoading: boolean = false;
 
   constructor(
     private walletService: WalletService,
@@ -30,34 +31,66 @@ export class AddAmountComponent implements OnInit {
     private route:ActivatedRoute
   ) {}
 
-    ngOnInit(): void {
+ngOnInit(): void {
+  this.isLoading = true; // Start loader immediately
 
-    this.getuseerandwalletbalnce()
-      const clientTxnId = this.route.snapshot.queryParamMap.get('client_txn_id');
-      if (clientTxnId) {
-        this.walletService.checkOrderStatus(clientTxnId).subscribe(result => {
-          if (result.success) {
-            // Show success/failure UI based on result.status
-            this.paymentStatus = result.status;
-            this.paymentData = result.data;
-          } else {
-            this.errorMessage = result.message;
-          }
-        });
-      }
+  // Wait for both wallet & user data to load
+  this.getuseerandwalletbalnce();
 
+  const clientTxnId = this.route.snapshot.queryParamMap.get('client_txn_id');
+
+  if (clientTxnId) {
+    this.walletService.checkOrderStatus(clientTxnId).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.paymentStatus = result.status;
+          this.paymentData = result.data;
+        } else {
+          this.errorMessage = result.message;
+        }
+        this.isLoading = false; // Stop loader after response
+      },
+      error: () => {
+        this.errorMessage = 'Something went wrong. Please try again.';
+        this.isLoading = false;
+      },
+    });
+  } else {
+    // Agar koi transaction nahi chal rahi
+    // tab loader tabhi band hoga jab user aur wallet data dono mil jaaye
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 800); // thoda smoothness effect ke liye
   }
+}
 
-    getuseerandwalletbalnce(){
-    this.apiservice.userSubject.subscribe((val:any)=>{
-      this.userdata = val
-    })
+getuseerandwalletbalnce() {
+  let userLoaded = false;
+  let walletLoaded = false;
 
-    this.walletService.walletBalance$.subscribe((val:any)=>{
-      this.walletblance = val
+  this.apiservice.userSubject.subscribe((val: any) => {
+    if (val) {
+      this.userdata = val;
+      userLoaded = true;
+      this.checkAllLoaded(userLoaded, walletLoaded);
+    }
+  });
 
-    })
+  this.walletService.walletBalance$.subscribe((val: any) => {
+    if (val !== undefined && val !== null) {
+      this.walletblance = val;
+      walletLoaded = true;
+      this.checkAllLoaded(userLoaded, walletLoaded);
+    }
+  });
+}
+
+checkAllLoaded(userLoaded: boolean, walletLoaded: boolean) {
+  // dono data mil gaye tabhi loader hatao
+  if (userLoaded && walletLoaded) {
+    this.isLoading = false;
   }
+}
 
   setQuickAmount(val: number) {
     this.amount = val;

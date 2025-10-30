@@ -1,6 +1,9 @@
 <app-header></app-header>
+<div *ngIf="isLoading" class="loader-overlay">
+  <span class="loader"></span>
+</div>
 <!-- game-menu.component.html -->
-<div class="max-w-full mx-auto p-4 my-16">
+<div class="max-w-full mx-auto p-4 my-16" [class.blur-bg]="isLoading">
   <!-- Header -->
   <div class="flex items-center justify-between btn-bg-color text-white py-3 px-4 rounded-t-md shadow">
     <button (click)="back()" class="text-xl">←</button>

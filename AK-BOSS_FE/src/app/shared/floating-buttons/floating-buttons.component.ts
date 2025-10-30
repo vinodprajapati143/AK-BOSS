@@ -8,7 +8,6 @@ import { RouterModule, Router } from '@angular/router';
   styleUrl: './floating-buttons.component.scss'
 })
 export class FloatingButtonsComponent {
-  constructor(private router: Router) { }
   refresh() {
     window.location.reload();
   }

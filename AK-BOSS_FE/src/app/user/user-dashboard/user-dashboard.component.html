@@ -2,9 +2,11 @@
 
   <!-- Top Navbar -->
    <app-header></app-header>
-<span class="loader"></span>
+<div *ngIf="isLoading" class="loader-overlay">
+  <span class="loader"></span>
+</div>
   <!-- Banner -->
-  <div class=" flex flex-col mt-16">
+  <div class=" flex flex-col mt-16" [class.blur-bg]="isLoading">
     <div class="px-8 py-4 mb-4 bg-color">
       <div
         class="bg-gradient-to-r from-teal-500 to-blue-500 rounded-xl justify-around shadow-lg p-4 flex items-center gap-4 text-white">
