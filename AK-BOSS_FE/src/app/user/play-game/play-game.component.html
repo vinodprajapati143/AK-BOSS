@@ -1,5 +1,5 @@
 <app-header></app-header>
-
+<app-loader *ngIf="isLoading"></app-loader>
 <!-- Single Ank -->
 @if(this.game.entrytype == 'singleank'){
 <div class="max-w-full px-3 min-h-[90vh] mx-auto bg-blue-50 rounded-lg shadow my-14">

@@ -8,11 +8,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { GamedataService } from '../../core/services/gamedata.service';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent,CommonModule,FormsModule],
+  imports: [FooterComponent, HeaderComponent,CommonModule,FormsModule , LoaderComponent],
   templateUrl: './user-dashboard.component.html',
   styleUrl: './user-dashboard.component.scss'
 })

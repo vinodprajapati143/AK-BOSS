@@ -7,10 +7,12 @@ import { FloatingButtonsComponent } from '../../shared/floating-buttons/floating
 import { GameDisplayComponent } from '../../shared/game-display/game-display.component';
 import { ApiService } from '../../core/services/api.service';
 import { interval, map, startWith, Subscription, timer } from 'rxjs';
+import { LoaderComponent } from "../../shared/loader/loader.component";
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
+    LoaderComponent,
     NgFor,
     CommonModule,
     RouterModule,
@@ -18,7 +20,8 @@ import { interval, map, startWith, Subscription, timer } from 'rxjs';
     MarqureeComponent,
     FloatingButtonsComponent,
     GameDisplayComponent,
-  ],
+    LoaderComponent
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

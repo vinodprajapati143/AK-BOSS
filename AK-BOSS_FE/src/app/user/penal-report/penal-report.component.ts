@@ -6,16 +6,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { CommonModule } from '@angular/common';
 import { PanelRecord } from '../../core/module/models';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-penal-report',
   standalone: true,
-  imports: [MarqureeComponent, HeaderComponent, FloatingButtonsComponent,CommonModule],
+  imports: [MarqureeComponent, HeaderComponent, LoaderComponent, FloatingButtonsComponent,CommonModule],
   templateUrl: './penal-report.component.html',
   styleUrl: './penal-report.component.scss'
 })
 export class PenalReportComponent {
   router = inject(Router);
+  isLoading : boolean = false;
   route = inject(ActivatedRoute)
   apiService = inject(ApiService)
   selectedGameId: any;

@@ -6,12 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { LoaderComponent } from "../../shared/loader/loader.component";
 
 @Component({
   selector: 'app-add-amount',
   standalone: true,
-  imports: [HeaderComponent, FooterComponent,FormsModule,CommonModule],
+  imports: [HeaderComponent, FooterComponent, FormsModule, CommonModule, LoaderComponent],
   templateUrl: './add-amount.component.html',
   styleUrl: './add-amount.component.scss'
 })

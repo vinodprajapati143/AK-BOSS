@@ -2,9 +2,7 @@
 
   <!-- Top Navbar -->
    <app-header></app-header>
-<div *ngIf="isLoading" class="loader-overlay">
-  <span class="loader"></span>
-</div>
+<app-loader *ngIf="isLoading"></app-loader>
   <!-- Banner -->
   <div class=" flex flex-col mt-16" [class.blur-bg]="isLoading">
     <div class="px-8 py-4 mb-4 bg-color">

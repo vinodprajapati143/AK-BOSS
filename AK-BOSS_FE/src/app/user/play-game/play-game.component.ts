@@ -9,17 +9,19 @@ import { WalletService } from '../../core/services/wallet.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import moment from 'moment';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-play-game',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent, CommonModule, FormsModule],
+  imports: [FooterComponent, HeaderComponent, CommonModule, LoaderComponent, FormsModule],
   templateUrl: './play-game.component.html',
   styleUrl: './play-game.component.scss'
 })
 export class PlayGameComponent implements OnInit {
   @Input() game: any;
   @Output() backClicked = new EventEmitter<void>();
+  isLoading: boolean = false;
   date: Date = new Date();
   digit: number | null = null;
   amount: number | null = null;

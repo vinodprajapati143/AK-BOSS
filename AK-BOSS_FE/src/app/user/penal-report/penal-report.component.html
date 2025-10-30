@@ -4,7 +4,9 @@
     <!-- Top Title -->
     <app-header></app-header>
     <app-floating-buttons />
+    <app-loader *ngIf="isLoading"></app-loader>
     <!-- Yellow Title Bar -->
+     <div >
     <div 
         class="bg-[#EDF0F5] border border-solid border-black flex items-center justify-between px-4 h-14 border-b mt-[65px]">
         <button (click)="goBack()"
@@ -119,7 +121,6 @@
 
     </div>
 
-
     <div id="bottom" class="text-center my-3 flex items-center justify-center gap-1">
         <button (click)="scrollTo('top')"
             class="bg-[#EDF0F5] text-black flex items-center gap-x-2 px-4 border border-solid border-black py-1 rounded font-semibold">Go
@@ -180,5 +181,6 @@
             <a href="#" class="underline-none mx-1">Privacy & policy</a> |
             <a href="#" class="underline-none mx-1">Term And Conditions</a>
         </div>
+    </div>
     </div>
 </div>

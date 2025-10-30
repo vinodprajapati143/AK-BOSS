@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-changepwd-modal',
   standalone: true,
-  imports: [],
+  imports: [LoaderComponent],
   templateUrl: './changepwd-modal.component.html',
   styleUrl: './changepwd-modal.component.scss'
 })

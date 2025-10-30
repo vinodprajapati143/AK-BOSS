@@ -1,7 +1,5 @@
 <app-header></app-header>
-<div *ngIf="isLoading" class="loader-overlay">
-  <span class="loader"></span>
-</div>
+<app-loader *ngIf="isLoading"></app-loader>
 <div class="min-h-[100vh] mt-12 bg-gray-50 flex flex-col items-center mb-12 px-4 py-6   " [class.blur-bg]="isLoading">
   <!-- Header -->
   <div class="w-full btn-bg-color from-pink-600 to-pink-500 text-white rounded-xl shadow-lg p-4 flex justify-between items-center">

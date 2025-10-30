@@ -10,12 +10,13 @@ import { take } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import Swal from 'sweetalert2';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 
 @Component({
   selector: 'app-all-games',
   standalone: true,
-  imports: [FooterComponent, HeaderComponent, NgFor, AdminRoutingModule, PlayGameComponent, NgFor, CommonModule],
+  imports: [FooterComponent, HeaderComponent, NgFor, AdminRoutingModule, LoaderComponent, NgFor, CommonModule],
   templateUrl: './all-games.component.html',
   styleUrl: './all-games.component.scss'
 })

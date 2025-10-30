@@ -1,15 +1,16 @@
 import { Component, Inject, inject, PLATFORM_ID } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
-import { CommonModule, isPlatformBrowser, NgFor } from '@angular/common';
+import { CommonModule, isPlatformBrowser, NgFor, NgIf } from '@angular/common';
 import { FooterComponent } from '../../shared/footer/footer.component';
 import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from "@angular/forms";
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-share-page',
   standalone: true,
-  imports: [HeaderComponent, NgFor, CommonModule, FooterComponent, FormsModule],
+  imports: [HeaderComponent, NgFor, CommonModule, FooterComponent, LoaderComponent, NgIf, FormsModule],
   templateUrl: './share-page.component.html',
   styleUrl: './share-page.component.scss'
 })

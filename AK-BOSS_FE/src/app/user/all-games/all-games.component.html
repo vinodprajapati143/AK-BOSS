@@ -1,7 +1,5 @@
 <app-header></app-header>
-<div *ngIf="isLoading" class="loader-overlay">
-  <span class="loader"></span>
-</div>
+<app-loader *ngIf="isLoading"></app-loader>
 <!-- game-menu.component.html -->
 <div class="max-w-full mx-auto p-4 my-16" [class.blur-bg]="isLoading">
   <!-- Header -->

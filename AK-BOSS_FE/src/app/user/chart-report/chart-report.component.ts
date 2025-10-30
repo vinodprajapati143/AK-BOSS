@@ -6,16 +6,18 @@ import { FloatingButtonsComponent } from "../../shared/floating-buttons/floating
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { JodiRecord } from '../../core/module/models';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 
 @Component({
   selector: 'app-chart-report',
   standalone: true,
-  imports: [MarqureeComponent, CommonModule, HeaderComponent, FloatingButtonsComponent],
+  imports: [MarqureeComponent, CommonModule, HeaderComponent, LoaderComponent, FloatingButtonsComponent],
   templateUrl: './chart-report.component.html',
   styleUrl: './chart-report.component.scss'
 })
 export class ChartReportComponent {
+  isLoading: boolean = false;
   router = inject(Router);
   route = inject(ActivatedRoute)
   apiService = inject(ApiService)

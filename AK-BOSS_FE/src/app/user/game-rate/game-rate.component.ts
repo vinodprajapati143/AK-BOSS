@@ -3,15 +3,17 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from "../../shared/footer/footer.component";
 import { HeaderComponent } from '../header/header.component';
+import { LoaderComponent } from '../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-game-rate',
   standalone: true,
-  imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent],
+  imports: [CommonModule, RouterModule, HeaderComponent, LoaderComponent, FooterComponent],
   templateUrl: './game-rate.component.html',
   styleUrl: './game-rate.component.scss'
 })
 export class GameRateComponent {
+isLoading : boolean = false;
   
 games = [
 { title: 'Single Ank', icon: 'assets/images/dice.png', route: '/user/play', rate: '₹1 → ₹9', description: 'Bet on a single number' },
