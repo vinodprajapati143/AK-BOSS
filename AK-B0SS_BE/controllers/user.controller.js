@@ -66,6 +66,8 @@ exports.getReferralCode = async (req, res) => {
 exports.getReferralList = async (req, res) => {
   try {
     const referrerId = req.user.id;
+    const commission_rate = 0.05; // 5%
+
 
     // Get base referral list with invitee details
     const sql = `
@@ -129,7 +131,7 @@ exports.getReferralList = async (req, res) => {
       // Convert Map to Array with commission calculation
       const invitee_bid_commision = Array.from(batchMap.values()).map(b => ({
         bid_amount: b.bid_amount.toFixed(2),
-        commission: (b.bid_amount * 0.10).toFixed(2),
+        commission: (b.bid_amount * commission_rate).toFixed(2),
         game_name: b.game_name,
         batch_id: b.batch_id,
         bet_date: b.bet_date
@@ -144,7 +146,7 @@ exports.getReferralList = async (req, res) => {
 
       // Calculate total stats for this invitee (based on unique batches)
       const totalBidAmount = invitee_bid_commision.reduce((sum, b) => sum + Number(b.bid_amount), 0);
-      const totalCommission = totalBidAmount * 0.10;
+      const totalCommission = totalBidAmount * commission_rate;
 
       updatedReferrals.push({
         id: ref.id,
