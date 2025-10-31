@@ -39,7 +39,7 @@
             class="bg-white shadow-md p-2 space-y-3 border-b-2 border-[#20A2A0] block">
             <div class="flex justify-between items-start" (click)="transaction.active = !transaction.active">
                 <div class="flex items-center gap-x-2">
-                    <div class="text-white font-bold sm:min-w-[110px] min-w-[90px] px-[10px] py-[12px] text-center rounded-md text-[12px]"
+                    <div class="text-white font-bold truncate max-w-[110px] uppercase sm:max-w-[120px] md:max-w-[150px] px-[10px] py-[12px] text-center rounded-md text-[12px]"
                         [ngStyle]="{
               'background-color':
                 transaction.txn_type === 'win'

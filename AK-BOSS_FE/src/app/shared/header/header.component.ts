@@ -16,6 +16,6 @@ export class HeaderComponent {
   }
 
   goToHome() {
-    this.router.navigate(['/user/home']);
+    this.router.navigate(['/']);
   }
 }

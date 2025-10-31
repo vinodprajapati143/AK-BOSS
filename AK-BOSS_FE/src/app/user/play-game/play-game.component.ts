@@ -14,7 +14,7 @@ import { GamedataService } from '../../core/services/gamedata.service';
 import { ApiService } from '../../core/services/api.service';
 import { WalletService } from '../../core/services/wallet.service';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment';
 import { LoaderComponent } from '../../shared/loader/loader.component';
 
@@ -46,21 +46,20 @@ export class PlayGameComponent implements OnInit {
   location = inject(Location);
   toastr = inject(ToastrService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
   selectedGameTimeType: any;
   isOpenDisabled = false;
+  entryType: string = '';
   isCloseDisabled = false;
 
   ngOnInit() {
-    this.gameDataService.getGameData().subscribe((game) => {
-      if (game) {
-        this.game = game;
-        this.evaluateGameTime();
-        // Setup UI accordingly
-      } else {
-        // Redirect or show message
-        // this.router.navigate(['/user/all-games']);
-      }
-    });
+   this.entryType = this.route.snapshot.paramMap.get('entryType') || '';
+  this.gameDataService.getGameData().subscribe((game) => {
+    if (game) {
+      this.game = game;
+      this.evaluateGameTime();
+    }
+  });
   }
 
   evaluateGameTime() {

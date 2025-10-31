@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './user/home/home.component';
 
 export const appRoutes: Routes = [
-  { path: '', redirectTo: 'user', pathMatch: 'full' },
-
+  { path: '', component: HomeComponent },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
