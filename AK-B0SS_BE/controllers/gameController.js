@@ -1405,6 +1405,8 @@ async function creditReferralCommission(invitee_id, bet_amount, batch_id) {
 
     const referrer_id = referralRelation[0].referrer_id;
     const commission_rate = 0.05; // 5%
+    const commission_rate_in_percentage =  '5%'
+
     const commission_amount = Number(bet_amount) * commission_rate;
 
     // Get referrer's latest balance
@@ -1424,7 +1426,7 @@ async function creditReferralCommission(invitee_id, bet_amount, batch_id) {
         referrer_id, 
         commission_amount, 
         newBalance, 
-        `Referral commission from user ${invitee_id} (10% of ${bet_amount})`,
+        `Referral commission from user ${invitee_id} (${commission_rate_in_percentage} of ${bet_amount})`,
         batch_id  // ✅ Add batch_id here
       ]
     );
