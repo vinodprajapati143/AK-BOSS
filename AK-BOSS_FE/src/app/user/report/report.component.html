@@ -114,6 +114,12 @@
                     <span class="text-[#00D457]">₹{{ transaction.opening_balance }}</span>
                 </div>
 
+                   <div *ngIf="transaction.playing_amount"
+                    class="flex items-center justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
+                    <span class="font-medium">Playing Amount</span>
+                    <span class="text-[#00D457]">₹{{ transaction.playing_amount }}</span>
+                </div>
+
                 <div *ngIf="transaction.amount"
                     class="flex items-center justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Withdrawal Amount</span>
