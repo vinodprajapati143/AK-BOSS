@@ -53,7 +53,7 @@
           <div class="min-w-[40px] px-1 text-[12px] sm:flex-1 py-2 text-left">{{ transaction.id }}</div>
           <div class="flex-1 px-1 text-[12px] py-2 text-left">{{ transaction.invitee_code }}</div>
           <div class="flex-1 px-1 text-[12px] py-2 text-left">{{ transaction.invitee_username }}</div>
-          <div class="flex-1 px-1 text-[12px] py-2 text-left">{{ transaction.invitee_phone }}</div>
+          <div class="flex-1 px-1 text-[12px] py-2 text-left">{{ maskLastFiveDigits(transaction.invitee_phone)}}</div>
         </div>
 
         <!-- Expanded Details -->

@@ -65,6 +65,15 @@ referList() {
   });
 }
 
+maskLastFiveDigits(phone: string): string {
+  if (!phone || phone.length <= 5) {
+    return phone; // Nothing to mask if length <= 5
+  }
+  const visiblePart = phone.slice(0, phone.length - 5); // start digits visible
+  const maskedPart = '*'.repeat(5); // mask last 5 digits
+  return visiblePart + maskedPart;
+}
+
 
   copyInviteLink() {
     navigator.clipboard.writeText(this.inviteLink)
