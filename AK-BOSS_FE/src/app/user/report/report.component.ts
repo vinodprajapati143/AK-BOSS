@@ -177,20 +177,36 @@ ngOnInit() {
   }
 
   getMatchingSelection(transaction: any) {
+    console.log('transaction: ', transaction);
     // Only filter selections for WIN status
     if (transaction.status === 'WIN') {
       let matchValue = null;
 
       if (transaction.game_type === 'single_ank') {
         // Use close digit
-        matchValue = transaction.result[2]?.toString();
+        if(transaction.game_time_type === "open"){
+        matchValue = transaction.result[1]?.toString();
+
+        }
+        else{
+          matchValue = transaction.result[2]?.toString();
+
+        }
       } else if (transaction.game_type === 'jodi_ank') {
         // Use jodi digits combination, e.g. "11"
         matchValue =
           transaction.result[1]?.toString() + transaction.result[2]?.toString();
       } else if (transaction.game_type === 'singlepanna_ank') {
         // Use panna number, e.g. "109"
-        matchValue = transaction.result[0]?.toString();
+             if(transaction.game_time_type === "open"){
+               matchValue = transaction.result[0]?.toString();
+
+
+        }
+        else{
+          matchValue = transaction.result[3]?.toString();
+
+        }
       } else {
         // Other win cases: show all
         return transaction.selections;
