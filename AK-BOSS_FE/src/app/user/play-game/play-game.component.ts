@@ -144,8 +144,13 @@ export class PlayGameComponent implements OnInit {
 
   submit() {
      if (this.isLoading) return;
-    if (!this.selectedGameTimeType) {
-      this.toastr.error('Please select game type..');
+        if (!this.selectedGameTimeType && this.game.entrytype ==="singleank") {
+      this.toastr.error('Please select game type Open/Close');
+      return;
+    }
+
+       if (!this.selectedGameTimeType && this.game.entrytype ==="singlepanna") {
+      this.toastr.error('Please select game type Open/Close');
       return;
     }
 

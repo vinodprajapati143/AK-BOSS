@@ -1444,6 +1444,10 @@ exports.addSingleAnk = async (req, res) => {
     const userId = req.user.id;
     const { game_id, input_date, name, total_amount, entrytype, game_time_type, entries } = req.body;
 
+     if (!game_time_type) {
+      return res.status(400).json({ message: 'Please select game type Open/Close' });
+    }
+
     if (!game_id || !input_date || !entries?.length) {
       return res.status(400).json({ message: 'Invalid input data' });
     }
@@ -1592,7 +1596,9 @@ exports.addSinglePannaAnk = async (req, res) => {
   try {
     const userId = req.user.id;
     const { game_id, input_date, name, total_amount, entrytype, game_time_type, entries } = req.body;
-
+   if (!game_time_type) {
+      return res.status(400).json({ message: 'Please select game type Open/Close' });
+    }
     if (!game_id || !input_date || !entries?.length) {
       return res.status(400).json({ message: 'Invalid input data' });
     }
