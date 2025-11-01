@@ -91,7 +91,7 @@
         </div>
 
         <!-- Chat & Support -->
-        <div class="flex justify-between items-center px-4 py-3 cursor-pointer border-b border-[#00000033]">
+        <div class="flex justify-between items-center px-4 py-3 cursor-pointer border-b border-[#00000033]" (click)="chatSupport()">
             <div class="flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -100,7 +100,7 @@
                 </svg>
                 <span>Chat & Support</span>
             </div>
-            <svg (click)="chatSupport()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path d="M9 6L15 12L9 18" stroke="black" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" />
             </svg>
