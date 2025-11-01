@@ -81,15 +81,14 @@
                   ? '#0A7E8D'
                   : '#57A6FE'
             }">{{ (transaction.status | uppercase) || 'N/A' }}</span>
-                    <div class="text-[12px] flex items-center text-right flex">
+                    <div class="text-[12px]  items-center text-right flex">
                         ₹{{
-                        transaction.amount_after_tax ||
-                        transaction.playing_amount ||
-                        transaction.win_amount ||
-                        transaction.recharge_amount ||
-                        transaction.amount
+                            transaction.txn_type === 'playing' ? transaction.playing_amount :
+                            transaction.txn_type === 'win' ? transaction.win_amount :
+                            transaction.recharge_amount || transaction.amount
                         }}
-                    </div>
+                        </div>
+
                 </div>
             </div>
 
@@ -114,7 +113,7 @@
                     <span class="text-[#00D457]">₹{{ transaction.opening_balance }}</span>
                 </div>
 
-                   <div *ngIf="transaction.playing_amount"
+                   <div *ngIf="transaction.playing_amount && transaction.txn_type === 'playing'"
                     class="flex items-center justify-between px-3 py-2 my-2 border-2 bg-[#D9D9D94D] rounded-sm border-[#20A2A0]">
                     <span class="font-medium">Playing Amount</span>
                     <span class="text-[#00D457]">₹{{ transaction.playing_amount }}</span>
