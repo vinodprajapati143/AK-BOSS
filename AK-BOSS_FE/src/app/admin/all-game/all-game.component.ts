@@ -376,6 +376,19 @@ export class AllGameComponent implements OnInit, OnDestroy {
 
 
   submitGame(game: any) {
+    console.log('game: ', game);
+
+  // Open input validation
+  if (game.openInputEnabled && (!game.patte1 || !game.patte1_open)) {
+    this.toastr.error('Open field ke liye patte1 aur patte1_open dono bharna zaruri hai.');
+    return;
+  }
+
+  // Close input validation
+  if (game.closeInputEnabled && (!game.patte2 || !game.patte2_close)) {
+    this.toastr.error('Close field ke liye patte2 aur patte2_close dono bharna zaruri hai.');
+    return;
+  }
 
     const todayDate = new Date().toISOString().split('T')[0];
 
@@ -388,37 +401,37 @@ export class AllGameComponent implements OnInit, OnDestroy {
       // Agar open already filled tha, toh wahi date use karo jo backend se aayi thi
       finalInputDate = game.formattedInputDate || todayDate;
     }
-    const payload = {
-      id: game.id,
-      patte1: game.patte1,
-      patte1_open: game.patte1_open,
-      patte2_close: game.patte2_close,
-      patte2: game.patte2,
-      input_date: finalInputDate
-    };
+    // const payload = {
+    //   id: game.id,
+    //   patte1: game.patte1,
+    //   patte1_open: game.patte1_open,
+    //   patte2_close: game.patte2_close,
+    //   patte2: game.patte2,
+    //   input_date: finalInputDate
+    // };
 
-    this.apiService.saveGameInput(payload).subscribe({
-        next: (res) => {
-            Swal.fire({
-                      icon: 'success',
-                      title: 'Game Saved',
-                      html: `'<strong>'Game input saved successfully!</strong>`,
-                      confirmButtonText: 'OK',
-                      confirmButtonColor: '#0A7E8D',
-                    });
-        this.loadGames();
-            if (!window.hasReloaded) {
-        window.hasReloaded = true;
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Error saving game input');
-      }
-    });
+    // this.apiService.saveGameInput(payload).subscribe({
+    //     next: (res) => {
+    //         Swal.fire({
+    //                   icon: 'success',
+    //                   title: 'Game Saved',
+    //                   html: `'<strong>'Game input saved successfully!</strong>`,
+    //                   confirmButtonText: 'OK',
+    //                   confirmButtonColor: '#0A7E8D',
+    //                 });
+    //     this.loadGames();
+    //         if (!window.hasReloaded) {
+    //     window.hasReloaded = true;
+    //     setTimeout(() => {
+    //       window.location.reload();
+    //     }, 1000);
+    //   }
+    //   },
+    //   error: (err) => {
+    //     console.error(err);
+    //     alert('Error saving game input');
+    //   }
+    // });
   }
 
   editGame(game: any) {
