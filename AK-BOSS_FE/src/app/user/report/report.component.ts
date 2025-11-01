@@ -12,6 +12,7 @@ import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { LoaderComponent } from '../../shared/loader/loader.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-reports',
@@ -26,133 +27,162 @@ import { LoaderComponent } from '../../shared/loader/loader.component';
     TitleCasePipe,
     LoaderComponent,
     CommonModule,
+    FormsModule
   ],
   templateUrl: './report.component.html',
   styleUrl: './report.component.scss',
 })
-export class ReportsComponent implements OnInit, AfterViewInit {
+export class ReportsComponent implements OnInit {
   router = inject(Router);
   reportservice = inject(ApiService);
   isLoading = false;
   error: string | null = null;
-  transactions = [
-    {
-      type: 'Balance Transfer',
-      route: '/add-amount',
-      date: '2025-03-31 18:03:14',
-      status: 'SUCCEED',
-      color: '#9E161C',
-      openingBalance: 500,
-      purchaseAmount: 500,
-      amountAfterTax: 2000,
-      tax: 10000,
-      openSelect: ['1X50', '4X150', '9X200'],
-      closingBalance: 10000,
-      winLoss: 500,
-      active: false,
-    },
-  ];
+  startDate: string = '';
+  endDate: string = '';
+  filteredTransactions: any[] = [];
+  mergedTransactions: any[] = [];
+  searchText: string = '';
   playingrecords: any;
   winrecords: any;
   withdrawals: any;
   addMoneyList: any;
-  mergedTransactions: any[] | undefined;
 
-ngOnInit() {
+ ngOnInit() {
   this.isLoading = true;
 
   let completed = 0;
   const totalRequests = 4;
-
   const checkDone = () => {
     completed++;
     if (completed === totalRequests) {
       this.isLoading = false;
+      this.checkAndMerge(); // ✅ Merge jab sab data aajaye
     }
   };
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+   this.startDate = yesterday.toISOString().split('T')[0];
+  this.endDate = today.toISOString().split('T')[0];
 
   this.reportservice.getAllPlayingRecords().subscribe({
-    next: (data) => {
-      this.playingrecords = data;
-      this.checkAndMerge();
-      checkDone();
-    },
+    next: (data) => { this.playingrecords = data; checkDone(); },
     error: () => checkDone(),
   });
 
   this.reportservice.getAllWinRecords().subscribe({
-    next: (data) => {
-      this.winrecords = data;
-      this.checkAndMerge();
-      checkDone();
-    },
+    next: (data) => { this.winrecords = data; checkDone(); },
     error: () => checkDone(),
   });
 
   this.reportservice.getWithdrawalsWithBalance().subscribe({
-    next: (list) => {
-      this.withdrawals = list;
-      this.checkAndMerge();
-      checkDone();
-    },
+    next: (data) => { this.withdrawals = data; checkDone(); },
     error: () => checkDone(),
   });
 
   this.reportservice.getAddMoneyList().subscribe({
-    next: (data) => {
-      this.addMoneyList = data;
-      this.checkAndMerge();
-      checkDone();
-    },
+    next: (data) => { this.addMoneyList = data; checkDone(); },
     error: () => checkDone(),
   });
 }
 
 
-  ngAfterViewInit(): void {
-    // this.mergerArray()
+  applyFilters() {
+  if (!this.startDate || !this.endDate) {
+    this.filteredTransactions = this.mergedTransactions;
+    return;
   }
 
-  mergerArray() {
-    if (
-      this.playingrecords &&
-      this.winrecords &&
-      this.withdrawals &&
-      this.addMoneyList
-    ) {
-      const allTxns: any[] = [
-        ...this.playingrecords.map((txn: { created_at: any }) => ({
-          ...txn,
-          txn_type: 'playing',
-          txn_time: txn.created_at,
-        })),
-        ...this.winrecords.map((txn: { result_updated_at: any }) => ({
-          ...txn,
-          txn_type: 'win',
-          txn_time: txn.result_updated_at,
-        })),
-        ...this.withdrawals.map((txn: { requested_at: any }) => ({
-          ...txn,
-          txn_type: 'withdrawal',
-          txn_time: txn.requested_at,
-        })),
-        ...this.addMoneyList.map((txn: { added_at: any }) => ({
-          ...txn,
-          txn_type: 'addmoney',
-          txn_time: txn.added_at,
-        })),
-      ];
+  const from = new Date(this.startDate + 'T00:00:00');
+  const to = new Date(this.endDate + 'T23:59:59');
+  const search = this.searchText.toLowerCase();
 
-      // Sort by txn_time descending (newest on top)
-      allTxns.sort(
-        (a, b) =>
-          new Date(b.txn_time).getTime() - new Date(a.txn_time).getTime()
-      );
+  this.filteredTransactions = this.mergedTransactions.filter((txn: any) => {
+    const txnDate = new Date(txn.txn_time);
 
-      this.mergedTransactions = allTxns;
-      console.log('this.mergedTransactions: ', this.mergedTransactions);
-    }
+    const dateMatch = txnDate >= from && txnDate <= to;
+    const searchMatch =
+      !search ||
+      (txn.game_name && txn.game_name.toLowerCase().includes(search)) ||
+      (txn.txn_type && txn.txn_type.toLowerCase().includes(search)) ||
+      (txn.status && txn.status.toLowerCase().includes(search));
+
+    return dateMatch && searchMatch;
+  });
+
+  console.log('🔍 Filtered by Date:', from, '→', to, this.filteredTransactions);
+}
+
+onSearchClick() {
+  if (!this.startDate || !this.endDate) {
+    // 🔸 Agar user ne date select nahi ki to default (yesterday + today) dikhao
+    this.mergerArray();
+    return;
   }
+
+  const start = new Date(this.startDate + 'T00:00:00');
+  const end = new Date(this.endDate + 'T23:59:59');
+
+  this.filteredTransactions = this.mergedTransactions.filter((txn) => {
+    if (!txn.txn_time) return false;
+    const txnDate = new Date(txn.txn_time);
+    return txnDate >= start && txnDate <= end;
+  });
+
+  console.log('🔍 Search Result:', start, '→', end, this.filteredTransactions);
+}
+
+
+
+mergerArray() {
+  if (this.playingrecords && this.winrecords && this.withdrawals && this.addMoneyList) {
+    const allTxns: any[] = [
+      ...this.playingrecords.map((txn: any) => ({
+        ...txn,
+        txn_type: 'playing',
+        txn_time: txn.created_at,
+      })),
+      ...this.winrecords.map((txn: any) => ({
+        ...txn,
+        txn_type: 'win',
+        txn_time: txn.result_updated_at,
+      })),
+      ...this.withdrawals.map((txn: any) => ({
+        ...txn,
+        txn_type: 'withdrawal',
+        txn_time: txn.requested_at,
+      })),
+      ...this.addMoneyList.map((txn: any) => ({
+        ...txn,
+        txn_type: 'addmoney',
+        txn_time: txn.added_at,
+      })),
+    ];
+
+    // Sort by date
+    this.mergedTransactions = allTxns.sort(
+      (a, b) => new Date(b.txn_time).getTime() - new Date(a.txn_time).getTime()
+    );
+
+    // ✅ Default filter (Yesterday + Today)
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const start = new Date(`${yesterday.toISOString().split('T')[0]}T00:00:00`);
+    const end = new Date(`${today.toISOString().split('T')[0]}T23:59:59`);
+
+    this.filteredTransactions = this.mergedTransactions.filter((txn) => {
+      const txnDate = new Date(txn.txn_time);
+      return txnDate >= start && txnDate <= end;
+    });
+
+    console.log('✅ Showing Yesterday + Today:', this.filteredTransactions);
+  }
+}
+
+
+
 
   checkAndMerge() {
     if (
@@ -184,11 +214,11 @@ ngOnInit() {
 
       if (transaction.game_type === 'single_ank') {
         // Use close digit
-        if(transaction.game_time_type === "open"){
-        matchValue = transaction.result[1]?.toString();
+        if (transaction.game_time_type === "open") {
+          matchValue = transaction.result[1]?.toString();
 
         }
-        else{
+        else {
           matchValue = transaction.result[2]?.toString();
 
         }
@@ -198,12 +228,12 @@ ngOnInit() {
           transaction.result[1]?.toString() + transaction.result[2]?.toString();
       } else if (transaction.game_type === 'singlepanna_ank') {
         // Use panna number, e.g. "109"
-             if(transaction.game_time_type === "open"){
-               matchValue = transaction.result[0]?.toString();
+        if (transaction.game_time_type === "open") {
+          matchValue = transaction.result[0]?.toString();
 
 
         }
-        else{
+        else {
           matchValue = transaction.result[3]?.toString();
 
         }
