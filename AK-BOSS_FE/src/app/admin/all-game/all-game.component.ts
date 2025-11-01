@@ -375,12 +375,10 @@ export class AllGameComponent implements OnInit, OnDestroy {
   }
 
 
-submitGame(game: any) {
-
-  // Decide kar rahe hain ki abhi kaunse input type submit ho raha hai
-  let inputType: 'open' | 'close' | null = null;
-
-  if (game.openInputEnabled) {
+  submitGame(game: any) {
+    console.log('game: ', game);
+ let inputType: 'open' | 'close' | null = null;
+   if (game.openInputEnabled) {
     inputType = 'open';
   } else if (game.closeInputEnabled) {
     inputType = 'close';
@@ -388,7 +386,6 @@ submitGame(game: any) {
     this.toastr.error('Submission ka koi valid input available nahi hai.');
     return;
   }
-
   // Validation based on inputType
   if (inputType === 'open') {
     if (!game.patte1 || !game.patte1_open) {
@@ -408,71 +405,49 @@ submitGame(game: any) {
     }
   }
 
-  // Date logic
-  const todayDate = new Date().toISOString().split('T')[0];
-  let finalInputDate: string;
+    const todayDate = new Date().toISOString().split('T')[0];
 
-  if ((inputType === 'open' && !game.patte1_open) || (inputType === 'close' && !game.patte2_close)) {
-    finalInputDate = todayDate;
-  } else {
-    finalInputDate = game.formattedInputDate || todayDate;
-  }
+    // Agar open abhi fill ho raha hai (close missing hai)
+    // toh aaj ki date bhejo
+    let finalInputDate: string;
+    if (!game.patte1_open || !game.patte2_close) {
+      finalInputDate = todayDate;
+    } else {
+      // Agar open already filled tha, toh wahi date use karo jo backend se aayi thi
+      finalInputDate = game.formattedInputDate || todayDate;
+    }
+    const payload = {
+      id: game.id,
+      patte1: game.patte1,
+      patte1_open: game.patte1_open,
+      patte2_close: game.patte2_close,
+      patte2: game.patte2,
+      input_date: finalInputDate
+    };
 
-  // Build payload dynamically based on inputType
-  const payload: any = {
-    id: game.id,
-    input_date: finalInputDate,
-  };
-
-  // if (inputType === 'open') {
-  //   payload.patte1 = game.patte1;
-  //   payload.patte1_open = game.patte1_open;
-  // }
-
-  // if (inputType === 'close') {
-        payload.patte1 = game.patte1;
-    payload.patte1_open = game.patte1_open;
-    payload.patte2 = game.patte2;
-    payload.patte2_close = game.patte2_close;
-  // }
-
-  // API call
-  this.apiService.saveGameInput(payload).subscribe({
-    next: (res) => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Game Saved',
-        html: `<strong>Game input saved successfully!</strong>`,
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#0A7E8D',
-      });
-
-      this.loadGames();
-
-      // Input flags update: open submit hone ke baad close enable karo
-      if (inputType === 'open') {
-        game.openInputEnabled = false;
-        game.closeInputEnabled = true;
-      } else if (inputType === 'close') {
-        game.closeInputEnabled = false;
-      }
-
-      if (!window.hasReloaded) {
+    this.apiService.saveGameInput(payload).subscribe({
+        next: (res) => {
+            Swal.fire({
+                      icon: 'success',
+                      title: 'Game Saved',
+                      html: `'<strong>'Game input saved successfully!</strong>`,
+                      confirmButtonText: 'OK',
+                      confirmButtonColor: '#0A7E8D',
+                    });
+        this.loadGames();
+            if (!window.hasReloaded) {
         window.hasReloaded = true;
         setTimeout(() => {
           window.location.reload();
         }, 1000);
       }
-    },
-    error: (err) => {
-      console.error(err);
-      alert('Error saving game input');
-    }
-  });
-}
-
-
-
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error saving game input');
+      }
+    });
+  }
 
   editGame(game: any) {
     // Implement edit functionality here
