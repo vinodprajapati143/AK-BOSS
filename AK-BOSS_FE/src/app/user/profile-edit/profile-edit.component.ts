@@ -6,69 +6,94 @@ import { ApiService } from '../../core/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-profile-edit',
   standalone: true,
-  imports: [ReactiveFormsModule,FormsModule],
+  imports: [ReactiveFormsModule,FormsModule, CommonModule],
   templateUrl: './profile-edit.component.html',
   styleUrl: './profile-edit.component.scss'
 })
-export class ProfileEditComponent implements OnInit{
+export class ProfileEditComponent implements OnInit {
   profileForm!: FormGroup;
   user: any;
-dialog: any;
 
-  constructor(private router:Router, private dialogRef: MatDialogRef<ProfileEditComponent>, private fb: FormBuilder, private backendService: ApiService,private toastr:ToastrService) {}
+  constructor(
+    private fb: FormBuilder,
+    private backendService: ApiService,
+    private toastr: ToastrService,
+    private router: Router,
+    private dialogRef: MatDialogRef<ProfileEditComponent>
+  ) {}
 
-    ngOnInit(): void {
-    // form banaya
+  ngOnInit(): void {
     this.profileForm = this.fb.group({
       username: [''],
-      phone: [''],
+      phone: ['']
     });
 
-    // signal se value patch
-     this.backendService.user$.subscribe(user => {
-      this.user = user
-            if (this.user) {
-      this.profileForm.patchValue({
-        username: this.user.username,
-        phone: `${this.user.countryCode}-${this.user.phone}`
-      });
-    }
-      });
-
-  }
-
-  closeModal() {
-  this.dialogRef.close();
-}
-
-saveProfile() {
-  if (this.profileForm.valid) {
-    const payload = {
-      id: this.user.id, // id tu user object se le sakta hai
-      username: this.profileForm.value.username,
-      phone: this.profileForm.value.phone.split('-')[1],
-      countryCode: this.user.countryCode
-    };
-
-    this.backendService.updateUserProfile(payload).subscribe({
-      next: (res: any) => {
-        if (res.success) {
-          this.backendService.getUserProfile();
-          this.router.navigate(['/user/profile'])  
-          this.toastr.success(res.message);
-
-          // optionally form ko patch/update kar sakte ho
-        }
-      },
-      error: (err) => {
-        console.error('Update failed:', err);
+    // user data patch
+    this.backendService.user$.subscribe(user => {
+      this.user = user;
+      if (this.user) {
+        this.profileForm.patchValue({
+          username: this.user.username,
+          phone: `${this.user.countryCode}-${this.user.phone}`
+        });
       }
     });
   }
-}
+
+  closeModal() {
+    this.dialogRef.close();
+  }
+
+  saveProfile() {
+    if (this.profileForm.valid && this.user) {
+      const [countryCode, phone] = this.profileForm.value.phone.split('-');
+      const payload = {
+        id: this.user.id,
+        username: this.profileForm.value.username,
+        phone,
+        countryCode: countryCode || this.user.countryCode
+      };
+
+      // 🔹 Loader start
+      this.backendService.setProfileLoading(true);
+
+      this.backendService.updateUserProfile(payload).subscribe({
+        next: (res: any) => {
+          if (res.success) {
+            const updatedUser = {
+              ...this.user,
+              username: this.profileForm.value.username,
+              phone,
+              countryCode: countryCode || this.user.countryCode
+            };
+
+            // Update subject + local storage instantly
+            this.backendService.setUser(updatedUser);
+
+            // 🔹 Loader stop
+            this.backendService.setProfileLoading(false);
+
+            this.toastr.success(res.message);
+            this.dialogRef.close();
+          } else {
+            this.backendService.setProfileLoading(false);
+            this.toastr.error(res.message || 'Update failed');
+          }
+        },
+        error: (err) => {
+          this.backendService.setProfileLoading(false);
+          console.error('Update failed:', err);
+          this.toastr.error('Something went wrong!');
+        }
+      });
+    } else {
+      this.toastr.warning('Please fill all fields correctly');
+    }
+  }
 
 }

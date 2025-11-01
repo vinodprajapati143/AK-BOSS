@@ -1,7 +1,5 @@
 <app-header></app-header>
-<div *ngIf="isLoading" class="loader-overlay">
-  <div class="loader"></div>
-</div>
+<app-loader *ngIf="isLoading"></app-loader>
 
 <div class="w-full max-w-full px-4 mx-auto mt-16 bg-gray-50 relative" [class.blur-bg]="isLoading">
 

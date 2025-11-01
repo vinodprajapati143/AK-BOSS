@@ -50,38 +50,55 @@ export class ReportsComponent implements OnInit {
  ngOnInit() {
   this.isLoading = true;
 
+  const today = new Date();
+
+  // ✅ input me current date dikhane ke liye
+  this.startDate = today.toISOString().split('T')[0];
+  this.endDate = this.startDate;
+
+  // baaki tera existing API calls same rahenge 👇
   let completed = 0;
   const totalRequests = 4;
   const checkDone = () => {
     completed++;
     if (completed === totalRequests) {
       this.isLoading = false;
-      this.checkAndMerge(); // ✅ Merge jab sab data aajaye
     }
   };
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-   this.startDate = yesterday.toISOString().split('T')[0];
-  this.endDate = today.toISOString().split('T')[0];
 
   this.reportservice.getAllPlayingRecords().subscribe({
-    next: (data) => { this.playingrecords = data; checkDone(); },
+    next: (data) => {
+      this.playingrecords = data;
+      this.checkAndMerge();
+      checkDone();
+    },
     error: () => checkDone(),
   });
 
   this.reportservice.getAllWinRecords().subscribe({
-    next: (data) => { this.winrecords = data; checkDone(); },
+    next: (data) => {
+      this.winrecords = data;
+      this.checkAndMerge();
+      checkDone();
+    },
     error: () => checkDone(),
   });
 
   this.reportservice.getWithdrawalsWithBalance().subscribe({
-    next: (data) => { this.withdrawals = data; checkDone(); },
+    next: (list) => {
+      this.withdrawals = list;
+      this.checkAndMerge();
+      checkDone();
+    },
     error: () => checkDone(),
   });
 
   this.reportservice.getAddMoneyList().subscribe({
-    next: (data) => { this.addMoneyList = data; checkDone(); },
+    next: (data) => {
+      this.addMoneyList = data;
+      this.checkAndMerge();
+      checkDone();
+    },
     error: () => checkDone(),
   });
 }
@@ -165,17 +182,15 @@ mergerArray() {
     );
 
     // ✅ Default filter (Yesterday + Today)
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-
-    const start = new Date(`${yesterday.toISOString().split('T')[0]}T00:00:00`);
+   const today = new Date();
+    const start = new Date(`${today.toISOString().split('T')[0]}T00:00:00`);
     const end = new Date(`${today.toISOString().split('T')[0]}T23:59:59`);
 
     this.filteredTransactions = this.mergedTransactions.filter((txn) => {
       const txnDate = new Date(txn.txn_time);
       return txnDate >= start && txnDate <= end;
     });
+
 
     console.log('✅ Showing Yesterday + Today:', this.filteredTransactions);
   }
