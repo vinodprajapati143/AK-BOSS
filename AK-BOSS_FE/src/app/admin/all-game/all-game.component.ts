@@ -424,15 +424,17 @@ submitGame(game: any) {
     input_date: finalInputDate,
   };
 
-  if (inputType === 'open') {
-    payload.patte1 = game.patte1;
-    payload.patte1_open = game.patte1_open;
-  }
+  // if (inputType === 'open') {
+  //   payload.patte1 = game.patte1;
+  //   payload.patte1_open = game.patte1_open;
+  // }
 
-  if (inputType === 'close') {
+  // if (inputType === 'close') {
+        payload.patte1 = game.patte1;
+    payload.patte1_open = game.patte1_open;
     payload.patte2 = game.patte2;
     payload.patte2_close = game.patte2_close;
-  }
+  // }
 
   // API call
   this.apiService.saveGameInput(payload).subscribe({
