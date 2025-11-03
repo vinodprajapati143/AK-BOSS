@@ -8,10 +8,6 @@ const walletRoutes = require('./routes/walletRoutes');
 const paymentsRoutes = require('./routes/paymentsRoutes');
 const withdrawalRoutes = require('./routes/withdrawalRoutes');
 
-
-
-
-
 dotenv.config();
 const app = express();
 
@@ -50,8 +46,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/withdrawal", withdrawalRoutes);
-
-
 
 
  // 🔁 Ping Pong route

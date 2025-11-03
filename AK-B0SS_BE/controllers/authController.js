@@ -416,6 +416,34 @@ exports.verifyOtpAndResetPassword = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId || !oldPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: "Missing fields" });
+    }
+
+    const [userResult] = await db.query("SELECT pwd FROM users WHERE id = ?", [userId]);
+    if (!userResult.length) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, userResult[0].pwd);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Old password incorrect" });
+    }
+
+    const hashedNew = await bcrypt.hash(newPassword, 10);
+    await db.query("UPDATE users SET pwd = ? WHERE id = ?", [hashedNew, userId]);
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Change Password Error:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
 
 
 

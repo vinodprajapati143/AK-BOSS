@@ -3,7 +3,7 @@ const router = express.Router();
 const paymentsControllers = require("../controllers/paymentsControllers");
 const { verifyToken } = require("../middlewares/authMiddleware");
 
-router.post('/save', verifyToken, paymentsControllers.savePaymentDetails);//1000
-router.get("/details", verifyToken, paymentsControllers.getPaymentDetails);//1000
+router.post('/save', verifyToken, paymentsControllers.savePaymentDetails); // 03/11/2025 -----> Paid
+router.get("/details", verifyToken, paymentsControllers.getPaymentDetails); // 03/11/2025 -----> Paid
 
 module.exports = router;
