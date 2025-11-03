@@ -15,14 +15,17 @@ import { CommonModule } from '@angular/common';
 })
 export class ChangepwdModalComponent implements OnInit {
   changePasswordForm!: FormGroup;
+  showOldPassword = false;
+  showNewPassword = false;
   isLoading = false;
+  password: any;
 
   constructor(
     private dialogRef: MatDialogRef<ChangepwdModalComponent>,
     private fb: FormBuilder,
     private apiService: ApiService,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.changePasswordForm = this.fb.group({
@@ -61,4 +64,13 @@ export class ChangepwdModalComponent implements OnInit {
       },
     });
   }
+
+  toggleVisibility(field: 'old' | 'new'): void {
+    if (field === 'old') {
+      this.showOldPassword = !this.showOldPassword;
+    } else {
+      this.showNewPassword = !this.showNewPassword;
+    }
+  }
+
 }
