@@ -7,11 +7,12 @@ import { ApiService } from '../../core/services/api.service';
 import { CommonModule } from '@angular/common';
 import { PanelRecord } from '../../core/module/models';
 import { LoaderComponent } from '../../shared/loader/loader.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-penal-report',
   standalone: true,
-  imports: [MarqureeComponent, HeaderComponent, LoaderComponent, FloatingButtonsComponent, CommonModule],
+  imports: [MarqureeComponent, HeaderComponent, FormsModule, LoaderComponent, FloatingButtonsComponent, CommonModule],
   templateUrl: './penal-report.component.html',
   styleUrl: './penal-report.component.scss'
 })
@@ -56,69 +57,78 @@ export class PenalReportComponent {
     }
     return chunks;
   }
-  ngOnInit() {
-    this.isLoading = true;
+ngOnInit() {
+  this.isLoading = true;
 
-    this.route.queryParamMap.subscribe(queryParams => {
-      const today = new Date();
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(today.getDate() - 6); // 7 days (today + past 6)
+  this.route.queryParamMap.subscribe(queryParams => {
+    const today = new Date();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1); // ✅ 1 Year Back
 
-      this.fromDate = this.formatDate(oneWeekAgo);
-      this.toDate = this.formatDate(today);
-      this.selectedGameId = queryParams.get('gameId');
+    this.fromDate = this.formatDate(oneYearAgo);
+    this.toDate = this.formatDate(today);
+    this.selectedGameId = queryParams.get('gameId');
 
-      this.loadPanelRecords();
-    });
-  }
+    this.loadPanelRecords();
+  });
+}
+
 
   loadPanelRecords() {
-    this.isLoading = true;
+  if (!this.fromDate || !this.toDate) return;
 
-    this.apiService.getPanelRecords(this.selectedGameId, this.fromDate, this.toDate)
-      .subscribe({
-        next: (data) => {
-          this.records = data.records;
-          this.game_name = data.game_name;
-          this.result = data.latestResultString;
+  this.isLoading = true;
 
-          // Step 1: Find earliest and latest dates
-          const datesList = this.records.map(r => r.input_date).sort();
-          const earliestDateStr = datesList[0];
-          const latestDateStr = datesList[datesList.length - 1];
+  this.apiService.getPanelRecords(this.selectedGameId, this.fromDate, this.toDate)
+    .subscribe({
+      next: (data) => {
+        this.records = data.records || [];
+        this.game_name = data.game_name;
+        this.result = data.latestResultString;
 
-          // Step 2: Get Monday for earliest date
-          const weekStart = this.getMonday(earliestDateStr);
-
-          // Step 3: Build day-wise records
-          const weekCells = [];
-          let currentDate = new Date(weekStart);
-
-          while (this.formatDate(currentDate) <= latestDateStr) {
-            const dateStr = this.formatDate(currentDate);
-            const rec = this.records.find(r => r.input_date === dateStr);
-
-            weekCells.push({
-              day: this.getDayName(currentDate),
-              date: dateStr,
-              jodi_value: rec ? rec.jodi : '**',
-              panelLeft: rec ? rec.panelLeft : ["*", "*", "*"],
-              panelRight: rec ? rec.panelRight : ["*", "*", "*"]
-            });
-
-            currentDate.setDate(currentDate.getDate() + 1);
-          }
-
-          this.weekCells = weekCells;
-          this.weekRows = this.chunkArray(this.weekCells, 7);
-          this.isLoading = false; // ✅ Stop loader after success
-        },
-        error: (err) => {
-          console.error('Error loading panel records:', err);
-          this.isLoading = false; // ✅ Stop loader even if error
+        if (!this.records.length) {
+          this.weekCells = [];
+          this.weekRows = [];
+          this.isLoading = false;
+          return;
         }
-      });
-  }
+
+        const datesList = this.records.map(r => r.input_date).sort();
+        const earliestDateStr = datesList[0];
+        const latestDateStr = datesList[datesList.length - 1];
+
+        const weekStart = this.getMonday(earliestDateStr);
+
+        const weekCells: any[] = [];
+        let currentDate = new Date(weekStart);
+
+        while (this.formatDate(currentDate) <= latestDateStr) {
+          const dateStr = this.formatDate(currentDate);
+          const rec = this.records.find(r => r.input_date === dateStr);
+
+          weekCells.push({
+            day: this.getDayName(currentDate),
+            date: dateStr,
+            jodi_value: rec ? rec.jodi : '**',
+            panelLeft: rec ? rec.panelLeft : ["*", "*", "*"],
+            panelRight: rec ? rec.panelRight : ["*", "*", "*"]
+          });
+
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        this.weekCells = weekCells;
+        this.weekRows = this.chunkArray(this.weekCells, 7);
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading panel records:', err);
+        this.isLoading = false;
+      }
+    });
+}
+
 
   refresh() {
     this.isLoading = true;

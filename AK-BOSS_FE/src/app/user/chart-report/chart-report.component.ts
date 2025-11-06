@@ -7,12 +7,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { JodiRecord } from '../../core/module/models';
 import { LoaderComponent } from '../../shared/loader/loader.component';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-chart-report',
   standalone: true,
-  imports: [MarqureeComponent, CommonModule, HeaderComponent, LoaderComponent, FloatingButtonsComponent],
+  imports: [MarqureeComponent, CommonModule, FormsModule, HeaderComponent, LoaderComponent, FloatingButtonsComponent],
   templateUrl: './chart-report.component.html',
   styleUrl: './chart-report.component.scss'
 })
@@ -43,22 +44,20 @@ export class ChartReportComponent {
 }
 
 ngOnInit() {
- 
-
-  // Ya agar query params use kiye to:
   this.route.queryParamMap.subscribe(queryParams => {
-      const today = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(today.getDate() - 6); // Include today + past 6 days = 7 days
+    
+    const today = new Date();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1); // ✅ One Year Back
 
-  this.fromDate = this.formatDate(oneWeekAgo);
-  this.toDate = this.formatDate(today);
-  this.selectedGameId = queryParams.get('gameId');
+    this.fromDate = this.formatDate(oneYearAgo);
+    this.toDate = this.formatDate(today);
 
-  this.loadJodiRecords();
-    // Use gameId
+    this.selectedGameId = queryParams.get('gameId');
+    this.loadJodiRecords();
   });
 }
+
 
 formatDate(date: Date): string {
   const yyyy = date.getFullYear();
@@ -89,42 +88,52 @@ chunkArray(arr: any[], chunkSize: number) {
 }
 
 loadJodiRecords() {
+
+  if (!this.fromDate || !this.toDate) {
+    return;
+  }
+
   this.apiService.getJodiRecords(this.selectedGameId, this.fromDate, this.toDate)
     .subscribe(data => {
-      this.records = data.records;
-      this.game_name = data.game_name
-      this.result = data.result
- // Step 1: Find earliest and latest dates from records
+
+      this.records = data.records || [];
+      this.game_name = data.game_name;
+      this.result = data.result;
+
+      if (!this.records.length) {
+        this.weekCells = [];
+        this.weekRows = [];
+        return;
+      }
+
       const datesList = this.records.map(r => r.input_date).sort();
       const earliestDateStr = datesList[0];
       const latestDateStr = datesList[datesList.length - 1];
 
-      // Step 2: Get Monday for earliest date
       const weekStart = this.getMonday(earliestDateStr);
 
-      // Step 3: Build days from Monday till latest date (inclusive)
       const weekCells = [];
       let currentDate = new Date(weekStart);
 
       while (this.formatDate(currentDate) <= latestDateStr) {
         const dateStr = this.formatDate(currentDate);
-
-        // Find record for this date or ** if missing
         const rec = this.records.find(r => r.input_date === dateStr);
+
         weekCells.push({
           day: this.getDayName(currentDate),
           date: dateStr,
           jodi_value: rec ? rec.jodi_value : '**'
         });
 
-        // increment one day
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
       this.weekCells = weekCells;
       this.weekRows = this.chunkArray(this.weekCells, 7);
+
+    });
 }
-    )}
+
  
 
 

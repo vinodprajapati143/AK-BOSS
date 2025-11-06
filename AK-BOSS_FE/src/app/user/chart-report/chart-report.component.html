@@ -25,7 +25,7 @@
     class="bg-[#0A7E8D] mt-2 border border-solid border-black text-white px-4 py-3 text-xs text-center leading-relaxed border-b ">
     <p class="uppercase tracking-wide font-semibold mb-2">{{game_name}} JODI RESULT CHART RECORDS</p>
     <p>
-      AKBOSS {{game_name}} jodi chart, {{game_name}} jodi chart, old {{game_name}} jodi chart, dpboss
+      DPBOSS {{game_name}} jodi chart, {{game_name}} jodi chart, old {{game_name}} jodi chart, dpboss
       {{game_name}} chart, {{game_name}} jodi record, {{game_name}}jodi record, {{game_name}} jodi chart 2015, MILAN
       MORNING jodi chart 2012, {{game_name}} jodi chart 2012 to 2023, {{game_name}} final ank, {{game_name}} jodi
       chart.co, {{game_name}} jodi chart matka, {{game_name}} jodi chart book, {{game_name}} matka chart, matka
@@ -47,9 +47,9 @@
 
     <!-- Date Filter Section -->
     <div class="flex justify-center items-center space-x-2 pt-4">
-      <input type="date" value="2019-07-25" class="btn rounded px-2 py-1 text-sm focus:outline-none min-w-[116px]">
-      <button class="btn text-gray-800 px-3 py-1 rounded font-semibold hover:bg-yellow-500 text-sm">Search</button>
-      <input type="date" value="2025-12-30" class="btn rounded px-2 py-1 text-sm focus:outline-none min-w-[116px]">
+      <input type="date" [(ngModel)]="fromDate" class="btn rounded px-2 py-1 text-sm focus:outline-none min-w-[116px]">
+      <button (click)="loadJodiRecords()" class="btn text-gray-800 px-3 py-1 rounded font-semibold hover:bg-yellow-500 text-sm">Search</button>
+      <input type="date" [(ngModel)]="toDate" class="btn rounded px-2 py-1 text-sm focus:outline-none min-w-[116px]">
     </div>
   </div>
 
