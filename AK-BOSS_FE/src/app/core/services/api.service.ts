@@ -66,14 +66,15 @@ export class ApiService {
   }
 
   changePassword(data: any) {
-  const token = localStorage.getItem('token'); // ya jaha store kiya ho
+  const token = localStorage.getItem('token');
 
-  return this.http.post(`${this.baseUrl}/change-password`, data, {
-    headers: { 
-      Authorization: `Bearer ${token}` 
+  return this.http.post(`${this.baseUrl}/api/auth/change-password`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`
     }
   });
 }
+
 
 
   getGames() {
