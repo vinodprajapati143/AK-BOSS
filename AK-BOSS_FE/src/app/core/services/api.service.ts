@@ -66,8 +66,15 @@ export class ApiService {
   }
 
   changePassword(data: any) {
-    return this.http.post(`${this.baseUrl}/api/auth/change-password`, data, { withCredentials: true });
-  }
+  const token = localStorage.getItem('token'); // ya jaha store kiya ho
+
+  return this.http.post(`${this.baseUrl}/change-password`, data, {
+    headers: { 
+      Authorization: `Bearer ${token}` 
+    }
+  });
+}
+
 
   getGames() {
     return this.http.get(`${this.baseUrl}/api/games/game-list`, { withCredentials: true });

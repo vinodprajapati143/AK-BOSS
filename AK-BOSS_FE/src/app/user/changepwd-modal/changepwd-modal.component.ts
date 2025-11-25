@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { LoaderComponent } from '../../shared/loader/loader.component';
 import { ApiService } from '../../core/services/api.service';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -9,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-changepwd-modal',
   standalone: true,
-  imports: [LoaderComponent, ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './changepwd-modal.component.html',
   styleUrl: './changepwd-modal.component.scss'
 })
