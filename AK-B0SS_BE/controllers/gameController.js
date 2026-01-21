@@ -741,7 +741,7 @@ exports.saveGameInput = async (req, res) => {
       [id, finalInputDate]
     );
 
-    console.log('existing: ', existing);
+    const createdBy = req.user?.id || 1;
     if (existing.length > 0) {
       // Update
       await db.query(
@@ -752,11 +752,11 @@ exports.saveGameInput = async (req, res) => {
       );
     } else {
       // Insert
-      await db.query(
+        await db.query(
         `INSERT INTO game_inputs 
-         (game_id, input_date, patte1, patte1_open, patte2_close, patte2, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-        [id, finalInputDate, patte1, patte1_open, patte2_close, patte2]
+        (game_id, input_date, patte1, patte1_open, patte2_close, patte2, created_by, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        [id, finalInputDate, patte1, patte1_open, patte2_close, patte2, createdBy]
       );
     }
 
