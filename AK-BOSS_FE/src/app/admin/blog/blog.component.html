@@ -1,0 +1,96 @@
+<div class="admin-dashboard">
+    <div class="flex">
+        <app-admin-sidebar />
+        <div class="content">
+            <div class="p-6 bg-white shadow-md rounded-lg">
+            
+                  <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-semibold text-gray-800">Create Blog</h1>
+        <p class="text-sm text-gray-500">Dashboard / Create Blog</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-lg shadow">
+
+        <!-- Card Header -->
+        <div class="border-b px-6 py-4">
+            <h2 class="font-semibold text-gray-700">Create A New Blog</h2>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-6 space-y-6">
+
+            <!-- Blog Title & Image -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">
+                        Title
+                    </label>
+                    <input type="text" placeholder="Enter Blog Title"
+                        class="w-full border rounded px-4 py-2 focus:outline-none focus:ring">
+                </div>
+
+                <!-- Image -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">
+                        Image <span class="text-red-500">(1150×777)</span>
+                    </label>
+                    <input type="file"
+                        class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                    <p class="text-xs text-gray-400 mt-1">
+                        Accepted Image Type: png, jpg, jpeg
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Blog Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-2">
+                    Description
+                </label>
+
+                <!-- Fake Editor Toolbar -->
+                <div class="border rounded-t bg-gray-50 p-2 flex flex-wrap gap-2 text-sm text-gray-600">
+                    <button class="px-2 py-1 border rounded">Paragraph</button>
+                    <button class="px-2 py-1 border rounded font-bold">B</button>
+                    <button class="px-2 py-1 border rounded italic">I</button>
+                    <button class="px-2 py-1 border rounded underline">U</button>
+                    <button class="px-2 py-1 border rounded">Link</button>
+                    <button class="px-2 py-1 border rounded">Image</button>
+                    <button class="px-2 py-1 border rounded">Source</button>
+                </div>
+
+                <!-- Editor Area -->
+                <textarea rows="8" placeholder="Enter Blog Description"
+                    class="w-full border border-t-0 rounded-b px-4 py-3 focus:outline-none focus:ring"></textarea>
+            </div>
+
+            <!-- AI Buttons -->
+            <div class="flex flex-wrap gap-4">
+                <button class="flex items-center gap-2 px-4 py-2 border rounded text-orange-600 hover:bg-orange-50">
+                    🤖 Generate AI Images
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 border rounded text-orange-600 hover:bg-orange-50">
+                    ✨ Generate Text With AI
+                </button>
+            </div>
+
+            <!-- Submit -->
+            <div class="flex justify-end">
+                <button
+                    class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+            </div>
+
+        </div>
+    </div>
+</div>

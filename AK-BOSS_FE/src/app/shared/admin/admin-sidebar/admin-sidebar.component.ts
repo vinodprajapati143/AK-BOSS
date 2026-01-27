@@ -38,8 +38,8 @@ export class AdminSidebarComponent {
     { img: 'referral', href: '/admin/users', text: 'Members', active: false },
     { img: 'report', href: '/admin/bal-transfer', text: 'Payment', active: false },
     { img: 'report', href: '/admin/all-report', text: 'Report', active: false },
-    { img: 'referral', href: '/admin/referral', text: 'Referral', active: false },
-    { img: 'help', href: '/admin/help', text: 'Help', active: false },
+    { img: 'referral', href: '/admin/general', text: 'Setting', active: false },
+    { img: 'help', href: '/admin/blog', text: 'Blog', active: false },
   ];
 
   subLinksMap: any = {
@@ -98,16 +98,22 @@ export class AdminSidebarComponent {
         href: '/admin/bal-withdrawal',
         active: false,
       },
+      // {
+      //   img: 'report',
+      //   text: 'Payment Request view',
+      //   href: '/admin/payment-request-view',
+      //   active: false,
+      // },
       {
         img: 'report',
-        text: 'Payment Request view',
-        href: '/admin/payment-request-view',
+        text: 'Payment-Update',
+        href: '/admin/payment-update',
         active: false,
       },
-      {
+        {
         img: 'report',
-        text: 'Purchase Balance',
-        href: '/admin/purchase-balance',
+        text: 'Pay-Method',
+        href: '/admin/payment-method',
         active: false,
       },
     ],
@@ -119,15 +125,18 @@ export class AdminSidebarComponent {
         active: false,
       },
     ],
-    Referral: [
+    Setting: [
       {
         img: 'referral',
-        text: 'My Referrals',
-        href: '/admin/referral',
+        text: 'General',
+        href: '/admin/general',
         active: false,
       },
     ],
-    Help: [{ img: 'help', text: 'FAQ', href: '/admin/help', active: false }],
+    Blog: [
+      { img: 'help', text: 'Blog', href: '/admin/blog', active: false },
+      { img: 'help', text: 'Blog-list', href: '/admin/blog-list', active: false },
+    ],
   };
 
   mobileNavLinks: any = [

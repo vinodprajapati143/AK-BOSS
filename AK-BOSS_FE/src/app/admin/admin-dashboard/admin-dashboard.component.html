@@ -94,7 +94,7 @@
                                     {{ user.enabled?'Enabled':'Disabled' }}
                                 </span>
                             </td>
-                            <td>{{ user.joiningdate | date:'dd-mm-yyyy hh:mm' }}</td>
+                            <td>{{ user.joiningdate | date: 'dd-mm-yy' }}</td>
                             <td>{{ user.phone }}</td>
                             <!-- <td>{{ user.amountPaid }}</td> -->
                             <!-- <td>{{ user.totalAmount }}</td> -->
