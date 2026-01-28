@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-payment-method',
@@ -11,4 +12,12 @@ import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-si
 })
 export class PaymentMethodComponent {
 
+routr = inject(Router)
+  constructor() {
+
+  }
+
+  editMethod() {
+    this.routr.navigateByUrl('admin/payment-update')
+  }
 }

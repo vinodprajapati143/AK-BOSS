@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blog-list',
@@ -9,5 +10,12 @@ import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-si
   styleUrl: './blog-list.component.scss'
 })
 export class BlogListComponent {
+routr = inject(Router)
+  constructor() {
 
+  }
+
+  createNew() {
+    this.routr.navigateByUrl('admin/blog')
+  }
 }

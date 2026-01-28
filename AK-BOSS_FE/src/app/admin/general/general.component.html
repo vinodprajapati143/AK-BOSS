@@ -1,176 +1,216 @@
-
-
 <div class="admin-dashboard">
   <div class="lg:flex">
     <app-admin-sidebar />
-    
-    <div class=" w-full p-4">
-         <div class="head left">
-                <h1 class="text-2xl font-semibold mb-4">General</h1>
+    <div class="content">
+
+      <div class="head">
+        <h1 class="text-2xl leading-[48px] font-semibold text-gray-800 flex aling-center">General</h1>
+      </div>
+      <div class="p-1">
+
+
+        <div class="bg-white rounded-lg shadow p-6 space-y-8">
+
+          <!-- Core Settings -->
+          <div>
+            <h2 class="font-semibold text-lg mb-4">Core Settings</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-medium">Site Name *</label>
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="Sa Robotic">
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Copyright Text *</label>
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="Powered By - Sa Developer Store">
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Phone Number</label>
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="+91 831598349">
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Email Address *</label>
+                <input type="email" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="support@sarobotic.in">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Address</label>
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="###">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Google Map Iframe Code</label>
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="###">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Android APK File Link</label>
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="###">
+              </div>
             </div>
+          </div>
 
-  <div class="bg-white rounded-lg shadow p-6 space-y-8">
+          <!-- Site Appearance -->
+          <div>
+            <h2 class="font-semibold text-lg mb-4">Site Appearance</h2>
 
-    <!-- Core Settings -->
-    <div>
-      <h2 class="font-semibold text-lg mb-4">Core Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-sm font-medium">Site Name *</label>
-          <input type="text" class="input" value="Sa Robotic">
-        </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Primary Color
+                </label>
+                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                  <input type="color" class="w-[80px] h-10 ">
+                </div>
+              </div>
 
-        <div>
-          <label class="text-sm font-medium">Copyright Text *</label>
-          <input type="text" class="input" value="Powered By - Sa Developer Store">
-        </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Primary Text Color
+                </label>
+                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                  <input type="color" class="w-[80px] h-10 ">
+                </div>
+              </div>
 
-        <div>
-          <label class="text-sm font-medium">Phone Number</label>
-          <input type="text" class="input" value="+91 831598349">
-        </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Secondary Color
+                </label>
+                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                  <input type="color" class="w-[80px] h-10 ">
+                </div>
+              </div>
 
-        <div>
-          <label class="text-sm font-medium">Email Address *</label>
-          <input type="email" class="input" value="support@sarobotic.in">
-        </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Tertiary Color
+                </label>
+                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                  <input type="color" class="w-[80px] h-10">
+                </div>
+              </div>
 
-        <div class="md:col-span-2">
-          <label class="text-sm font-medium">Address</label>
-          <input type="text" class="input" value="###">
-        </div>
 
-        <div class="md:col-span-2">
-          <label class="text-sm font-medium">Google Map Iframe Code</label>
-          <input type="text" class="input" value="###">
-        </div>
+              <!--  -->
 
-        <div class="md:col-span-2">
-          <label class="text-sm font-medium">Android APK File Link</label>
-          <input type="text" class="input" value="###">
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Site Logo <span class="text-red-500">(1150×777)</span>
+                </label>
+                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <p class="text-xs text-gray-400 mt-1">
+                  Accepted Site Logo Type: png, jpg, jpeg
+                </p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Square Logo <span class="text-red-500">(1150×777)</span>
+                </label>
+                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <p class="text-xs text-gray-400 mt-1">
+                  Square Logo Type: png, jpg, jpeg
+                </p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Panel Logo <span class="text-red-500">(1150×777)</span>
+                </label>
+                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <p class="text-xs text-gray-400 mt-1">
+                  Panel Logo Type: png, jpg, jpeg
+                </p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                  Favicon <span class="text-red-500">(1150×777)</span>
+                </label>
+                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <p class="text-xs text-gray-400 mt-1">
+                  Accepted Favicon Type: png, jpg, jpeg
+                </p>
+              </div>
+              <!--  -->
+
+
+              <!-- Theme Settings -->
+              <div>
+                <h2 class="font-semibold text-lg mb-4">Theme Settings</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-sm font-medium">Website Direction</label>
+                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                      <option>Left To Right</option>
+                      <option>Right To Left</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium">Default Theme Mode</label>
+                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                      <option>Light Mode</option>
+                      <option>Dark Mode</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Advanced Settings -->
+              <div>
+                <h2 class="font-semibold text-lg mb-4">Advanced Settings</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-sm font-medium">Time Zone</label>
+                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                      <option>Asia/Kolkata</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium">Country Code</label>
+                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                      <option>India +91</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium">Paginate Number</label>
+                    <input type="number" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="20">
+                  </div>
+
+                  <div class="flex items-center gap-4">
+                    <label class="text-sm font-medium">Debug Mode</label>
+                    <input type="checkbox" class="toggle">
+                  </div>
+
+                  <div class="flex items-center gap-4">
+                    <label class="text-sm font-medium">Landing Page</label>
+                    <input type="checkbox" class="toggle" checked>
+                  </div>
+
+                  <div class="flex items-center gap-4">
+                    <label class="text-sm font-medium">Force SSL</label>
+                    <input type="checkbox" class="toggle" checked>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="flex justify-end gap-3">
+                <button class="px-4 py-2 border rounded text-gray-600">Reset</button>
+                <button class="px-4 py-2 bg-orange-500 text-white rounded">Save</button>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Site Appearance -->
-    <div>
-      <h2 class="font-semibold text-lg mb-4">Site Appearance</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-sm font-medium">Primary Color</label>
-          <input type="color" value="#f8c737" class="w-full h-10 rounded">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Primary Text Color</label>
-          <input type="color" value="#111111" class="w-full h-10 rounded">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Secondary Color</label>
-          <input type="color" value="#ff8300" class="w-full h-10 rounded">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Tertiary Color</label>
-          <input type="color" value="#ff6600" class="w-full h-10 rounded">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Site Logo</label>
-          <input type="file" class="input">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Square Logo</label>
-          <input type="file" class="input">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Panel Logo</label>
-          <input type="file" class="input">
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Favicon</label>
-          <input type="file" class="input">
-        </div>
-      </div>
-    </div>
-
-    <!-- Theme Settings -->
-    <div>
-      <h2 class="font-semibold text-lg mb-4">Theme Settings</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-sm font-medium">Website Direction</label>
-          <select class="input">
-            <option>Left To Right</option>
-            <option>Right To Left</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Default Theme Mode</label>
-          <select class="input">
-            <option>Light Mode</option>
-            <option>Dark Mode</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Advanced Settings -->
-    <div>
-      <h2 class="font-semibold text-lg mb-4">Advanced Settings</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="text-sm font-medium">Time Zone</label>
-          <select class="input">
-            <option>Asia/Kolkata</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Country Code</label>
-          <select class="input">
-            <option>India +91</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Paginate Number</label>
-          <input type="number" class="input" value="20">
-        </div>
-
-        <div class="flex items-center gap-4">
-          <label class="text-sm font-medium">Debug Mode</label>
-          <input type="checkbox" class="toggle">
-        </div>
-
-        <div class="flex items-center gap-4">
-          <label class="text-sm font-medium">Landing Page</label>
-          <input type="checkbox" class="toggle" checked>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <label class="text-sm font-medium">Force SSL</label>
-          <input type="checkbox" class="toggle" checked>
-        </div>
-      </div>
-    </div>
-
-    <!-- Buttons -->
-    <div class="flex justify-end gap-3">
-      <button class="px-4 py-2 border rounded text-gray-600">Reset</button>
-      <button class="px-4 py-2 bg-orange-500 text-white rounded">Save</button>
-    </div>
-
-  </div>
-</div>
-  </div>
-</div>
