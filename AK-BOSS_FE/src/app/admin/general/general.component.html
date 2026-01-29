@@ -12,9 +12,9 @@
         <div class="bg-white rounded-lg shadow p-6 space-y-8">
 
           <!-- Core Settings -->
-          <section class="flex justify-start w-full">
-            <h2 class="font-semibold text-lg mb-4 w-[20%]">Core Settings</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
+          <section class="flex justify-start w-full resposive-mob">
+            <h2 class="font-semibold text-lg mb-4 w-[15%] resposive-mob-one">Core Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[85%] resposive-mob-third">
               <div class="flex gap-4 items-center">
                 <label class="text-sm font-medium flex text-nowrap">Site Name *</label>
                 <input type="text" class="input border rounded w-full px-2 py-1 bg-white focus:outline-none focus:ring"
@@ -51,8 +51,27 @@
                   value="###">
               </div>
 
-              <div class="md:col-span-2 flex gap-4 items-center">
-                <label class="text-sm font-medium flex text-nowrap">Android APK File Link</label>
+
+              <div class="flex gap-4 items-center">
+                <label class="text-sm font-medium flex text-nowrap">Android File Name</label>
+                <input type="text" class="input border rounded w-full px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="###">
+              </div>
+
+              <div class="flex gap-4 items-center">
+                <label class="text-sm font-medium flex text-nowrap">Android File APK link</label>
+                <input type="text" class="input border rounded w-full px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="###">
+              </div>
+
+              <div class="flex gap-4 items-center">
+                <label class="text-sm font-medium flex text-nowrap">API Name</label>
+                <input type="text" class="input border rounded w-full px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="###">
+              </div>
+
+              <div class="flex gap-4 items-center">
+                <label class="text-sm font-medium flex text-nowrap">API link</label>
                 <input type="text" class="input border rounded w-full px-2 py-1 bg-white focus:outline-none focus:ring"
                   value="###">
               </div>
@@ -60,15 +79,17 @@
           </section>
 
 
-           <section class="flex justify-start w-full">
-            <h2 class="font-semibold text-lg mb-4 w-[20%]">Site Appearance</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
+          <section class="flex justify-start w-full resposive-mob">
+            <h2 class="font-semibold text-lg mb-4 w-[15%] resposive-mob-one">Site Appearance</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[85%] resposive-mob-third">
               <div>
-                <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
-                  Primary Color
-                </label>
-                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                  <input type="color" class="w-[80px] h-10 ">
+                <label class="text-sm font-medium block mb-1">Primary Color</label>
+                <div class="flex items-center border rounded-md px-3 py-2 gap-3">
+                  <input type="color" value="#ec8737" class="w-8 h-8 border rounded cursor-pointer">
+                  <input type="text" value="#ec8737" class="flex-1 text-sm outline-none">
+                  <button class="text-gray-400 hover:text-gray-600">
+                    🔄
+                  </button>
                 </div>
               </div>
 
@@ -76,8 +97,12 @@
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
                   Primary Text Color
                 </label>
-                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                  <input type="color" class="w-[80px] h-10 ">
+                   <div class="flex items-center border rounded-md px-3 py-2 gap-3">
+                  <input type="color" value="#ec8737" class="w-8 h-8 border rounded cursor-pointer">
+                  <input type="text" value="#ec8737" class="flex-1 text-sm outline-none">
+                  <button class="text-gray-400 hover:text-gray-600">
+                    🔄
+                  </button>
                 </div>
               </div>
 
@@ -85,8 +110,12 @@
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
                   Secondary Color
                 </label>
-                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                  <input type="color" class="w-[80px] h-10 ">
+                  <div class="flex items-center border rounded-md px-3 py-2 gap-3">
+                  <input type="color" value="#ec8737" class="w-8 h-8 border rounded cursor-pointer">
+                  <input type="text" value="#ec8737" class="flex-1 text-sm outline-none">
+                  <button class="text-gray-400 hover:text-gray-600">
+                    🔄
+                  </button>
                 </div>
               </div>
 
@@ -94,16 +123,20 @@
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
                   Tertiary Color
                 </label>
-                <div class="w-full border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                  <input type="color" class="w-[80px] h-10">
+                   <div class="flex items-center border rounded-md px-3 py-2 gap-3">
+                  <input type="color" value="#ec8737" class="w-8 h-8 border rounded cursor-pointer">
+                  <input type="text" value="#ec8737" class="flex-1 text-sm outline-none">
+                  <button class="text-gray-400 hover:text-gray-600">
+                    🔄
+                  </button>
                 </div>
               </div>
 
               <div>
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
-                  Site Logo <span class="text-red-500">(1150×777)</span>
+                  Site Logo <span class="text-red-500">(438×117)</span>
                 </label>
-                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <input type="file" class="w-full border rounded bg-white focus:outline-none focus:ring">
                 <p class="text-xs text-gray-400 mt-1">
                   Accepted Site Logo Type: png, jpg, jpeg
                 </p>
@@ -111,9 +144,9 @@
 
               <div>
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
-                  Square Logo <span class="text-red-500">(1150×777)</span>
+                  Square Logo <span class="text-red-500">(160×160)</span>
                 </label>
-                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <input type="file" class="w-full border rounded bg-white focus:outline-none focus:ring">
                 <p class="text-xs text-gray-400 mt-1">
                   Square Logo Type: png, jpg, jpeg
                 </p>
@@ -121,9 +154,9 @@
 
               <div>
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
-                  Panel Logo <span class="text-red-500">(1150×777)</span>
+                  Panel Logo <span class="text-red-500">(350*75)</span>
                 </label>
-                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <input type="file" class="w-full border rounded bg-white focus:outline-none focus:ring">
                 <p class="text-xs text-gray-400 mt-1">
                   Panel Logo Type: png, jpg, jpeg
                 </p>
@@ -131,9 +164,9 @@
 
               <div>
                 <label class="block text-sm font-medium flex text-nowrap text-gray-600 mb-1">
-                  Favicon <span class="text-red-500">(1150×777)</span>
+                  Favicon <span class="text-red-500">(160*160)</span>
                 </label>
-                <input type="file" class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                <input type="file" class="w-full border rounded bg-white focus:outline-none focus:ring">
                 <p class="text-xs text-gray-400 mt-1">
                   Accepted Favicon Type: png, jpg, jpeg
                 </p>
@@ -142,73 +175,117 @@
           </section>
 
 
-           <section class="flex justify-start w-full">
-            <h2 class="font-semibold text-lg mb-4 w-[20%]">Theme Settings</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
-                   <div>
-                    <label class="text-sm font-medium flex text-nowrap">Website Direction</label>
-                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                      <option>Left To Right</option>
-                      <option>Right To Left</option>
-                    </select>
-                  </div>
+          <section class="flex justify-start w-full resposive-mob">
+            <h2 class="font-semibold text-lg mb-4 w-[15%] resposive-mob-one">Theme Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[85%] resposive-mob-third">
+              <div>
+                <label class="text-sm font-medium flex text-nowrap">Website Direction</label>
+                <select class="input border w-full rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                  <option>Left To Right</option>
+                  <option>Right To Left</option>
+                </select>
+              </div>
 
-                  <div>
-                    <label class="text-sm font-medium flex text-nowrap">Default Theme Mode</label>
-                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                      <option>Light Mode</option>
-                      <option>Dark Mode</option>
-                    </select>
-                  </div>
+              <div>
+                <label class="text-sm font-medium flex text-nowrap">Default Theme Mode</label>
+                <select class="input border w-full rounded px-2 py-1 bg-white focus:outline-none focus:ring">
+                  <option>Light Mode</option>
+                  <option>Dark Mode</option>
+                </select>
+              </div>
             </div>
           </section>
 
           <!-- Site Appearance -->
 
-                <section class="flex justify-start w-full">
-            <h2 class="font-semibold text-lg mb-4 w-[20%]">Advanced Settings</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
-                 <div>
-                    <label class="text-sm font-medium flex text-nowrap">Time Zone</label>
-                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                      <option>Asia/Kolkata</option>
-                    </select>
-                  </div>
+          <section class="flex w-full resposive-mob">
+            <!-- Left Title -->
+            <h2 class="font-semibold text-lg w-[15%] resposive-mob-one">Advanced Settings</h2>
 
-                  <div>
-                    <label class="text-sm font-medium flex text-nowrap">Country Code</label>
-                    <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
-                      <option>India +91</option>
-                    </select>
-                  </div>
+            <!-- Right Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full lg:w-[85%] resposive-mob-third">
 
-                  <div>
-                    <label class="text-sm font-medium flex text-nowrap">Paginate Number</label>
-                    <input type="number" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
-                      value="20">
-                  </div>
+              <!-- Time Zone -->
+              <div>
+                <label class="text-sm font-medium mb-1 block">Time Zone</label>
+                <select
+                  class="w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option>Asia/Kolkata</option>
+                </select>
+              </div>
 
-                  <div class="flex items-center gap-4">
-                    <label class="text-sm font-medium flex text-nowrap">Debug Mode</label>
-                    <input type="checkbox" class="toggle">
-                  </div>
+              <!-- Country Code -->
+              <div>
+                <label class="text-sm font-medium mb-1 block">Country Code</label>
+                <select
+                  class="w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option>India +91</option>
+                </select>
+              </div>
 
-                  <div class="flex items-center gap-4">
-                    <label class="text-sm font-medium flex text-nowrap">Landing Page</label>
-                    <input type="checkbox" class="toggle" checked>
-                  </div>
+              <!-- Paginate Number -->
+              <div>
+                <label class="text-sm font-medium mb-1 block">
+                  Paginate Number <span class="text-red-500">*</span>
+                </label>
+                <input type="number" value="20"
+                  class="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+              </div>
 
-                  <div class="flex items-center gap-4">
-                    <label class="text-sm font-medium flex text-nowrap">Force SSL</label>
-                    <input type="checkbox" class="toggle" checked>
-                  </div>
+              <!-- Debug Mode -->
+              <div>
+                <label class="text-sm font-medium">Debug Mode</label>
+                <div class="flex items-center justify-between border rounded-md px-4 py-1.5 bg-gray-100">
+                  <span class="text-sm font-medium">Turn On/Off Debug Mode</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-orange-500
+           after:content-[''] after:absolute after:top-0.5 after:left-0.5
+           after:bg-white after:rounded-full after:h-5 after:w-5
+           after:transition-all peer-checked:after:translate-x-5">
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Landing Page</label>
+                <div class="flex items-center justify-between border rounded-md px-4 py-1.5 bg-gray-100">
+                  <span class="text-sm font-medium">Turn On/Off Landing Page</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-orange-500
+           after:content-[''] after:absolute after:top-0.5 after:left-0.5
+           after:bg-white after:rounded-full after:h-5 after:w-5
+           after:transition-all peer-checked:after:translate-x-5">
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Force SSL</label>
+                <div class="flex items-center justify-between border rounded-md px-4 py-1.5 bg-gray-100">
+                  <span class="text-sm font-medium">Turn On/Off Force SSL</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-orange-500
+           after:content-[''] after:absolute after:top-0.5 after:left-0.5
+           after:bg-white after:rounded-full after:h-5 after:w-5
+           after:transition-all peer-checked:after:translate-x-5">
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+
             </div>
           </section>
 
-           <div class="flex justify-end gap-3">
-                <button class="px-4 py-2 border rounded text-gray-600">Reset</button>
-                <button class="px-4 py-2 bg-orange-500 text-white rounded">Save</button>
-              </div>
+          <div class="flex justify-end gap-3">
+            <button class="px-4 py-2 border rounded text-gray-600">Reset</button>
+            <button class="px-4 py-2 bg-orange-500 text-white rounded">Save</button>
+          </div>
 
         </div>
       </div>

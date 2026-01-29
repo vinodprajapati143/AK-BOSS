@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+  .resposive-mob {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    .resposive-mob-one {
+      width: 100%;
+    }
+    .resposive-mob-third {
+      width: 100%;
+    }
+  }
+}
