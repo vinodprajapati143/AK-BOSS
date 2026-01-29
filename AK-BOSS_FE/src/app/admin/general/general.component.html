@@ -12,53 +12,57 @@
         <div class="bg-white rounded-lg shadow p-6 space-y-8">
 
           <!-- Core Settings -->
-          <div>
-            <h2 class="font-semibold text-lg mb-4">Core Settings</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+          <section class="flex justify-start w-full">
+            <h2 class="font-semibold text-lg mb-4 w-[20%]">Core Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
+              <div class="flex gap-4">
                 <label class="text-sm font-medium">Site Name *</label>
-                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="Sa Robotic">
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="Sa Robotic">
               </div>
 
-              <div>
+              <div class="flex gap-4">
                 <label class="text-sm font-medium">Copyright Text *</label>
-                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="Powered By - Sa Developer Store">
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="Powered By - Sa Developer Store">
               </div>
 
-              <div>
+              <div class="flex gap-4">
                 <label class="text-sm font-medium">Phone Number</label>
-                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="+91 831598349">
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="+91 831598349">
               </div>
 
-              <div>
+              <div class="flex gap-4">
                 <label class="text-sm font-medium">Email Address *</label>
-                <input type="email" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="support@sarobotic.in">
+                <input type="email" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="support@sarobotic.in">
               </div>
 
-              <div class="md:col-span-2">
+              <div class="md:col-span-2 flex gap-4">
                 <label class="text-sm font-medium">Address</label>
-                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="###">
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="###">
               </div>
 
-              <div class="md:col-span-2">
+              <div class="md:col-span-2 flex gap-4">
                 <label class="text-sm font-medium">Google Map Iframe Code</label>
-                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="###">
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="###">
               </div>
 
-              <div class="md:col-span-2">
+              <div class="md:col-span-2 flex gap-4">
                 <label class="text-sm font-medium">Android APK File Link</label>
-                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="###">
+                <input type="text" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                  value="###">
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- Site Appearance -->
-          <div>
-            <h2 class="font-semibold text-lg mb-4">Site Appearance</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+           <section class="flex justify-start w-full">
+            <h2 class="font-semibold text-lg mb-4 w-[20%]">Site Appearance</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
               <div>
                 <label class="block text-sm font-medium text-gray-600 mb-1">
                   Primary Color
@@ -94,9 +98,6 @@
                   <input type="color" class="w-[80px] h-10">
                 </div>
               </div>
-
-
-              <!--  -->
 
               <div>
                 <label class="block text-sm font-medium text-gray-600 mb-1">
@@ -137,15 +138,14 @@
                   Accepted Favicon Type: png, jpg, jpeg
                 </p>
               </div>
-              <!--  -->
+            </div>
+          </section>
 
 
-              <!-- Theme Settings -->
-              <div>
-                <h2 class="font-semibold text-lg mb-4">Theme Settings</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+           <section class="flex justify-start w-full">
+            <h2 class="font-semibold text-lg mb-4 w-[20%]">Theme Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
+                   <div>
                     <label class="text-sm font-medium">Website Direction</label>
                     <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
                       <option>Left To Right</option>
@@ -160,15 +160,15 @@
                       <option>Dark Mode</option>
                     </select>
                   </div>
-                </div>
-              </div>
+            </div>
+          </section>
 
-              <!-- Advanced Settings -->
-              <div>
-                <h2 class="font-semibold text-lg mb-4">Advanced Settings</h2>
+          <!-- Site Appearance -->
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                <section class="flex justify-start w-full">
+            <h2 class="font-semibold text-lg mb-4 w-[20%]">Advanced Settings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-[80%]">
+                 <div>
                     <label class="text-sm font-medium">Time Zone</label>
                     <select class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring">
                       <option>Asia/Kolkata</option>
@@ -184,7 +184,8 @@
 
                   <div>
                     <label class="text-sm font-medium">Paginate Number</label>
-                    <input type="number" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring" value="20">
+                    <input type="number" class="input border rounded px-2 py-1 bg-white focus:outline-none focus:ring"
+                      value="20">
                   </div>
 
                   <div class="flex items-center gap-4">
@@ -201,16 +202,13 @@
                     <label class="text-sm font-medium">Force SSL</label>
                     <input type="checkbox" class="toggle" checked>
                   </div>
-                </div>
-              </div>
+            </div>
+          </section>
 
-              <!-- Buttons -->
-              <div class="flex justify-end gap-3">
+           <div class="flex justify-end gap-3">
                 <button class="px-4 py-2 border rounded text-gray-600">Reset</button>
                 <button class="px-4 py-2 bg-orange-500 text-white rounded">Save</button>
               </div>
 
-            </div>
-          </div>
         </div>
       </div>
