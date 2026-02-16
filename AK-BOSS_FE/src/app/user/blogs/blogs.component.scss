@@ -1,0 +1,47 @@
+a {
+  position: relative;
+}
+a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: 0.3s;
+}
+a:hover::after {
+  width: 100%;
+}
+
+
+.filter-wrapper {
+    width: fit-content;
+    background: rgba(10, 126, 141, 0.4);
+    border-radius: 8px;
+        padding: 8px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);   
+}
+
+.tab {
+    background-color: white;
+    color: black;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+} 
+.tab-active {
+    background-color: black;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+     transition: background-color 0.3s;
+}
+

@@ -76,4 +76,8 @@ export class UserDashboardComponent implements OnInit,OnDestroy{
     const url = `https://wa.me/919575259525?text=Goodbye`;
     window.open(url, "_blank");
   }
+
+  blogs() {
+    this.router.navigate(['/user/blogs']);
+  }
 }
