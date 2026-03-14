@@ -14,6 +14,8 @@ import { PlayGameComponent } from './play-game/play-game.component';
 import { ReportsComponent } from './report/report.component';
 import { GameRateComponent } from './game-rate/game-rate.component';
 import { BlogsComponent } from './blogs/blogs.component';
+import { AboutUsComponent } from './about-us/about-us.component';
+import { ContactComponent } from './contact/contact.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -29,7 +31,9 @@ const routes: Routes = [
   { path: 'play', component: PlayGameComponent },
   { path: 'withdrawal', component: WithdrawalComponent },
   { path: 'game-rate', component: GameRateComponent },
-  { path: 'blogs', component: BlogsComponent }
+  { path: 'blogs', component: BlogsComponent },
+  { path: 'about-us', component: AboutUsComponent },
+  { path: 'contact', component: ContactComponent }
 
 ];
 
