@@ -1,5 +1,6 @@
 const db = require("../config/db");
-
+const dotenv = require('dotenv');
+dotenv.config();
 
 // ✅ Create Blog
 exports.createBlog = async (req, res) => {
@@ -7,7 +8,7 @@ exports.createBlog = async (req, res) => {
     const { title, description } = req.body;
 
     const image = req.file
-    ? `${BASE_URL}/uploads/${req.file.filename}`
+    ? `${process.env.BASE_URL}/backend/api/uploads/${req.file.filename}`
     : '';
 
     const query = `

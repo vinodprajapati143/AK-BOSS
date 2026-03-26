@@ -47,7 +47,7 @@ uploadAdapter(loader: any) {
         const formData = new FormData();
         formData.append('file', file);
 
-        return fetch(`${this.baseUrl}/api/uploads`, {
+        return fetch(`${this.baseUrl}/api/upload`, {
           method: 'POST',
           body: formData
         })

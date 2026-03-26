@@ -19,25 +19,26 @@ export const AppInterceptor: HttpInterceptorFn = (request, next) => {
   const sessionStorageService = inject(StorageService);
   const jwtToken = sessionStorageService.getItem('authToken'); // Example: Retrieve from localStorage
   // Clone the request and add the Authorization header with the JWT
-  const modifiedRequest = jwtToken
-    ? request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${jwtToken}`,
-        Accept: 'application/json', // Set the Accept header to JSON format
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0'
-      },
-    }) : request.clone({
-      setHeaders: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0'
-      }
-    });
+    // ✅ check if FormData
+  const isFormData = request.body instanceof FormData;
+    const headers: any = {
+    Accept: 'application/json',
+    'Cache-Control': 'no-cache',
+    Pragma: 'no-cache',
+    Expires: '0'
+  };
+
+    if (jwtToken) {
+    headers['Authorization'] = `Bearer ${jwtToken}`;
+  }
+    // ❗ ONLY set JSON header if NOT FormData
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
+  const modifiedRequest = request.clone({
+    setHeaders: headers
+  });
+
 
     loaderService.show();
   return next(modifiedRequest).pipe(

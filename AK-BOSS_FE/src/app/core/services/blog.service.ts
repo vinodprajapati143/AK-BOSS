@@ -13,7 +13,7 @@ export class BlogService {
   constructor(private http: HttpClient) {}
 
   createBlog(formData: FormData) {
-    return this.http.post(`${this.baseUrl}/create`, formData);
+    return this.http.post(`${this.baseUrl}/api/blog/create`, formData);
   }
 
   getBlogs() {
