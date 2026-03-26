@@ -15,7 +15,7 @@ const upload = multer({ storage });
 
 router.post('/', upload.single('file'), (req, res) => {
   res.json({
-    url: `${process.env.BASE_URL}/backend/uploads/${req.file.filename}`
+    url: `${process.env.BASE_URL}/backend/api/uploads/${req.file.filename}`
   });
 });
 

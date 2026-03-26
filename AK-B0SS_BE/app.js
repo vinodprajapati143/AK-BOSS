@@ -49,8 +49,8 @@ app.use("/api/wallet", walletRoutes);
 app.use("/api/payments", paymentsRoutes);
 app.use("/api/withdrawal", withdrawalRoutes);
 app.use('/api/blog', blogRoutes);
-app.use('/backend/upload', uploadRoutes);
-app.use('/backend/uploads', express.static('uploads'));
+app.use('/api/upload', uploadRoutes);
+app.use('/api/uploads', express.static('uploads'));
 
 
 
