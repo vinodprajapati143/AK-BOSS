@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { createBlog } = require('../controllers/blogController');
+const blogController  = require('../controllers/blogController');
+const authController = require('../controllers/authController');
+const { verifyToken } = require('../middlewares/authMiddleware');
+
+
 
 // multer config
 const storage = multer.diskStorage({
@@ -16,6 +20,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // API
-router.post('/create', upload.single('image'), createBlog);
+router.post('/create', upload.single('image'),verifyToken, blogController.createBlog);
 
 module.exports = router;
