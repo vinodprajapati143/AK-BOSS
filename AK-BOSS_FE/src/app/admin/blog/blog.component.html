@@ -29,8 +29,10 @@
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Title
                     </label>
-                    <input type="text" placeholder="Enter Blog Title"
-                        class="w-full border rounded px-4 py-2 focus:outline-none focus:ring">
+                                <input type="text"
+                    [(ngModel)]="title"
+                    placeholder="Enter Blog Title"
+                    class="w-full border rounded px-4 py-2">
                 </div>
 
                 <!-- Image -->
@@ -38,8 +40,9 @@
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Image <span class="text-red-500">(1150×777)</span>
                     </label>
-                    <input type="file"
-                        class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring">
+                  <input type="file"
+  (change)="onFileChange($event)"
+  class="w-full border rounded px-3 py-2">
                     <p class="text-xs text-gray-400 mt-1">
                         Accepted Image Type: png, jpg, jpeg
                     </p>
@@ -53,20 +56,15 @@
                     Description
                 </label>
 
-                <!-- Fake Editor Toolbar -->
-                <div class="border rounded-t bg-gray-50 p-2 flex flex-wrap gap-2 text-sm text-gray-600">
-                    <button class="px-2 py-1 border rounded">Paragraph</button>
-                    <button class="px-2 py-1 border rounded font-bold">B</button>
-                    <button class="px-2 py-1 border rounded italic">I</button>
-                    <button class="px-2 py-1 border rounded underline">U</button>
-                    <button class="px-2 py-1 border rounded">Link</button>
-                    <button class="px-2 py-1 border rounded">Image</button>
-                    <button class="px-2 py-1 border rounded">Source</button>
-                </div>
+                                <ckeditor 
+                [editor]="Editor"
+                [(ngModel)]="blogContent"
+                [config]="config"
+                (ready)="onReady($event)">
+                </ckeditor>
 
-                <!-- Editor Area -->
-                <textarea rows="8" placeholder="Enter Blog Description"
-                    class="w-full border border-t-0 rounded-b px-4 py-3 focus:outline-none focus:ring"></textarea>
+                
+ 
             </div>
 
             <!-- AI Buttons -->
