@@ -77,7 +77,4 @@ export class UserDashboardComponent implements OnInit,OnDestroy{
     window.open(url, "_blank");
   }
 
-  blogs() {
-    this.router.navigate(['/user/blogs']);
-  }
 }
