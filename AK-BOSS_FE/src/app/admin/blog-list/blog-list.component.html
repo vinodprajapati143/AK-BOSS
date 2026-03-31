@@ -81,52 +81,62 @@
             </tr>
           </thead>
 
-          <tbody>
-            <!-- Row -->
-            <tr class="border-b hover:bg-gray-50">
-              <td class="p-3"><input type="checkbox" /></td>
-              <td class="p-3">1</td>
-              <td class="p-3 text-gray-600">
-                SA Robotic - One Platform, Multiple Benefits !
-              </td>
-              <td class="p-3 text-center">
-                      <label class="inline-flex relative items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-orange-500 
-                                after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
-                                after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
-                                peer-checked:after:translate-x-full"></div>
-                                    </label>
-              </td>
-              <td class="p-3 text-center flex justify-center gap-3">
-                <button class="text-gray-500 hover:text-orange-500">✏️</button>
-                <button class="text-gray-500 hover:text-red-500">🗑️</button>
-              </td>
-            </tr>
+         <tbody>
+  <tr *ngFor="let blog of blogs; let i = index" 
+      class="border-b hover:bg-gray-50">
 
-            <!-- Duplicate rows -->
-            <tr class="border-b hover:bg-gray-50">
-              <td class="p-3"><input type="checkbox" /></td>
-              <td class="p-3">2</td>
-              <td class="p-3 text-gray-600">
-                Share & Earn Money Online
-              </td>
-              <td class="p-3 text-center">
-                      <label class="inline-flex relative items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-orange-500 
-                                after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
-                                after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
-                                peer-checked:after:translate-x-full"></div>
-                                    </label>
-              </td>
-              <td class="p-3 text-center flex justify-center gap-3">
-                <button class="text-gray-500 hover:text-orange-500">✏️</button>
-                <button class="text-gray-500 hover:text-red-500">🗑️</button>
-              </td>
-            </tr>
+    <!-- Checkbox -->
+    <td class="p-3">
+      <input type="checkbox" />
+    </td>
 
-          </tbody>
+    <!-- Index -->
+    <td class="p-3">
+      {{ (pagination?.page - 1) * pagination?.limit + i + 1 }}
+    </td>
+
+    <!-- Title -->
+    <td class="p-3 text-gray-600">
+      {{ blog.title }}
+    </td>
+
+    <!-- Status Toggle -->
+    <td class="p-3 text-center">
+      <label class="inline-flex relative items-center cursor-pointer">
+        
+        <input type="checkbox"
+               class="sr-only peer"
+               [checked]="blog.status == 1"
+               (change)="toggleStatus(blog)" />
+
+        <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-orange-500 
+          after:content-[''] after:absolute after:top-0.5 after:left-[2px] 
+          after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
+          peer-checked:after:translate-x-full">
+        </div>
+      </label>
+    </td>
+
+    <!-- Actions -->
+    <td class="p-3 text-center flex justify-center gap-3">
+      
+      <!-- Edit -->
+      <button 
+        class="text-gray-500 hover:text-orange-500"
+        (click)="editBlog(blog)">
+        ✏️
+      </button>
+
+      <!-- Delete -->
+      <button 
+        class="text-gray-500 hover:text-red-500"
+        (click)="deleteBlog(blog.id)">
+        🗑️
+      </button>
+
+    </td>
+  </tr>
+</tbody>
         </table>
       </div>
 

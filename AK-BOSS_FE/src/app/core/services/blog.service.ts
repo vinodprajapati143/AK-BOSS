@@ -6,6 +6,17 @@ export interface BlogResponse {
   blogId: number;
   slug?: string;
 }
+
+export interface BlogListResponse {
+  message: string;
+  data: any[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -21,9 +32,9 @@ export class BlogService {
     return this.http.post<BlogResponse>(`${this.baseUrl}/api/blog/create`, formData);
   }
 
-  getBlogs() {
-    return this.http.get<BlogResponse[]>(`${this.baseUrl}/all`);
-  }
+getBlogs(params: any) {
+  return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/list`, { params });
+}
 
   getBlogById(id: number) {
     return this.http.get<BlogResponse>(`${this.baseUrl}/${id}`);

@@ -94,3 +94,64 @@ exports.createBlog = async (req, res) => {
     });
   }
 };
+
+exports.getBlogs = async (req, res) => {
+  try {
+    let { page = 1, limit = 10, search = '', status } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+    const offset = (page - 1) * limit;
+
+    let whereClause = 'WHERE 1=1';
+    let params = [];
+
+    // 🔍 Search (title)
+    if (search) {
+      whereClause += ' AND title LIKE ?';
+      params.push(`%${search}%`);
+    }
+
+    // 🔘 Status filter
+    if (status !== undefined) {
+      whereClause += ' AND status = ?';
+      params.push(status);
+    }
+
+    // 📊 Total count
+    const [countResult] = await db.execute(
+      `SELECT COUNT(*) as total FROM blogs ${whereClause}`,
+      params
+    );
+
+    const total = countResult[0].total;
+
+    // 📄 Data query
+    const [blogs] = await db.execute(
+      `SELECT id, title, subDescription, image, status, created_at 
+       FROM blogs 
+       ${whereClause}
+       ORDER BY id DESC
+       LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
+    );
+
+    res.status(200).json({
+      message: 'Blogs fetched successfully',
+      data: blogs,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('Get Blogs Error:', error);
+
+    res.status(500).json({
+      message: 'Internal Server Error'
+    });
+  }
+};
