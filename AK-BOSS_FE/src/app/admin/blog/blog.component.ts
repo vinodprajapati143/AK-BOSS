@@ -4,8 +4,11 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BlogService } from '../../core/services/blog.service';
+import { BlogResponse, BlogService } from '../../core/services/blog.service';
 import { environment } from '../../../environments/environment.prod';
+import { ToastrService } from 'ngx-toastr';
+
+ 
 
 @Component({
   selector: 'app-blog',
@@ -30,10 +33,12 @@ public Editor: any = ClassicEditor;
   ]
 };
 title: string = '';
+subDescription: string = '';
 selectedFile: File | null = null;
-  private baseUrl = environment.apiUrl;
+private baseUrl = environment.apiUrl;
+isLoading: boolean | undefined;
 
-constructor(private blogService: BlogService) {}
+constructor(private blogService: BlogService, private toastr:ToastrService) {}
 
 onFileChange(event: any) {
   this.selectedFile = event.target.files[0];
@@ -71,24 +76,72 @@ onReady(editor: any) {
   };
 }
 onSubmit() {
-  const formData = new FormData();
+  // ✅ Validation
+  if (!this.title || !this.blogContent) {
+    this.toastr.warning('Title and description are required');
+    return;
+  }
 
-  formData.append('title', this.title);
-  formData.append('description', this.blogContent);
+  const title = this.title.trim();
+  const subDescription = this.subDescription?.trim();
+  const description = this.blogContent.trim();
+
+  // ✅ Image validation
+  if (this.selectedFile) {
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+    if (!allowedTypes.includes(this.selectedFile.type)) {
+      this.toastr.error('Only JPG, PNG images allowed');
+      return;
+    }
+
+    if (this.selectedFile.size > 2 * 1024 * 1024) {
+      this.toastr.error('Image size should be less than 2MB');
+      return;
+    }
+  }
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('subDescription', subDescription || '');
+  formData.append('description', description);
 
   if (this.selectedFile) {
     formData.append('image', this.selectedFile);
   }
 
+  this.isLoading = true;
+
   this.blogService.createBlog(formData).subscribe({
-    next: (res) => {
-      alert('Blog Created 🔥');
-       this.title = '';
-  this.blogContent = '';
-  this.selectedFile = null;
+    next: (res: BlogResponse) => {
+      this.toastr.success(res?.message || 'Blog Created Successfully 🔥');
+
+      // reset form
+      this.title = '';
+      this.subDescription = '';
+      this.blogContent = '';
+      this.selectedFile = null;
+
+      this.isLoading = false;
     },
+
     error: (err) => {
-      console.error(err);
+      console.error('Create Blog Error:', err);
+
+      // 🔥 Main logic (server message show)
+      let errorMessage = 'Something went wrong. Please try again.';
+
+      if (err?.error?.message) {
+        errorMessage = err.error.message;
+      } else if (err?.status === 0) {
+        errorMessage = 'Unable to connect to server';
+      } else if (err?.status === 500) {
+        errorMessage = 'Internal server error';
+      }
+
+      this.toastr.error(errorMessage);
+
+      this.isLoading = false;
     }
   });
 }
