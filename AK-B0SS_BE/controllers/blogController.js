@@ -97,36 +97,33 @@ exports.createBlog = async (req, res) => {
 
 exports.getBlogs = async (req, res) => {
   try {
-    let { page = 1, limit = 10, search = '', status } = req.query;
+    let { page = '1', limit = '10' } = req.query;
 
-    page = parseInt(page);
-    limit = parseInt(limit);
+    // 🔥 FORCE number conversion (important)
+    page = parseInt(page, 10);
+    limit = parseInt(limit, 10);
+
+    if (isNaN(page) || isNaN(limit)) {
+      return res.status(400).json({
+        message: 'Invalid pagination params'
+      });
+    }
+
     const offset = (page - 1) * limit;
 
-    let whereClause = 'WHERE 1=1';
-    let params = [];
+    console.log('page:', page);
+    console.log('limit:', limit);
+    console.log('offset:', offset);
 
-    // 🔍 Search
-    if (search) {
-      whereClause += ' AND title LIKE ?';
-      params.push(`%${search}%`);
-    }
+    const query = `
+      SELECT id, title, subDescription, image, status, created_at
+      FROM blogs
+      ORDER BY id DESC
+      LIMIT ? OFFSET ?
+    `;
 
-    // 🔘 Status filter
-    if (status !== undefined) {
-      whereClause += ' AND status = ?';
-      params.push(status);
-    }
-
-    // 📄 MAIN QUERY (IMPORTANT FIX 🔥)
-    const [blogs] = await db.execute(
-      `SELECT id, title, subDescription, image, status, created_at 
-       FROM blogs 
-       ${whereClause}
-       ORDER BY id DESC
-       LIMIT ? OFFSET ?`,
-      [...params, limit, offset] // ✅ FIX
-    );
+    // ✅ MOST IMPORTANT LINE
+    const [blogs] = await db.execute(query, [limit, offset]);
 
     res.status(200).json({
       message: 'Blogs fetched successfully',
