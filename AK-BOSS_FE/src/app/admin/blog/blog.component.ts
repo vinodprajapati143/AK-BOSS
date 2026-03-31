@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
@@ -20,6 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 export class BlogComponent {
 public Editor: any = ClassicEditor;
   public blogContent = '';
+  @ViewChild('fileInput') fileInput!: ElementRef;
  
   public config = {
   toolbar: [
@@ -121,6 +122,7 @@ onSubmit() {
       this.subDescription = '';
       this.blogContent = '';
       this.selectedFile = null;
+      this.fileInput.nativeElement.value = '';
 
       this.isLoading = false;
     },
