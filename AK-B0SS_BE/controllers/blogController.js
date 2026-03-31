@@ -99,31 +99,19 @@ exports.getBlogs = async (req, res) => {
   try {
     let { page = '1', limit = '10' } = req.query;
 
-    // 🔥 FORCE number conversion (important)
-    page = parseInt(page, 10);
-    limit = parseInt(limit, 10);
-
-    if (isNaN(page) || isNaN(limit)) {
-      return res.status(400).json({
-        message: 'Invalid pagination params'
-      });
-    }
+    page = parseInt(page);
+    limit = parseInt(limit);
 
     const offset = (page - 1) * limit;
-
-    console.log('page:', page);
-    console.log('limit:', limit);
-    console.log('offset:', offset);
 
     const query = `
       SELECT id, title, subDescription, image, status, created_at
       FROM blogs
       ORDER BY id DESC
-      LIMIT ? OFFSET ?
+      LIMIT ${limit} OFFSET ${offset}
     `;
 
-    // ✅ MOST IMPORTANT LINE
-    const [blogs] = await db.execute(query, [limit, offset]);
+    const [blogs] = await db.execute(query);
 
     res.status(200).json({
       message: 'Blogs fetched successfully',
