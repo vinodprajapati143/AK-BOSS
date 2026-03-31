@@ -33,7 +33,7 @@ export class BlogService {
   }
 
 getBlogs(params: any) {
-  return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/list`, { params });
+  return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params });
 }
 
   getBlogById(id: number) {

@@ -106,7 +106,7 @@ exports.getBlogs = async (req, res) => {
     let whereClause = 'WHERE 1=1';
     let params = [];
 
-    // 🔍 Search (title)
+    // 🔍 Search
     if (search) {
       whereClause += ' AND title LIKE ?';
       params.push(`%${search}%`);
@@ -118,33 +118,19 @@ exports.getBlogs = async (req, res) => {
       params.push(status);
     }
 
-    // 📊 Total count
-    const [countResult] = await db.execute(
-      `SELECT COUNT(*) as total FROM blogs ${whereClause}`,
-      params
-    );
-
-    const total = countResult[0].total;
-
-    // 📄 Data query
+    // 📄 MAIN QUERY (IMPORTANT FIX 🔥)
     const [blogs] = await db.execute(
       `SELECT id, title, subDescription, image, status, created_at 
        FROM blogs 
        ${whereClause}
        ORDER BY id DESC
        LIMIT ? OFFSET ?`,
-      [...params, limit, offset]
+      [...params, limit, offset] // ✅ FIX
     );
 
     res.status(200).json({
       message: 'Blogs fetched successfully',
-      data: blogs,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      }
+      data: blogs
     });
 
   } catch (error) {
