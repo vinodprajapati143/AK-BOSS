@@ -104,6 +104,13 @@ exports.getBlogs = async (req, res) => {
 
     const offset = (page - 1) * limit;
 
+    // 📊 Total count
+    const [countResult] = await db.execute(
+      `SELECT COUNT(*) as total FROM blogs`
+    );
+    const total = countResult[0].total;
+
+    // 📄 Data
     const query = `
       SELECT id, title, subDescription, image, status, created_at
       FROM blogs
@@ -115,7 +122,13 @@ exports.getBlogs = async (req, res) => {
 
     res.status(200).json({
       message: 'Blogs fetched successfully',
-      data: blogs
+      data: blogs,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
     });
 
   } catch (error) {
