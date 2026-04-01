@@ -22,6 +22,6 @@ const upload = multer({ storage });
 // API
 router.post('/create', upload.single('image'),verifyToken, blogController.createBlog);
 router.get('/lists',verifyToken, blogController.getBlogs);
-router.patch('/:id/status', verifyToken, blogController.updateBlogStatus);
+router.post('/:id/status', verifyToken, blogController.updateBlogStatus);
 
 module.exports = router;

@@ -3,10 +3,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 exports.verifyToken = (req, res, next) => {
-   // ✅ preflight request ko allow karo
-  if (req.method === 'OPTIONS') {
-    return next();
-  }
+  
   const authHeader = req.headers["authorization"];
   const token = authHeader?.split(" ")[1]; // "Bearer <token>" se sirf token nikal liya
   console.log('token: ', token);
