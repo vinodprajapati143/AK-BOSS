@@ -50,18 +50,17 @@ loadBlogs(page: number = 1) {
 }
 
 toggleStatus(blog: any) {
-  const newStatus = blog.status == 1 ? 0 : 1;
+  const oldStatus = blog.status;
+  const newStatus = oldStatus === 1 ? 0 : 1;
 
-  // this.blogservice.updateStatus(blog.id, { status: newStatus })
-  //   .subscribe({
-  //     next: () => {
-  //       blog.status = newStatus;
-  //       this.toastr.success('Status updated');
-  //     },
-  //     error: (err) => {
-  //       this.toastr.error(err?.error?.message || 'Failed to update status');
-  //     }
-  //   });
+  blog.status = newStatus; // optimistic
+
+  this.blogservice.updateBlogStatus(blog.id, newStatus)
+    .subscribe({
+      error: () => {
+        blog.status = oldStatus; // rollback if failed
+      }
+    });
 }
 
 deleteBlog(id: number) {

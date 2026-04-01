@@ -139,3 +139,44 @@ exports.getBlogs = async (req, res) => {
     });
   }
 };
+
+exports.updateBlogStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // 0 or 1
+
+    if (status === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Status is required"
+      });
+    }
+
+    const query = `
+      UPDATE blogs 
+      SET status = ? 
+      WHERE id = ?
+    `;
+
+    const [result] = await db.execute(query, [status, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Blog status updated successfully"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};

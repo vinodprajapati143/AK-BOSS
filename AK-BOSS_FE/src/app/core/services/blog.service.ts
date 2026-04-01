@@ -36,6 +36,13 @@ getBlogs(params: any) {
   return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params });
 }
 
+updateBlogStatus(id: number, status: number) {
+  return this.http.patch(
+    `${this.baseUrl}/api/blog/${id}/status`,
+    { status }
+  );
+}
+
   getBlogById(id: number) {
     return this.http.get<BlogResponse>(`${this.baseUrl}/${id}`);
   }
