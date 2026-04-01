@@ -144,6 +144,7 @@ exports.updateBlogStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body; // 0 or 1
+    console.log('status: ', status);
 
     if (status === undefined) {
       return res.status(400).json({
