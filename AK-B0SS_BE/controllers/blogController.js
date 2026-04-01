@@ -25,7 +25,19 @@ exports.createBlog = async (req, res) => {
     }
 
     // 🧼 Sanitize HTML (XSS protection)
-    const cleanDescription = sanitizeHtml(description);
+      const cleanDescription = sanitizeHtml(description, {
+      allowedTags: [
+        'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'b', 'i', 'em', 'strong',
+        'a', 'ul', 'ol', 'li',
+        'figure', 'img'
+      ],
+      allowedAttributes: {
+        a: ['href', 'target'],
+        img: ['src', 'alt', 'width', 'height', 'style'],
+        figure: ['class']
+      }
+    });
     const cleanSubDescription = subDescription
       ? sanitizeHtml(subDescription)
       : null;
