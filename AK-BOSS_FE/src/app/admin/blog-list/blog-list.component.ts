@@ -50,15 +50,30 @@ loadBlogs(page: number = 1) {
 }
 
 toggleStatus(blog: any) {
+  if (blog.loading) return;
+
+  blog.loading = true;
+
   const oldStatus = blog.status;
   const newStatus = oldStatus === 1 ? 0 : 1;
 
-  blog.status = newStatus; // optimistic
+  blog.status = newStatus;
 
   this.blogservice.updateBlogStatus(blog.id, newStatus)
     .subscribe({
-      error: () => {
-        blog.status = oldStatus; // rollback if failed
+      next: () => {
+        this.toastr.success(
+          `Blog ${newStatus === 1 ? 'Activated' : 'Deactivated'} successfully`
+        );
+        blog.loading = false;
+      },
+      error: (err) => {
+        blog.status = oldStatus;
+        blog.loading = false;
+
+        this.toastr.error(
+          err?.error?.message || 'Update failed'
+        );
       }
     });
 }

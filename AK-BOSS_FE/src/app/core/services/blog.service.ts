@@ -37,7 +37,7 @@ getBlogs(params: any) {
 }
 
 updateBlogStatus(id: number, status: number) {
-  return this.http.patch(
+  return this.http.post(
     `${this.baseUrl}/api/blog/${id}/status`,
     { status }
   );
