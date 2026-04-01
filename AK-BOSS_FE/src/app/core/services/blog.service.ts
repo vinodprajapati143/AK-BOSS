@@ -43,6 +43,10 @@ updateBlogStatus(id: number, status: number) {
   );
 }
 
+deleteBlog(id: number) {
+  return this.http.delete(`${this.baseUrl}/api/blog/${id}`);
+}
+
   getBlogById(id: number) {
     return this.http.get<BlogResponse>(`${this.baseUrl}/${id}`);
   }

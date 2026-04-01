@@ -2,6 +2,8 @@ const db = require("../config/db");
 const dotenv = require('dotenv');
 const sanitizeHtml = require('sanitize-html');
 const slugify = require('slugify');
+const fs = require('fs');
+const path = require('path');
 
 dotenv.config();
 
@@ -181,3 +183,92 @@ exports.updateBlogStatus = async (req, res) => {
     });
   }
 };
+
+// 🔹 Helper: extract images from HTML
+const extractImagePathsFromHTML = (html) => {
+  if (!html) return [];
+
+  const regex = /<img[^>]+src="([^">]+)"/g;
+  const imagePaths = [];
+
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    const url = match[1];
+
+    if (url.includes('/uploads/')) {
+      const fileName = url.split('/uploads/')[1];
+      if (fileName && !fileName.includes('..')) {
+        imagePaths.push(fileName);
+      }
+    }
+  }
+
+  return imagePaths;
+};
+
+ exports.deleteBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // ✅ Step 1: Fetch blog
+    const [rows] = await db.execute(
+      "SELECT image, description FROM blogs WHERE id = ?",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found"
+      });
+    }
+
+    const blog = rows[0];
+
+    let filesToDelete = [];
+
+    // ✅ Step 2: Thumbnail
+    if (blog.image?.includes('/uploads/')) {
+      const fileName = blog.image.split('/uploads/')[1];
+      if (fileName && !fileName.includes('..')) {
+        filesToDelete.push(fileName);
+      }
+    }
+
+    // ✅ Step 3: CKEditor images
+    const editorImages = extractImagePathsFromHTML(blog.description);
+    filesToDelete.push(...editorImages);
+
+    // ✅ Step 4: Remove duplicates
+    filesToDelete = [...new Set(filesToDelete)];
+
+    // ✅ Step 5: Delete DB FIRST (important)
+    await db.execute("DELETE FROM blogs WHERE id = ?", [id]);
+
+    // ✅ Step 6: Delete files safely (non-blocking)
+    filesToDelete.forEach((file) => {
+      const fullPath = path.join(__dirname, '..', 'uploads', file);
+
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          console.error("❌ File delete error:", file, err.message);
+        } else {
+          console.log("✅ Deleted:", file);
+        }
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Blog and all related images permanently deleted"
+    });
+
+  } catch (error) {
+    console.error("Delete Blog Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+ 

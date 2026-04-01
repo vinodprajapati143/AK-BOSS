@@ -78,18 +78,35 @@ toggleStatus(blog: any) {
     });
 }
 
-deleteBlog(id: number) {
-  if (!confirm('Are you sure you want to delete this blog?')) return;
+deleteBlog(blog: any, index: number) {
 
-  // this.blogservice.deleteBlog(id).subscribe({
-  //   next: () => {
-  //     this.toastr.success('Blog deleted');
-  //     this.loadBlogs();
-  //   },
-  //   error: (err) => {
-  //     this.toastr.error(err?.error?.message || 'Delete failed');
-  //   }
-  // });
+  // ✅ confirm before delete
+  if (!confirm('Are you sure you want to delete this blog?')) {
+    return;
+  }
+
+  blog.loading = true;
+
+  this.blogservice.deleteBlog(blog.id)
+    .subscribe({
+      next: () => {
+        this.toastr.success('Blog deleted successfully', 'Success');
+
+        // ✅ remove from UI list
+        this.blogs.splice(index, 1);
+      },
+      error: (err) => {
+        blog.loading = false;
+
+        const message =
+          err?.error?.message ||
+          'Delete failed';
+
+        this.toastr.error(message, 'Error');
+
+        console.error(err);
+      }
+    });
 }
 
 editBlog(blog: any) {

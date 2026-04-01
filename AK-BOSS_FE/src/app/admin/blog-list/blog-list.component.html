@@ -131,7 +131,8 @@
       <!-- Delete -->
       <button 
         class="text-gray-500 hover:text-red-500"
-        (click)="deleteBlog(blog.id)">
+         (click)="deleteBlog(blog, i)" 
+          [disabled]="blog.loading">
         🗑️
       </button>
 
