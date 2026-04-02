@@ -3,7 +3,6 @@ const db = require("../config/db");
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 
-
 exports.listUsers = async (req, res) => {
   try {
     const [rows] = await db.query(`
@@ -27,8 +26,6 @@ exports.listUsers = async (req, res) => {
   }
 };
 
-
-
 async function generateReferralCode(userId) {
   const [rows] = await db.query("SELECT id, phone, invitecode FROM users WHERE id = ?", [userId]);
   if (rows.length === 0) throw new Error("User not found");
@@ -45,7 +42,6 @@ async function generateReferralCode(userId) {
 
   return newInviteCode;
 }
-
 
 // GENERATE REFERRAL CODE API (if needed separately)
 exports.getReferralCode = async (req, res) => {
@@ -178,8 +174,6 @@ exports.getReferralList = async (req, res) => {
   }
 };
 
-
-
 // User Profile Controller
 exports.getUserProfile = async (req, res) => {
   try {
@@ -304,10 +298,6 @@ exports.transferBalance = async (req, res) => {
     return res.status(500).json({ message: 'Something went wrong.', error: err.message });
   }
 };
-
-
-
-
 
 exports.deleteUser = async (req, res) => {
   try {
