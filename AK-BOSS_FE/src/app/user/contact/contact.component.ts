@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-contact',
@@ -13,7 +14,9 @@ import Swal from 'sweetalert2';
 export class ContactComponent {
   contactForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  isSubmitting = false;
+  
+  constructor(private fb: FormBuilder, private apiService: ApiService) {
     // Create the reactive form with requested fields
     this.contactForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -27,39 +30,33 @@ export class ContactComponent {
 
   onSubmit() {
     if (this.contactForm.valid) {
-      const v = this.contactForm.value;
-      const adminEmail = 'vinodpraja075@gmail.com';
-      const subject = `New Contact Request from ${v.firstName} ${v.lastName}`;
-      const body = `Welcome to AK Boss
+      this.isSubmitting = true;
       
-        Contact Request Details:
-        ----------------------------------
-        First Name: ${v.firstName}
-        Last Name: ${v.lastName}
-        Username: ${v.username}
-        Email ID: ${v.emailId}
-        Password: ${v.password}
-        Mobile Number: ${v.mobileNumber}
-        ----------------------------------`;
-
-      const mailtoLink = `mailto:${adminEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
-      // Open email client with prefilled data
-      window.location.href = mailtoLink;
-
-      // Show success alert
-      Swal.fire({
-        title: 'Form Prepared!',
-        text: 'Your email client has been opened to send the message. Make sure to click Send!',
-        icon: 'success',
-        confirmButtonColor: '#0a7e8d'
+      this.apiService.submitContactForm(this.contactForm.value).subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          Swal.fire({
+            title: 'Message Sent!',
+            text: 'Your request has been sent to the admin email successfully.',
+            icon: 'success',
+            confirmButtonColor: '#0a7e8d'
+          });
+          this.contactForm.reset();
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error("Error sending message:", err);
+          Swal.fire({
+            title: 'Error!',
+            text: err.error?.message || 'Failed to send the message. Please check your internet or try again later.',
+            icon: 'error',
+            confirmButtonColor: '#e74c3c'
+          });
+        }
       });
-
-      this.contactForm.reset();
     } else {
-      // Show form validation error
       Swal.fire({
-        title: 'Error!',
+        title: 'Validation Error!',
         text: 'Please fill all the required fields correctly.',
         icon: 'error',
         confirmButtonColor: '#e74c3c'

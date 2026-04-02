@@ -200,5 +200,7 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/api/withdrawal/adminProcessWithdrawal`, payload);
   }
 
-
+  submitContactForm(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/users/contact`, data);
+  }
 }

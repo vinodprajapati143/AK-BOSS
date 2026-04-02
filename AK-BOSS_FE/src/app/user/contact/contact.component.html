@@ -208,10 +208,12 @@
 
           <!-- Submit Button -->
           <div class="flex justify-center mt-6 pt-4">
-            <button type="submit" [disabled]="contactForm.invalid"
+            <button type="submit" [disabled]="contactForm.invalid || isSubmitting"
               class="w-full md:w-2/3 max-w-sm py-3.5 px-6 bg-gradient-to-r from-[#003f4a] to-[#0a7e8d] text-white rounded-lg font-bold text-[16px] tracking-wide hover:shadow-xl hover:-translate-y-1 hover:brightness-110 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-3">
-              <span>Send Message</span>
-              <i class="fas fa-paper-plane text-md"></i>
+              <span *ngIf="!isSubmitting">Send Message</span>
+              <span *ngIf="isSubmitting">Sending...</span>
+              <i *ngIf="!isSubmitting" class="fas fa-paper-plane text-md"></i>
+              <i *ngIf="isSubmitting" class="fas fa-circle-notch fa-spin text-md"></i>
             </button>
           </div>
         </form>
