@@ -63,4 +63,10 @@ deleteBlog(id: number) {
 getBlogById(id: number) {
   return this.http.get<BlogResponse>(`${this.baseUrl}/api/blog/${id}`);
 }
+updateBlog(id: number, data: FormData) {
+  return this.http.put<BlogResponse>(
+    `${this.baseUrl}/api/blogs/${id}`,
+    data
+  );
+}
 }

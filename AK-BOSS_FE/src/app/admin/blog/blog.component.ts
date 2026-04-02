@@ -42,6 +42,7 @@ isLoading: boolean | undefined;
 isEditMode: boolean | undefined;
 imagePreview: string | ArrayBuffer | null = null;
   showImageModal: boolean = false;
+  blogId: number | null = null;
 
   constructor(private blogService: BlogService, private toastr: ToastrService, private route: ActivatedRoute) { }
 
@@ -94,6 +95,7 @@ ngOnInit() {
 
   if (id) {
     this.isEditMode = true;
+    this.blogId = +id;
     this.getBlogById(id);
   }
 }
@@ -146,25 +148,34 @@ onSubmit() {
 
   this.isLoading = true;
 
-  this.blogService.createBlog(formData).subscribe({
-    next: (res: BlogResponse) => {
-      this.toastr.success(res?.message || 'Blog Created Successfully 🔥');
+  // 🔥 MAIN LOGIC (yahi important hai)
+  const request$ = this.isEditMode
+    ? this.blogService.updateBlog(this.blogId!, formData)
+    : this.blogService.createBlog(formData);
 
-      // reset form
-      this.title = '';
-      this.subDescription = '';
-      this.blogContent = '';
-      this.selectedFile = null;
-      this.imagePreview = null;
-      this.fileInput.nativeElement.value = '';
+  request$.subscribe({
+    next: (res: BlogResponse) => {
+      this.toastr.success(
+        res?.message ||
+        (this.isEditMode ? 'Blog Updated Successfully 🔥' : 'Blog Created Successfully 🔥')
+      );
+
+      // ✅ Reset only for CREATE (edit me nahi)
+      if (!this.isEditMode) {
+        this.title = '';
+        this.subDescription = '';
+        this.blogContent = '';
+        this.selectedFile = null;
+        this.imagePreview = null;
+        this.fileInput.nativeElement.value = '';
+      }
 
       this.isLoading = false;
     },
 
     error: (err) => {
-      console.error('Create Blog Error:', err);
+      console.error('Blog Error:', err);
 
-      // 🔥 Main logic (server message show)
       let errorMessage = 'Something went wrong. Please try again.';
 
       if (err?.error?.message) {
@@ -176,7 +187,6 @@ onSubmit() {
       }
 
       this.toastr.error(errorMessage);
-
       this.isLoading = false;
     }
   });
