@@ -84,6 +84,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/api/users/user-list`, { withCredentials: true });
   }
 
+  deleteUser(id: string | number) {
+    return this.http.delete(`${this.baseUrl}/api/users/${id}`, { withCredentials: true });
+  }
+
   getNearestGames(): Observable<any> {
     return timer(0, 30_000).pipe(
       switchMap(() => this.http.get<any>(`${this.baseUrl}/api/games/nearest-game-list`, { withCredentials: true })),

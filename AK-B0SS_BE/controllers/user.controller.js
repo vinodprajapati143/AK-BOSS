@@ -40,7 +40,7 @@ async function generateReferralCode(userId) {
 
   const newInviteCode = `AK_${user.phone}`;
 
-  
+
 
   return newInviteCode;
 }
@@ -106,16 +106,16 @@ exports.getReferralList = async (req, res) => {
       const unionQueries = entryTables
         .map(table => `SELECT total_amount AS bid_amount, name AS game_name, batch_id, created_at AS bet_date FROM ${table} WHERE user_id = ?`)
         .join(' UNION ALL ');
-      
+
       const fullQuery = `${unionQueries} ORDER BY bet_date DESC`;
-      
+
       // Execute query with repeated invitee_id for each table
       const params = entryTables.map(() => ref.invitee_id);
       const [bets] = await db.query(fullQuery, params);
 
       // ✅ Group bets by batch_id (one batch = one transaction with multiple digits)
       const batchMap = new Map();
-      
+
       for (const bet of bets) {
         if (!batchMap.has(bet.batch_id)) {
           batchMap.set(bet.batch_id, {
@@ -162,17 +162,17 @@ exports.getReferralList = async (req, res) => {
       });
     }
 
-    return res.json({ 
-      success: true, 
+    return res.json({
+      success: true,
       total_referrals: updatedReferrals.length,
-      referrals: updatedReferrals 
+      referrals: updatedReferrals
     });
 
   } catch (error) {
     console.error("Referral List API error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Internal Server Error" 
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
     });
   }
 };
@@ -260,7 +260,7 @@ exports.transferBalance = async (req, res) => {
     const operatorId = req.user.id;
     const { userId, amount, remark, password } = req.body;
 
-     // Input validation
+    // Input validation
     if (!userId || !amount || !password) {
       return res.status(400).json({ message: 'Required fields missing.' });
     }
@@ -284,7 +284,7 @@ exports.transferBalance = async (req, res) => {
     }
 
     // 3. Further balance transfer logic...
-  // Fetch receiver's last balance
+    // Fetch receiver's last balance
     const [walletRows] = await db.query(
       'SELECT balance_after FROM user_wallet WHERE user_id = ? ORDER BY id DESC LIMIT 1',
       [userId]
@@ -308,3 +308,44 @@ exports.transferBalance = async (req, res) => {
 
 
 
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+
+    const childTables = [
+      { name: "user_wallet", col: "user_id" },
+      { name: "withdrawal_requests", col: "user_id" },
+      { name: "user_payment_details", col: "user_id" },
+      { name: "payment_orders", col: "user_id" },
+      { name: "single_ank_entries", col: "user_id" },
+      { name: "jodi_ank_entries", col: "user_id" },
+      { name: "singlepanna_ank_entries", col: "user_id" },
+      { name: "referral_relations", col: "invitee_id" },
+      { name: "referral_relations", col: "referrer_id" }
+    ];
+
+    for (const table of childTables) {
+      try {
+        await db.query(`DELETE FROM ${table.name} WHERE ${table.col} = ?`, [id]);
+      } catch (e) {
+        // Silently skip if table doesn't exist or other minor issues
+        console.warn(`Could not delete from ${table.name}:`, e.message);
+      }
+    }
+
+    const [result] = await db.query("DELETE FROM users WHERE id = ?", [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, message: "User deleted successfully" });
+  } catch (err) {
+    console.error("deleteUser error:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
+  }
+};

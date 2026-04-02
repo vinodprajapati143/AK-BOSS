@@ -40,11 +40,21 @@ selectedFile: File | null = null;
 private baseUrl = environment.apiUrl;
 isLoading: boolean | undefined;
 isEditMode: boolean | undefined;
+imagePreview: string | ArrayBuffer | null = null;
+  showImageModal: boolean = false;
 
-constructor(private blogService: BlogService, private toastr:ToastrService,private route: ActivatedRoute) {}
+  constructor(private blogService: BlogService, private toastr: ToastrService, private route: ActivatedRoute) { }
 
-onFileChange(event: any) {
-  this.selectedFile = event.target.files[0];
+  onFileChange(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
 uploadAdapter(loader: any) {
@@ -93,6 +103,9 @@ this.blogService.getBlogById(id).subscribe(res => {
   this.title = res.data.title;
   this.subDescription = res.data.subDescription;
   this.selectedFile = res.data.image ? { name: 'Current Image', type: 'image/*' } as File : null; // placeholder file
+  if (res.data.image) {
+    this.imagePreview = res.data.image; // res.data.image is expected to be the image URL
+  }
   this.blogContent = res.data.description; // CKEditor bind 🔥
 });
 }
@@ -142,6 +155,7 @@ onSubmit() {
       this.subDescription = '';
       this.blogContent = '';
       this.selectedFile = null;
+      this.imagePreview = null;
       this.fileInput.nativeElement.value = '';
 
       this.isLoading = false;
@@ -166,5 +180,9 @@ onSubmit() {
       this.isLoading = false;
     }
   });
+}
+
+toggleImageModal() {
+  this.showImageModal = !this.showImageModal;
 }
 }

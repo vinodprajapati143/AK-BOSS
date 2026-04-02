@@ -1,7 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import { ApiService } from '../../core/services/api.service';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
+import { forkJoin } from 'rxjs';
 export interface User {
   name: string;
   enabled: boolean;
@@ -14,89 +18,23 @@ export interface User {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, AdminSidebarComponent],
+  imports: [CommonModule, AdminSidebarComponent, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss'
 })
 export class AdminDashboardComponent implements OnInit  {
- private apiService = inject(ApiService); 
-  // users: User[] = [
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: true,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-  //   {
-  //     name: 'Deepak Sharma',
-  //     enabled: false,
-  //     date: '25-04-2025',
-  //     phone: '8979108932',
-  //     amountPaid: '₹ 15,000',
-  //     totalAmount: '₹ 15,000',
-  //     id: 123
-  //   },
-
-  // ];
+  protected readonly Math = Math;
+  private apiService = inject(ApiService); 
+  private toastr = inject(ToastrService);
+  allUsers: any[] = [];
   users: any[] = [];
+  paginatedUsers: any[] = [];
   loading = true;
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 0;
+  searchTerm = '';
+  selectedIds = new Set<string | number>();
 
   links = [{
     "img": "home",
@@ -175,17 +113,165 @@ export class AdminDashboardComponent implements OnInit  {
   }
 
 
-
     loadUsers() {
     this.apiService.getUsers().subscribe({
-      next: (res:any) => {
-        this.users = res.data;
+      next: (res: any) => {
+        this.allUsers = res.data;
+        this.applyFilter();
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error fetching games', err);
+        console.error('Error fetching users', err);
         this.loading = false;
       }
     });
+  }
+
+  applyFilter() {
+    if (!this.searchTerm) {
+      this.users = [...this.allUsers];
+    } else {
+      const search = this.searchTerm.toLowerCase();
+      this.users = this.allUsers.filter(u => 
+        (u.username && u.username.toLowerCase().includes(search)) ||
+        (u.phone && u.phone.includes(search)) ||
+        (u.invitecode && u.invitecode.toLowerCase().includes(search))
+      );
+    }
+    this.currentPage = 1;
+    this.totalPages = Math.ceil(this.users.length / this.itemsPerPage);
+    this.updatePaginatedUsers();
+  }
+
+  updatePaginatedUsers() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedUsers = this.users.slice(startIndex, endIndex);
+  }
+
+  onSearchChange() {
+    this.applyFilter();
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedUsers();
+    }
+  }
+
+  getPages(): number[] {
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  onItemsPerPageChange(event: any) {
+    this.itemsPerPage = +event.target.value;
+    this.applyFilter();
+  }
+
+  toggleSelection(id: string | number) {
+    if (this.selectedIds.has(id)) {
+      this.selectedIds.delete(id);
+    } else {
+      this.selectedIds.add(id);
+    }
+  }
+
+  toggleSelectAll(event: any) {
+    const checked = event.target.checked;
+    if (checked) {
+      this.paginatedUsers.forEach(user => this.selectedIds.add(user.id));
+    } else {
+      this.paginatedUsers.forEach(user => this.selectedIds.delete(user.id));
+    }
+  }
+
+  isAllSelected(): boolean {
+    return this.paginatedUsers.length > 0 && this.paginatedUsers.every(user => this.selectedIds.has(user.id));
+  }
+
+  deleteSelectedUsers() {
+    if (this.selectedIds.size === 0) {
+      this.toastr.warning('Please select at least one user to delete');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to delete ${this.selectedIds.size} selected user(s)? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#0A7E8D',
+      cancelButtonColor: '#EF5350',
+      confirmButtonText: 'Yes, delete!',
+      cancelButtonText: 'Cancel',
+      background: '#fff',
+      customClass: {
+        confirmButton: 'rounded-sm px-6 py-2',
+        cancelButton: 'rounded-sm px-6 py-2'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeDelete();
+      }
+    });
+  }
+
+  executeDelete() {
+    this.loading = true;
+    const deleteRequests = Array.from(this.selectedIds).map(id => this.apiService.deleteUser(id));
+
+    forkJoin(deleteRequests).subscribe({
+      next: (responses) => {
+        this.toastr.success('Success', `Successfully deleted ${this.selectedIds.size} user(s)`);
+        this.selectedIds.clear();
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Bulk Delete Error:', err);
+        this.toastr.error('Error', 'Some users could not be deleted. Refreshing list...');
+        this.selectedIds.clear();
+        this.loadUsers();
+      }
+    });
+  }
+
+  exportToExcel() {
+    if (this.users.length === 0) {
+      this.toastr.warning('No data to export');
+      return;
+    }
+
+    const headers = ['ID', 'Username', 'Status', 'Joining Date', 'Phone', 'Invite Code', 'Register Type'];
+    const rows = this.users.map(user => [
+      user.id,
+      user.username,
+      user.enabled ? 'Enabled' : 'Disabled',
+      user.joiningdate ? new Date(user.joiningdate).toLocaleDateString() : 'N/A',
+      user.phone,
+      user.invitecode || 'N/A',
+      user.registerType || 'N/A'
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `AK_BOSS_Users_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    this.toastr.success('Exported Successfully', 'User list has been downloaded');
   }
 }
