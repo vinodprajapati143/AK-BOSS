@@ -320,7 +320,7 @@ exports.getBlogById = async (req, res) => {
 exports.updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, subDescription, description, status } = req.body;
+    const { title, subDescription, description } = req.body;
     const newImage = req.file?.filename; // multer se aa raha hoga
 
     // ✅ Step 1: Old blog fetch
@@ -367,9 +367,9 @@ exports.updateBlog = async (req, res) => {
     // ✅ Step 4: DB update
     await db.execute(
       `UPDATE blogs 
-       SET title=?, subDescription=?, description=?, image=?, status=? 
+       SET title=?, subDescription=?, description=?, image=?
        WHERE id=?`,
-      [title, subDescription, description, finalImage, status, id]
+      [title, subDescription, description, finalImage, id]
     );
 
     // ✅ Step 5: delete files (non-blocking)

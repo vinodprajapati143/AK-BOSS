@@ -65,7 +65,7 @@ getBlogById(id: number) {
 }
 updateBlog(id: number, data: FormData) {
   return this.http.put<BlogResponse>(
-    `${this.baseUrl}/api/blogs/${id}`,
+    `${this.baseUrl}/api/blog/${id}`,
     data
   );
 }
