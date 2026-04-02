@@ -344,7 +344,8 @@ exports.updateBlog = async (req, res) => {
     let finalImage = oldBlog.image;
 
     if (newImage) {
-      finalImage = `/uploads/${newImage}`;
+      const image = req.file ? `${process.env.BASE_URL}/backend/api/uploads/${req.file.filename}` : null;
+      finalImage = image;
 
       if (oldBlog.image?.includes('/uploads/')) {
         const oldFile = oldBlog.image.split('/uploads/')[1];
