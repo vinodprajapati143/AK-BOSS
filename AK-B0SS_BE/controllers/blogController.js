@@ -283,4 +283,121 @@ const extractImagePathsFromHTML = (html) => {
     });
   }
 };
+
+exports.getBlogById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await db.execute(
+      `SELECT id, title, subDescription, description, image, status, created_at 
+       FROM blogs 
+       WHERE id = ?`,
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: rows[0]
+    });
+
+  } catch (error) {
+    console.error("Get Blog By ID Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+exports.updateBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, subDescription, description, status } = req.body;
+    const newImage = req.file?.filename; // multer se aa raha hoga
+
+    // ✅ Step 1: Old blog fetch
+    const [rows] = await db.execute(
+      "SELECT image, description FROM blogs WHERE id = ?",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found"
+      });
+    }
+
+    const oldBlog = rows[0];
+
+    let filesToDelete = [];
+
+    // ✅ Step 2: Thumbnail compare
+    let finalImage = oldBlog.image;
+
+    if (newImage) {
+      finalImage = `/uploads/${newImage}`;
+
+      if (oldBlog.image?.includes('/uploads/')) {
+        const oldFile = oldBlog.image.split('/uploads/')[1];
+
+        if (oldFile && !oldFile.includes('..')) {
+          filesToDelete.push(oldFile);
+        }
+      }
+    }
+
+    // ✅ Step 3: CKEditor image compare
+    const oldImages = extractImagePathsFromHTML(oldBlog.description);
+    const newImages = extractImagePathsFromHTML(description);
+
+    // jo old me the but new me nahi → delete
+    const removedImages = oldImages.filter(img => !newImages.includes(img));
+
+    filesToDelete.push(...removedImages);
+
+    // ✅ Step 4: DB update
+    await db.execute(
+      `UPDATE blogs 
+       SET title=?, subDescription=?, description=?, image=?, status=? 
+       WHERE id=?`,
+      [title, subDescription, description, finalImage, status, id]
+    );
+
+    // ✅ Step 5: delete files (non-blocking)
+    filesToDelete = [...new Set(filesToDelete)];
+
+    filesToDelete.forEach((file) => {
+      const fullPath = path.join(__dirname, '..', 'uploads', file);
+
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          console.error("❌ File delete error:", file, err.message);
+        } else {
+          console.log("✅ Deleted:", file);
+        }
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Blog updated successfully"
+    });
+
+  } catch (error) {
+    console.error("Update Blog Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
  

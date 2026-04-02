@@ -24,5 +24,6 @@ router.post('/create', upload.single('image'),verifyToken, blogController.create
 router.get('/lists',verifyToken, blogController.getBlogs);
 router.post('/:id/status', verifyToken, blogController.updateBlogStatus);
 router.delete('/:id', verifyToken, blogController.deleteBlog);
+router.get('/:id', verifyToken, blogController.getBlogById);
 
 module.exports = router;

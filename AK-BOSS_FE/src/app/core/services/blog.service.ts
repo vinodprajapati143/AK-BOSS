@@ -1,13 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
+
+export interface Blog {
+  description: string;
+  id: number;
+  title: string;
+  content: string;
+  slug: string;
+}
+
 export interface BlogResponse {
   message: string;
   blogId: number;
   slug?: string;
+  data: Blog;
 }
 
 export interface BlogListResponse {
+  description: string;
   message: string;
   data: any[];
   pagination: {
@@ -47,7 +58,7 @@ deleteBlog(id: number) {
   return this.http.delete(`${this.baseUrl}/api/blog/${id}`);
 }
 
-  getBlogById(id: number) {
-    return this.http.get<BlogResponse>(`${this.baseUrl}/${id}`);
-  }
+getBlogById(id: number) {
+  return this.http.get<BlogResponse>(`${this.baseUrl}/api/blog/${id}`);
+}
 }

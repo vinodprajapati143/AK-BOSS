@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { BlogResponse, BlogService } from '../../core/services/blog.service';
 import { environment } from '../../../environments/environment.prod';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute } from '@angular/router';
 
  
 
@@ -17,7 +18,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './blog.component.html',
   styleUrl: './blog.component.scss'
 })
-export class BlogComponent {
+export class BlogComponent  implements OnInit {
 public Editor: any = ClassicEditor;
   public blogContent = '';
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -38,8 +39,9 @@ subDescription: string = '';
 selectedFile: File | null = null;
 private baseUrl = environment.apiUrl;
 isLoading: boolean | undefined;
+isEditMode: boolean | undefined;
 
-constructor(private blogService: BlogService, private toastr:ToastrService) {}
+constructor(private blogService: BlogService, private toastr:ToastrService,private route: ActivatedRoute) {}
 
 onFileChange(event: any) {
   this.selectedFile = event.target.files[0];
@@ -75,6 +77,21 @@ onReady(editor: any) {
   editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
     return this.uploadAdapter(loader);
   };
+}
+
+ngOnInit() {
+  const id = this.route.snapshot.paramMap.get('id');
+
+  if (id) {
+    this.isEditMode = true;
+    this.getBlogById(id);
+  }
+}
+
+getBlogById(id: any) {
+this.blogService.getBlogById(id).subscribe(res => {
+  this.blogContent = res.data.description; // CKEditor bind 🔥
+});
 }
 onSubmit() {
   // ✅ Validation

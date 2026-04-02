@@ -26,6 +26,7 @@ const routes: Routes = [
   { path: 'payment-method', component: PaymentMethodComponent},
   { path: 'payment-update', component: PaymentUpdateComponent},
   { path: 'blog', component: BlogComponent},
+  { path: 'blog/:id', component: BlogComponent },
   { path: 'blog-list', component: BlogListComponent},
 
 ];
