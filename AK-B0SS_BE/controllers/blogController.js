@@ -320,8 +320,21 @@ exports.getBlogById = async (req, res) => {
 exports.updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, subDescription, description } = req.body;
-    const newImage = req.file?.filename; // multer se aa raha hoga
+    let { title, subDescription, description } = req.body;
+
+    // ✅ Basic validation
+    if (!title || !description) {
+      return res.status(400).json({
+        success: false,
+        message: "Title and description are required"
+      });
+    }
+
+    title = title.trim();
+    subDescription = subDescription?.trim() || '';
+    description = description.trim();
+
+    const newImage = req.file?.filename;
 
     // ✅ Step 1: Old blog fetch
     const [rows] = await db.execute(
@@ -340,12 +353,11 @@ exports.updateBlog = async (req, res) => {
 
     let filesToDelete = [];
 
-    // ✅ Step 2: Thumbnail compare
+    // ✅ Step 2: Thumbnail handling
     let finalImage = oldBlog.image;
 
     if (newImage) {
-      const image = req.file ? `${process.env.BASE_URL}/backend/api/uploads/${req.file.filename}` : null;
-      finalImage = image;
+      finalImage = `${process.env.BASE_URL}/backend/api/uploads/${newImage}`;
 
       if (oldBlog.image?.includes('/uploads/')) {
         const oldFile = oldBlog.image.split('/uploads/')[1];
@@ -360,9 +372,7 @@ exports.updateBlog = async (req, res) => {
     const oldImages = extractImagePathsFromHTML(oldBlog.description);
     const newImages = extractImagePathsFromHTML(description);
 
-    // jo old me the but new me nahi → delete
     const removedImages = oldImages.filter(img => !newImages.includes(img));
-
     filesToDelete.push(...removedImages);
 
     // ✅ Step 4: DB update
@@ -373,28 +383,32 @@ exports.updateBlog = async (req, res) => {
       [title, subDescription, description, finalImage, id]
     );
 
-    // ✅ Step 5: delete files (non-blocking)
-    filesToDelete = [...new Set(filesToDelete)];
-
-    filesToDelete.forEach((file) => {
-      const fullPath = path.join(__dirname, '..', 'uploads', file);
-
-      fs.unlink(fullPath, (err) => {
-        if (err) {
-          console.error("❌ File delete error:", file, err.message);
-        } else {
-          console.log("✅ Deleted:", file);
-        }
-      });
-    });
-
+    // ✅ Step 5: Send response immediately (FAST 🚀)
     res.status(200).json({
       success: true,
       message: "Blog updated successfully"
     });
 
+    // ✅ Step 6: Background cleanup (non-blocking)
+    setImmediate(async () => {
+      try {
+        const uniqueFiles = [...new Set(filesToDelete)];
+
+        await Promise.all(
+          uniqueFiles.map(file => {
+            const fullPath = path.join(__dirname, '..', 'uploads', file);
+            return fs.promises.unlink(fullPath).catch(() => {});
+          })
+        );
+
+      } catch (err) {
+        console.error("Background delete error:", err.message);
+      }
+    });
+
   } catch (error) {
     console.error("Update Blog Error:", error);
+
     res.status(500).json({
       success: false,
       message: "Internal server error"
