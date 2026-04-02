@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { BlogResponse, BlogService } from '../../core/services/blog.service';
 import { environment } from '../../../environments/environment.prod';
 import { ToastrService } from 'ngx-toastr';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
  
 
@@ -41,8 +41,9 @@ private baseUrl = environment.apiUrl;
 isLoading: boolean | undefined;
 isEditMode: boolean | undefined;
 imagePreview: string | ArrayBuffer | null = null;
-  showImageModal: boolean = false;
-  blogId: number | null = null;
+showImageModal: boolean = false;
+blogId: number | null = null;
+private router = inject(Router);
 
   constructor(private blogService: BlogService, private toastr: ToastrService, private route: ActivatedRoute) { }
 
@@ -169,6 +170,9 @@ onSubmit() {
         this.imagePreview = null;
         this.fileInput.nativeElement.value = '';
       }
+
+      this.router.navigate(['/admin/blog-list']); // ✅ go back to list after success 
+
 
       this.isLoading = false;
     },
