@@ -17,6 +17,7 @@ export class BlogListComponent {
 routr = inject(Router)
 blogservice = inject(BlogService);
 toastr = inject(ToastrService)
+
   constructor() {
   this.loadBlogs();
   }
@@ -109,9 +110,8 @@ deleteBlog(blog: any, index: number) {
     });
 }
 
-editBlog(blog: any) {
-  console.log('Edit blog:', blog);
-  // future → route to edit page
+editBlog(id: number) {
+  this.routr.navigate(['/admin/blog', id]); // 👈 dynamic route
 }
 
   createNew() {

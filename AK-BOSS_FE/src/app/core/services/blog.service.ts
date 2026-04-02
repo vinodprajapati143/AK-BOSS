@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
 
 export interface Blog {
+  image: any;
+  subDescription: string;
   description: string;
   id: number;
   title: string;

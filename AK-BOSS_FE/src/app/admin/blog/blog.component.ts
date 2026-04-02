@@ -90,6 +90,9 @@ ngOnInit() {
 
 getBlogById(id: any) {
 this.blogService.getBlogById(id).subscribe(res => {
+  this.title = res.data.title;
+  this.subDescription = res.data.subDescription;
+  this.selectedFile = res.data.image ? { name: 'Current Image', type: 'image/*' } as File : null; // placeholder file
   this.blogContent = res.data.description; // CKEditor bind 🔥
 });
 }
