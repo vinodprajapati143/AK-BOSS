@@ -76,6 +76,8 @@
               </th>
               <th class="p-3">SL No.</th>
               <th class="p-3">Blog Title</th>
+              <th class="p-3">Blog Created</th>
+
               <th class="p-3 text-center">Status</th>
               <th class="p-3 text-center">Option</th>
             </tr>
@@ -98,6 +100,11 @@
     <!-- Title -->
     <td class="p-3 text-gray-600">
       {{ blog.title }}
+    </td>
+
+    <!-- Created Date -->
+    <td class="p-3 text-gray-600">
+      {{ blog.created_at | date:'medium' }}
     </td>
 
     <!-- Status Toggle -->

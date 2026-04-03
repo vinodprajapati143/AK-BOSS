@@ -49,11 +49,13 @@ private router = inject(Router);
 
   onFileChange(event: any) {
   const file = event.target.files[0];
+
   if (file) {
     this.selectedFile = file;
+
     const reader = new FileReader();
     reader.onload = () => {
-      this.imagePreview = reader.result;
+      this.imagePreview = reader.result as string;
     };
     reader.readAsDataURL(file);
   }
@@ -105,7 +107,7 @@ getBlogById(id: any) {
 this.blogService.getBlogById(id).subscribe(res => {
   this.title = res.data.title;
   this.subDescription = res.data.subDescription;
-  this.selectedFile = res.data.image ? { name: 'Current Image', type: 'image/*' } as File : null; // placeholder file
+  this.selectedFile = null;
   if (res.data.image) {
     this.imagePreview = res.data.image; // res.data.image is expected to be the image URL
   }
@@ -124,28 +126,29 @@ onSubmit() {
   const description = this.blogContent.trim();
 
   // ✅ Image validation
-  if (this.selectedFile) {
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+  console.log('this.selectedFile: ', this.selectedFile);
+if (this.selectedFile instanceof File) {
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
-    if (!allowedTypes.includes(this.selectedFile.type)) {
-      this.toastr.error('Only JPG, PNG images allowed');
-      return;
-    }
-
-    if (this.selectedFile.size > 2 * 1024 * 1024) {
-      this.toastr.error('Image size should be less than 2MB');
-      return;
-    }
+  if (!allowedTypes.includes(this.selectedFile.type)) {
+    this.toastr.error('Only JPG, PNG images allowed');
+    return;
   }
+
+  if (this.selectedFile.size > 2 * 1024 * 1024) {
+    this.toastr.error('Image size should be less than 2MB');
+    return;
+  }
+}
 
   const formData = new FormData();
   formData.append('title', title);
   formData.append('subDescription', subDescription || '');
   formData.append('description', description);
 
-  if (this.selectedFile) {
-    formData.append('image', this.selectedFile);
-  }
+if (this.selectedFile instanceof File) {
+  formData.append('image', this.selectedFile);
+}
 
   this.isLoading = true;
 
