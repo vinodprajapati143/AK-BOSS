@@ -9,6 +9,7 @@ const paymentsRoutes = require('./routes/paymentsRoutes');
 const withdrawalRoutes = require('./routes/withdrawalRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const settingRoutes = require('./routes/settingRoute');
 
 dotenv.config();
 const app = express();
@@ -51,6 +52,8 @@ app.use("/api/withdrawal", withdrawalRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/uploads', express.static('uploads'));
+app.use('/api/admin', settingRoutes);
+
 
 
 
