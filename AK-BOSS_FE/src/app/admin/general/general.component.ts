@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SettingService } from '../../core/services/setting.service';
 
 @Component({
   selector: 'app-general',
@@ -13,6 +14,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 export class GeneralComponent implements OnInit {
 
 private fb = inject(FormBuilder);
+private settingService = inject(SettingService);
 form!: FormGroup;
 constructor() { }
 
@@ -82,22 +84,20 @@ resetColor(field: string) {
 
 upload(event: any, field: string) {
   const file = event.target.files[0];
+ 
 
-  const formData = new FormData();
-  formData.append('file', file);
+  this.settingService.uploadFile(file).subscribe((res: any) => {
 
-  // this.api.upload(formData).subscribe((res: any) => {
+    const appearance = this.form.get('appearance')?.value;
 
-  //   const appearance = this.form.get('appearance')?.value;
+    this.form.patchValue({
+      appearance: {
+        ...appearance,
+        [field]: res.url
+      }
+    });
 
-  //   this.form.patchValue({
-  //     appearance: {
-  //       ...appearance,
-  //       [field]: res.url
-  //     }
-  //   });
-
-  // });
+  });
 }
 
 onSubmit() {
