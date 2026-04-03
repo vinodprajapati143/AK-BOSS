@@ -20,6 +20,7 @@ constructor() { }
 
 ngOnInit(): void {
   this.initForm();
+  this.getSettings();
 }
 
 initForm(){
@@ -100,14 +101,30 @@ upload(event: any, field: string) {
   });
 }
 
+getSettings() {
+  this.settingService.getSettings().subscribe((res: any) => {
+    this.form.patchValue(res.data);
+  });
+}
+
+isLoading = false;
+
 onSubmit() {
   if (this.form.invalid) {
     this.form.markAllAsTouched();
     return;
   }
 
-  const payload = this.form.value;
+  this.isLoading = true;
 
-  console.log('🔥 FINAL JSON PAYLOAD:', payload);
+  this.settingService.updateSettings(this.form.value).subscribe({
+    next: () => {
+      this.isLoading = false;
+      alert('Saved ✅');
+    },
+    error: () => {
+      this.isLoading = false;
+    }
+  });
 }
 }
