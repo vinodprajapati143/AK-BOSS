@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,22 @@ private settings$ = new BehaviorSubject<any>(null);
 
     getSettings() {
     return this.settings$.asObservable();
+  }
+
+    getSite() {
+    return this.settings$.pipe(map(res => res?.site));
+  }
+
+  getAppearance() {
+    return this.settings$.pipe(map(res => res?.appearance));
+  }
+
+  getTheme() {
+    return this.settings$.pipe(map(res => res?.theme));
+  }
+
+  getAdvanced() {
+    return this.settings$.pipe(map(res => res?.advanced));
   }
 
   // 🔥 UPDATE SETTINGS

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ApiService } from '../../core/services/api.service';
+import { SettingService } from '../../core/services/setting.service';
 
 @Component({
   selector: 'app-contact',
@@ -11,10 +12,14 @@ import { ApiService } from '../../core/services/api.service';
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss'
 })
-export class ContactComponent {
+export class ContactComponent implements OnInit {
   contactForm: FormGroup;
+  private settingStore = inject(SettingService);
 
   isSubmitting = false;
+  location: any;
+  phone: any;
+  email: any;
   
   constructor(private fb: FormBuilder, private apiService: ApiService) {
     // Create the reactive form with requested fields
@@ -26,6 +31,22 @@ export class ContactComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9+() -]+$')]]
     });
+  }
+
+  ngOnInit(): void {
+    this.getContactInfo();
+  }
+
+  getContactInfo() {
+      this.settingStore.loadSettings();
+
+  this.settingStore.getSite().subscribe(res => {
+    if (res) {
+       this.location = res.address || '';
+       this.phone = res.phone || '';
+       this.email = res.email || '';
+    }
+  });
   }
 
   onSubmit() {
