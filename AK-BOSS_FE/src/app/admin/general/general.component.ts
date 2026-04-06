@@ -104,8 +104,12 @@ upload(event: any, field: string) {
 }
 
 getSettings() {
-  this.settingService.getSettings().subscribe((res: any) => {
-    this.form.patchValue(res.data);
+  this.settingService.loadSettings();
+
+  this.settingService.getSettings().subscribe((data) => {
+    if (data) {
+      this.form.patchValue(data);
+    }
   });
 }
 

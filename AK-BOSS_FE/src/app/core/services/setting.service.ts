@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import { environment } from '../../../environments/environment.prod';
 private http = inject(HttpClient);
 private baseUrl = environment.apiUrl;
 
+private settings$ = new BehaviorSubject<any>(null);
  uploadFile(file: File) {
     const formData = new FormData();
     formData.append('file', file);
@@ -18,8 +20,20 @@ private baseUrl = environment.apiUrl;
   }
 
     // 🔥 GET SETTINGS
-  getSettings() {
+  getSettingsFromApi() {
     return this.http.get(`${this.baseUrl}/api/admin/settings`);
+  }
+
+    loadSettings() {
+    if (!this.settings$.value) {
+      this.getSettingsFromApi().subscribe((res: any) => {
+        this.settings$.next(res.data);
+      });
+    }
+  }
+
+    getSettings() {
+    return this.settings$.asObservable();
   }
 
   // 🔥 UPDATE SETTINGS
