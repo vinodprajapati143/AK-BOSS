@@ -12,6 +12,8 @@ import { SettingService } from '../../core/services/setting.service';
   styleUrl: './general.component.scss'
 })
 export class GeneralComponent implements OnInit {
+  isPreviewVisible = false;
+  previewImageUrl: string | ArrayBuffer | null = '';
 
 private fb = inject(FormBuilder);
 private settingService = inject(SettingService);
@@ -109,22 +111,36 @@ getSettings() {
 
 isLoading = false;
 
-onSubmit() {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
+  onSubmit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.settingService.updateSettings(this.form.value).subscribe({
+      next: () => {
+        this.isLoading = false;
+        alert('Saved ✅');
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
   }
 
-  this.isLoading = true;
-
-  this.settingService.updateSettings(this.form.value).subscribe({
-    next: () => {
-      this.isLoading = false;
-      alert('Saved ✅');
-    },
-    error: () => {
-      this.isLoading = false;
+  showPreview(url: string | ArrayBuffer | null) {
+    if (!url) {
+      alert('No image to preview');
+      return;
     }
-  });
-}
+    this.previewImageUrl = url;
+    this.isPreviewVisible = true;
+  }
+
+  closePreview() {
+    this.isPreviewVisible = false;
+    this.previewImageUrl = '';
+  }
 }
