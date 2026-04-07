@@ -57,21 +57,21 @@
         <!-- Featured Blogs -->
         <section class="section">
             <div class="blog-grid-3">
-                <div class="blog-card" *ngFor="let blog of featuredBlogs">
+                <div class="blog-card" *ngFor="let blog of blogs">
                     <div class="card-img">
                         <img [src]="blog.image" [alt]="blog.title">
-                        <span class="category-tag">{{ blog.category }}</span>
+                        <span class="category-tag">Category</span>
                     </div>
                     <div class="card-body">
                         <h3>{{ blog.title }}</h3>
-                        <p>{{ blog.desc }}</p>
+                        <p>{{ blog.subDescription }}</p>
                     </div>
                     <div class="card-footer">
                         <div class="author">
                             <img src="https://i.pravatar.cc/150?u=joel" alt="Avatar">
-                            <span>{{ blog.author }}</span>
+                            <span>Admin</span>
                         </div>
-                        <span class="read-time">{{ blog.date }}</span>
+                        <span class="read-time">{{ blog.created_at | date:'short' }}</span>
                     </div>
                 </div>
             </div>
@@ -167,118 +167,24 @@
 
             <div class="insights-grid">
                 <!-- Row 1, Card 1 -->
-                <div class="insight-card light">
+                <div class="insight-card light" *ngFor="let item of blogs">
                     <div class="card-img-wrapper">
-                        <img src="https://picsum.photos/seed/ins1/400/250" alt="Insight 1">
+                        <img [src]="item.image" [alt]="item.title">
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Optimizing Workflow Processes for Maximum Efficiency</h3>
-                        <p class="card-desc">Understand the importance of streamlining workflow processes to enhance
-                            collaboration, task focus, and performance.</p>
+                        <h3 class="card-title">{{item.title}}</h3>
+                        <p class="card-desc">{{item.subDescription}}</p>
                     </div>
                     <div class="card-footer">
                         <div class="author">
                             <img src="https://i.pravatar.cc/150?u=joel" alt="Joel Kennedy">
-                            <span class="author-name">Joel Kennedy</span>
+                            <span class="author-name">Admin</span>
                         </div>
-                        <span class="read-time">4 Min Read</span>
+                        <span class="read-time">{{item.created_at | date:'short'}}</span>
                     </div>
                 </div>
 
-                <!-- Row 1, Card 2 -->
-                <div class="insight-card light">
-                    <div class="card-img-wrapper">
-                        <img src="https://picsum.photos/seed/ins2/400/250" alt="Insight 2">
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Optimizing Workflow Processes for Maximum Efficiency</h3>
-                        <p class="card-desc">Understand the importance of streamlining workflow processes to enhance
-                            collaboration, task focus, and performance.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="author">
-                            <img src="https://i.pravatar.cc/150?u=joel" alt="Joel Kennedy">
-                            <span class="author-name">Joel Kennedy</span>
-                        </div>
-                        <span class="read-time">4 Min Read</span>
-                    </div>
-                </div>
-
-                <!-- Row 1, Card 3 -->
-                <div class="insight-card dark">
-                    <div class="card-img-wrapper">
-                        <img src="https://picsum.photos/seed/ins3/400/250" alt="Insight 3">
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Optimizing Workflow Processes for Maximum Efficiency</h3>
-                        <p class="card-desc">Understand the importance of streamlining workflow processes to enhance
-                            collaboration, task focus, and performance.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="author">
-                            <img src="https://i.pravatar.cc/150?u=joel" alt="Joel Kennedy">
-                            <span class="author-name">Joel Kennedy</span>
-                        </div>
-                        <span class="read-time">4 Min Read</span>
-                    </div>
-                </div>
-
-                <!-- Row 2, Card 1 -->
-                <div class="insight-card light">
-                    <div class="card-img-wrapper">
-                        <img src="https://picsum.photos/seed/ins4/400/250" alt="Insight 4">
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Optimizing Workflow Processes for Maximum Efficiency</h3>
-                        <p class="card-desc">Understand the importance of streamlining workflow processes to enhance
-                            collaboration, task focus, and performance.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="author">
-                            <img src="https://i.pravatar.cc/150?u=joel" alt="Joel Kennedy">
-                            <span class="author-name">Joel Kennedy</span>
-                        </div>
-                        <span class="read-time">4 Min Read</span>
-                    </div>
-                </div>
-
-                <!-- Row 2, Card 2 (Featured with Border) -->
-                <div class="insight-card dark featured-border">
-                    <div class="card-img-wrapper">
-                        <img src="https://picsum.photos/seed/ins5/400/250" alt="Insight 5">
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Optimizing Workflow Processes for Maximum Efficiency</h3>
-                        <p class="card-desc">Understand the importance of streamlining workflow processes to enhance
-                            collaboration, task focus, and performance.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="author">
-                            <img src="https://i.pravatar.cc/150?u=joel" alt="Joel Kennedy">
-                            <span class="author-name">Joel Kennedy</span>
-                        </div>
-                        <span class="read-time">4 Min Read</span>
-                    </div>
-                </div>
-
-                <!-- Row 2, Card 3 -->
-                <div class="insight-card light">
-                    <div class="card-img-wrapper">
-                        <img src="https://picsum.photos/seed/ins6/400/250" alt="Insight 6">
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">Optimizing Workflow Processes for Maximum Efficiency</h3>
-                        <p class="card-desc">Understand the importance of streamlining workflow processes to enhance
-                            collaboration, task focus, and performance.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="author">
-                            <img src="https://i.pravatar.cc/150?u=joel" alt="Joel Kennedy">
-                            <span class="author-name">Joel Kennedy</span>
-                        </div>
-                        <span class="read-time">4 Min Read</span>
-                    </div>
-                </div>
+          
             </div>
         </section>
 

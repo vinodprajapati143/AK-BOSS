@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { BlogService } from '../../core/services/blog.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-blogs',
@@ -8,15 +10,51 @@ import { Component } from '@angular/core';
   templateUrl: './blogs.component.html',
   styleUrl: './blogs.component.scss'
 })
-export class BlogsComponent {
+export class BlogsComponent  implements OnInit {
   tabs = ['All', 'Task', 'Collaboration', 'Productivity', 'Strategies'];
   activeTab = 'All';
+  private blogsservice = inject(BlogService);
+  private toastr = inject(ToastrService);
   
-  blogs = [
-    { title: 'Optimizing Workflow Processes', desc: 'Improve efficiency...' },
-    { title: 'Managing Stakeholders', desc: 'Build trust...' },
-    { title: 'Creative Thinking', desc: 'Boost innovation...' }
-  ];
+  // blogs = [
+  //   { title: 'Optimizing Workflow Processes', desc: 'Improve efficiency...' },
+  //   { title: 'Managing Stakeholders', desc: 'Build trust...' },
+  //   { title: 'Creative Thinking', desc: 'Boost innovation...' }
+  // ];
+
+  constructor() { }
+
+  ngOnInit(): void {
+  this.loadBlogs();
+  }
+
+blogs: any[] = [];
+pagination: any;
+isLoading = false;
+
+loadBlogs(page: number = 1) {
+  this.isLoading = true;
+
+  this.blogsservice.getBlogs({ page, limit: 10 }).subscribe({
+    next: (response: any) => {
+      this.blogs = response.data;
+      this.pagination = response.pagination;
+
+      console.log('Blogs:', response);
+      this.isLoading = false;
+    },
+
+    error: (error) => {
+      console.error('Error fetching blogs:', error);
+
+      this.toastr.error(
+        error?.error?.message || 'Failed to load blogs'
+      );
+
+      this.isLoading = false;
+    }
+  });
+}
 
    setTab(tab: string) {
     this.activeTab = tab;
@@ -134,5 +172,8 @@ export class BlogsComponent {
     { name: 'Joel Kenley', role: 'Web Designer', desc: 'Innovative manager driving product development with a focus on user-centric project solutions.', image: 'https://i.pravatar.cc/150?u=joel3' },
     { name: 'Joel Kenley', role: 'Web Designer', desc: 'Innovative manager driving product development with a focus on user-centric project solutions.', image: 'https://i.pravatar.cc/150?u=kenley3' }
   ];
+
+
+
 
  }
