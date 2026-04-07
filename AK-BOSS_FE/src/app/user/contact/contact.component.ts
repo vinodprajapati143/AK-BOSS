@@ -20,6 +20,9 @@ export class ContactComponent implements OnInit {
   location: any;
   phone: any;
   email: any;
+  apiLink: any;
+  name: any;
+  copyright: any;
   
   constructor(private fb: FormBuilder, private apiService: ApiService) {
     // Create the reactive form with requested fields
@@ -45,6 +48,9 @@ export class ContactComponent implements OnInit {
        this.location = res.address || '';
        this.phone = res.phone || '';
        this.email = res.email || '';
+       this.apiLink = res.apiLink || '';
+       this.name = res.name || '';
+       this.copyright = res.copyright || '';
     }
   });
   }

@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private settingStore = inject(SettingService);
   sitename: any;
   copyright: any;
+  apiLink: any;
   constructor(private router: Router, private gameService: ApiService) {}
 
   chartData = [
@@ -163,6 +164,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.log('res: ', res);
         this.sitename = res.name || 'AK-BOSS';
         this.copyright = res.copyright || '';
+       this.apiLink = res.apiLink || '';
+
       } });
     //  this.loadpubligamesResult()
   }
