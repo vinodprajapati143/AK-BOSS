@@ -104,7 +104,7 @@ upload(event: any, field: string) {
 }
 
 getSettings() {
-  this.settingService.loadSettings();
+  // this.settingService.loadSettings();
 
   this.settingService.getSettings().subscribe((data) => {
     if (data) {

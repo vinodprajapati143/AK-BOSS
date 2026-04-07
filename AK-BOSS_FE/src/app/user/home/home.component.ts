@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NgFor, CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HeaderComponent } from '../../shared/header/header.component';
@@ -8,6 +8,7 @@ import { GameDisplayComponent } from '../../shared/game-display/game-display.com
 import { ApiService } from '../../core/services/api.service';
 import { interval, map, startWith, Subscription, timer } from 'rxjs';
 import { LoaderComponent } from "../../shared/loader/loader.component";
+import { SettingService } from '../../core/services/setting.service';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -31,6 +32,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   interval: any;
   private subscription!: Subscription;
   isLoading: boolean = false;
+  private settingStore = inject(SettingService);
+  sitename: any;
+  copyright: any;
   constructor(private router: Router, private gameService: ApiService) {}
 
   chartData = [
@@ -154,6 +158,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadpubligames();
+    this.settingStore.getSite().subscribe(res => {
+      if (res) {
+        console.log('res: ', res);
+        this.sitename = res.name || 'AK-BOSS';
+        this.copyright = res.copyright || '';
+      } });
     //  this.loadpubligamesResult()
   }
 

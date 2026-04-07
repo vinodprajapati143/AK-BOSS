@@ -11,6 +11,8 @@ import { map } from 'rxjs';
  export class SettingService {
 private http = inject(HttpClient);
 private baseUrl = environment.apiUrl;
+  private isLoaded = false;
+
 
 private settings$ = new BehaviorSubject<any>(null);
  uploadFile(file: File) {
@@ -20,18 +22,20 @@ private settings$ = new BehaviorSubject<any>(null);
     return this.http.post<any>(`${this.baseUrl}/api/upload`, formData);
   }
 
+
     // 🔥 GET SETTINGS
   getSettingsFromApi() {
     return this.http.get(`${this.baseUrl}/api/admin/settings`);
   }
 
-    loadSettings() {
-    if (!this.settings$.value) {
-      this.getSettingsFromApi().subscribe((res: any) => {
-        this.settings$.next(res.data);
-      });
-    }
-  }
+loadSettings() {
+  if (this.isLoaded) return; // ✅ already loaded, no API call
+
+  this.getSettingsFromApi().subscribe((res: any) => {
+    this.settings$.next(res.data);
+    this.isLoaded = true;
+  });
+}
 
     getSettings() {
     return this.settings$.asObservable();

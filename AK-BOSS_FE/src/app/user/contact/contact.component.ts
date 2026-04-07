@@ -38,7 +38,7 @@ export class ContactComponent implements OnInit {
   }
 
   getContactInfo() {
-      this.settingStore.loadSettings();
+      // this.settingStore.loadSettings();
 
   this.settingStore.getSite().subscribe(res => {
     if (res) {

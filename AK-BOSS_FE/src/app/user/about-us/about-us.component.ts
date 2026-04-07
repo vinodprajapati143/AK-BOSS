@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { SettingService } from '../../core/services/setting.service';
 
 @Component({
   selector: 'app-about-us',
@@ -7,6 +8,17 @@ import { Component } from '@angular/core';
   templateUrl: './about-us.component.html',
   styleUrl: './about-us.component.scss'
 })
-export class AboutUsComponent {
+export class AboutUsComponent implements OnInit {
+  private settingStore = inject(SettingService);
+  sitename: any;
+  copyright: any;
+
+  ngOnInit(): void {
+        this.settingStore.getSite().subscribe(res => {
+      if (res) {
+        this.sitename = res.name || 'AK-BOSS';
+        this.copyright = res.copyright || '';
+      } });
+  }
 
 }
