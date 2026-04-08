@@ -8,6 +8,18 @@ import { BlogResponse, BlogService } from '../../core/services/blog.service';
 import { environment } from '../../../environments/environment.prod';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
+import {
+ 
+  Bold,
+  Italic,
+  Essentials,
+  Paragraph,
+  List,          // ✅ important
+  Heading,
+  Link,
+  ImageUpload,
+  BlockQuote
+} from 'ckeditor5';
 
  
 
@@ -20,6 +32,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class BlogComponent  implements OnInit {
 public Editor: any = ClassicEditor;
+ 
   public blogContent = '';
   @ViewChild('fileInput') fileInput!: ElementRef;
  

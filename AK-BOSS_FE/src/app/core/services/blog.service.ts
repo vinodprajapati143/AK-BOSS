@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
+import { map } from 'rxjs';
 
 export interface Blog {
   image: any;
@@ -47,6 +48,13 @@ export class BlogService {
 
 getBlogs(params: any) {
   return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params });
+}
+
+getBlogswithStatus(params: any) {
+  return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params }).pipe(map((response: BlogListResponse) => {
+    const filteredBlogs = response.data.filter(blog => blog.status === 1);
+    return { ...response, data: filteredBlogs };
+  }));
 }
 
 updateBlogStatus(id: number, status: number) {

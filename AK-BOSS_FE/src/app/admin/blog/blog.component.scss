@@ -36,4 +36,18 @@
         width: 100% !important;
         max-width: 100% !important;
     }
+
+    .ck-content ul {
+  list-style-type: disc !important;
+  padding-left: 20px;
+}
+
+.ck-content ul li::marker {
+  content: "• " !important;
+}
+
+.ck-content ol {
+  list-style-type: decimal !important;
+  padding-left: 20px;
+}
 }

@@ -35,7 +35,7 @@ isLoading = false;
 loadBlogs(page: number = 1) {
   this.isLoading = true;
 
-  this.blogsservice.getBlogs({ page, limit: 10 }).subscribe({
+  this.blogsservice.getBlogswithStatus({ page, limit: 10 }).subscribe({
     next: (response: any) => {
       this.blogs = response.data;
       this.pagination = response.pagination;
