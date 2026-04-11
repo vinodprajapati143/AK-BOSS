@@ -6,7 +6,7 @@
                     class="bg-color z-[2] rounded-[10px] md:w-[40%]  max-w-auto backdrop-blur-[4px] md:py-[25px] md:px-[30px] p-[30px]">
                     <div class="w-full flex justify-center">
                         <h1 (click)="goToHome()"
-                            class="md:text-[3rem] font-bold tracking-widest text-[#0A7E8D] cursor-pointer akboss-text">
+                            class="md:text-[3rem] font-bold tracking-widest text-[var(--dark-teal)] cursor-pointer akboss-text">
                             AKBOSS</h1>
                     </div>
 
@@ -64,7 +64,7 @@
                         Register now
                     </button>
 
-                    <p class="text-center text-sm border-[1px] border-[#000] cursor-pointer rounded-full py-2 mt-4">
+                    <p class="text-center text-sm border-[1px] border-[var(--black)] cursor-pointer rounded-full py-2 mt-4">
                         I have an account
                         <a [routerLink]="['/auth/login']" class="text-white font-bold">Login</a>
                     </p>
@@ -73,3 +73,5 @@
         </div>
     </div>
 </div>
+
+

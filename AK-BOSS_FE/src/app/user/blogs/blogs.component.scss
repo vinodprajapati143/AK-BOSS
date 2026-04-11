@@ -5,7 +5,7 @@ $light-teal-bg: #f8fbfc;
 $card-light-bg: #d8edf0;
 $text-dark: #111;
 $text-gray: #666;
-$white: #ffffff;
+$white: var(--white);
 
 // --- GLOBAL STYLES ---
 .blog-page {
@@ -34,7 +34,7 @@ $white: #ffffff;
   font-weight: 800;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
-  color: #000;
+  color: var(--black);
 }
 
 // --- TABS / FILTER ---
@@ -219,7 +219,7 @@ $white: #ffffff;
       height: 44px;
       border-radius: 50%;
       border: 1px solid #ddd;
-      background: #fff;
+      background: var(--white);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -300,15 +300,15 @@ $white: #ffffff;
 
   &.dark {
     background-color: $primary-teal;
-    color: #fff;
+    color: var(--white);
 
     .card-title {
-      color: #fff;
+      color: var(--white);
     }
 
     .card-footer {
       background-color: #0b6b77;
-      color: #fff;
+      color: var(--white);
 
       .read-time {
         background: rgba(255, 255, 255, 0.2);
@@ -386,7 +386,7 @@ $white: #ffffff;
 .team-section {
   text-align: center;
   padding: 6rem 5%;
-  background-color: #fff;
+  background-color: var(--white);
 
   .section-subtitle {
     max-width: 800px;
@@ -427,7 +427,7 @@ $white: #ffffff;
 
   &.dark {
     background-color: $primary-teal;
-    color: #fff;
+    color: var(--white);
 
     .role {
       color: rgba(255, 255, 255, 0.9);
@@ -438,7 +438,7 @@ $white: #ffffff;
     }
 
     .social-links a {
-      background: #fff;
+      background: var(--white);
       color: $text-dark;
     }
   }
@@ -456,7 +456,7 @@ $white: #ffffff;
     }
 
     .social-links a {
-      background: #fff;
+      background: var(--white);
       color: $text-dark;
       border: 1px solid #ccc;
     }
@@ -678,12 +678,12 @@ a:hover::after {
 
 
 
-$primary-teal: #0a7e8d;
+$primary-teal: var(--dark-teal);
 $dark-teal: #003f4a;
 $light-teal: rgba(10, 126, 141, 0.1);
 $text-dark: #1a1a1a;
 $text-light: #666;
-$white: #ffffff;
+$white: var(--white);
 $black: #222;
 
 .blog-page {
@@ -1289,8 +1289,8 @@ a::after {
 $primary-teal: #0e7e8c; // dark teal background
 $light-teal: #f0fcfd; // background for side cards
 $text-light: #666;
-$text-white: #ffffff;
-$text-black: #000;
+$text-white: var(--white);
+$text-black: var(--black);
 $gray-border: #ddd;
 
 .top-blogs-section {
@@ -1596,3 +1596,5 @@ $gray-border: #ddd;
     }
   }
 }
+
+

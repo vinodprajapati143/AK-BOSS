@@ -1,5 +1,5 @@
 <div class="sidebar w-[280px] h-full lg:block hidden">
-    <div class="logo bg-[#FB8500] flex justify-center items-center h-[90px]">
+    <div class="logo bg-[var(--primary-orange)] flex justify-center items-center h-[90px]">
         <img src="/assets/images/dashboard/images/logo.png" alt="">
     </div>
 
@@ -24,7 +24,7 @@
         </div>
 
         <!-- Right Submenu -->
-        <div class="right flex-1" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
+        <div class="right flex-1" style="background: linear-gradient(180deg, var(--primary-orange) 0%, var(--primary-blue) 100%);">
             <ul>
                 <li *ngFor="let sub of currentSubLinks">
                     <a [routerLink]="sub.href" routerLinkActive="active" class="text-xs"
@@ -49,7 +49,7 @@
             <ul>
                 <li *ngFor="let link of this.mobileNavLinks" class="bg-[#F6F6F6]">
                     <div (click)="handleNavItemClick(link)"
-                        class="px-4 py-2 border-y border-[#20A2A066] flex justify-between w-full font-semibold text-[#000000B2]">
+                        class="px-4 py-2 border-y border-[var(--border-teal)66] flex justify-between w-full font-semibold text-[var(--black)B2]">
                         {{link.title}}
                         <img *ngIf="link.subLinks" class="rotate-[90deg]" src="/assets/images/icons/arrow-left.svg"
                             alt="">
@@ -57,8 +57,8 @@
                     <div *ngIf="link.isOpen">
                         <ul>
                             <li *ngFor="let subLink of link.subLinks"
-                                [ngStyle]="{'background-color': link.isActive?'#20A2A0': '#fff'}"
-                                class="px-4 py-1 border-y border-[#20A2A066]">
+                                [ngStyle]="{'background-color': link.isActive?'var(--border-teal)': 'var(--white)'}"
+                                class="px-4 py-1 border-y border-[var(--border-teal)66]">
                                 <div (click)="handleNavSubLinkItemClick(link,subLink)">
                                     {{subLink.title}}
                                 </div>
@@ -75,3 +75,5 @@
         </div>
     </div>
 </div>
+
+

@@ -36,7 +36,7 @@
         <h2 class="text-xl font-bold tracking-wide text-black">{{ game.name }}</h2>
       </div>
       <!-- Body -->
-      <div class="bg-gradient-to-b from-[#0A7E8D] to-[#066874] text-center p-2 flex items-center justify-between ">
+      <div class="bg-gradient-to-b from-[var(--dark-teal)] to-[var(--dark-teal-dark)] text-center p-2 flex items-center justify-between ">
         <!-- Chart Button -->
         <button (click)="openChart()"
          [ngClass]="game.status === 'Close'?'close-btn':game.status === 'Play'?'play-btn':game.status === 'Holiday'?'holiday-btn':''"
@@ -105,3 +105,5 @@
 
 </div>
 <app-footer></app-footer>
+
+

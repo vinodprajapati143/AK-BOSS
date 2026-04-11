@@ -4,7 +4,7 @@
     align-items: center;
     padding: 0 20px;
     font-size: 20px;
-    background: linear-gradient(90deg, #219EBC 0%, #FB8500 100%);
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
     width: 100%;
     color: white;
     font-weight: bold;
@@ -15,32 +15,35 @@ table {
 
     td,
     th {
-        border: 1px solid #000;
+        border: 1px solid var(--black);
         padding: 10px;
     }
     thead tr{
-        background-color: #fff;
+        background-color: var(--white);
     }
     tr:nth-of-type(odd) {
         background-color: #EDF0F5;
     }
     button{
-        background-color: #EB2222;
+        background-color: var(--color-danger);
         border-radius: 4px;
-        color: #fff;
+        color: var(--white);
         font-weight: bold;
         padding: 8px 16px;
-        border: 2px solid #fff;
+        border: 2px solid var(--white);
     }
     .btn-rate{
-        background-color: #fff;
-        color:#0A7E8D;
-        border-color: #0A7E8D;
+        background-color: var(--white);
+        color:var(--dark-teal);
+        border-color: var(--dark-teal);
     }
     .btn-edit{
-        color:#fff;
-        border-color: #000;
-        background-color: #0A7E8D;
+        color:var(--white);
+        border-color: var(--black);
+        background-color: var(--dark-teal);
     }
 }
+
+
+
 

@@ -5,10 +5,11 @@
             <div class="head">
                 <h4>Games</h4>
             </div>
-            <div class="flex px-4 py-4 justify-between bg-[#0A7E8D] border-t-2 border-b-2 border-[#000000B2] mt-2">
+            <div
+                class="flex px-4 py-4 justify-between bg-[var(--dark-teal)] border-t-2 border-b-2 border-[var(--black)B2] mt-2">
                 <div class="flex gap-x-4">
                     <button (click)="togglePopup()"
-                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[#000] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
+                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[var(--black)] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
                         <div>
                             Add Game
                         </div>
@@ -16,28 +17,28 @@
                 </div>
                 <div class="flex gap-x-2">
                     <button
-                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[#000] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
+                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[var(--black)] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
                         <div>
                             Excel
                         </div>
                     </button>
                     <button
-                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[#000] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
+                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[var(--black)] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
                         <div>
                             PDF
                         </div>
                     </button>
                     <button
-                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[#000] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
+                        class="rounded-md flex justify-between items-center text-[14px] border-2 border-[var(--black)] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
                         <div>
                             Print
                         </div>
                     </button>
                     <div class="flex gap-x-2">
-                        <input type="text" class="border-2 border-[#000] bg-[#FFFFFFE5] rounded-md px-4 py-2"
+                        <input type="text" class="border-2 border-[var(--black)] bg-[#FFFFFFE5] rounded-md px-4 py-2"
                             placeholder="Search Anything....">
                         <button
-                            class="rounded-md flex justify-between items-center text-[14px] border-2 border-[#000] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
+                            class="rounded-md flex justify-between items-center text-[14px] border-2 border-[var(--black)] px-4 py-1 font-[500] gap-x-2 bg-[#FFFFFFE5]">
                             <img src="/assets/images/dashboard/icons/search.svg" alt="">
                         </button>
                     </div>
@@ -59,7 +60,7 @@
                     <!-- Repeat this row as needed -->
                     <tr *ngFor="let game of games; let i = index" class="text-center">
                         <td>{{ i + 1 }}</td>
-                        <td>{{ game.game_name  }}</td>
+                        <td>{{ game.game_name }}</td>
                         <td>{{ game.open_time | time12Hour }}</td>
                         <td>{{ game.close_time | time12Hour }}</td>
                         <td align="center">
@@ -89,7 +90,7 @@
                     <!-- Add more rows as needed -->
                 </tbody>
             </table>
-            <div class="pagination flex justify-between px-4 py-2 bg-[#0A7E8D]">
+            <div class="pagination flex justify-between px-4 py-2 bg-[var(--dark-teal)]">
                 <div class="text-white flex items-center">
                     Showing 1-20 of 70 results
                 </div>
@@ -115,11 +116,11 @@
         <div (click)="togglePopup()" class="backdrop fixed w-[100vw] h-[100vh] z-[1] top-0 left-0"
             style="backdrop-filter: blur(5px);"></div>
         <div
-            class="model add-game rounded-md bg-white fixed z-[2] top-[50%] left-[50%] lg:w-[1200px] border border-[#000] w-[100%] translate-x-[-50%] translate-y-[-50%]">
+            class="model add-game rounded-md bg-white fixed z-[2] top-[50%] left-[50%] lg:w-[1200px] border border-[var(--black)] w-[100%] translate-x-[-50%] translate-y-[-50%]">
             <div class="heading border-b-2 border-black py-4 flex justify-between px-2">
                 <h3 class="text-[20px] font-bold">Add New Game</h3>
                 <button (click)="togglePopup()"
-                    class="bg-[#0A7E8D] w-[35px] h-[35px] flex justify-center items-center rounded-md">
+                    class="bg-[var(--dark-teal)] w-[35px] h-[35px] flex justify-center items-center rounded-md">
                     <img src="/assets/images/dashboard/icons/cross.svg" alt="">
                 </button>
             </div>
@@ -129,52 +130,48 @@
                     <div class="px-4">
                         <label class="font-bold">Enter Game Name</label>
                         <input type="text" formControlName="game_name"
-                            class="bg-[#0A7E8D0D] border-2 border-[#0A7E8D] w-full h-[40px] px-4 mt-2 mb-2">
+                            class="bg-[var(--dark-teal)0D] border-2 border-[var(--dark-teal)] w-full h-[40px] px-4 mt-2 mb-2">
                     </div>
                     <div class="flex gap-x-2 px-4">
                         <div class="flex-1">
                             <label class="font-bold">Open Time</label>
                             <input type="time" value="13:30" formControlName="open_time"
-                                class="bg-[#0A7E8D0D] border-2 border-[#0A7E8D] w-full h-[40px] px-4 mt-2">
+                                class="bg-[var(--dark-teal)0D] border-2 border-[var(--dark-teal)] w-full h-[40px] px-4 mt-2">
                         </div>
                         <div class="flex-1">
                             <label class="font-bold">Close Time</label>
                             <input type="time" value="13:30" formControlName="close_time"
-                                class="bg-[#0A7E8D0D] border-2 border-[#0A7E8D] w-full h-[40px] px-4 mt-2">
+                                class="bg-[var(--dark-teal)0D] border-2 border-[var(--dark-teal)] w-full h-[40px] px-4 mt-2">
                         </div>
                     </div>
                     <div class="flex mt-3">
                         <div class="w-1/2">
-                             <div class="flex items-center justify-between px-4 py-2">
+                            <div class="flex items-center justify-between px-4 py-2">
                                 <label class="font-bold flex-1">Select All</label>
-                                <input 
-                                type="checkbox" 
-                                class="w-[20px] h-[20px] flex-1"
-                                [checked]="selectAll"
-                                (change)="toggleSelectAll($event)">
+                                <input type="checkbox" class="w-[20px] h-[20px] flex-1" [checked]="selectAll"
+                                    (change)="toggleSelectAll($event)">
                             </div>
-                             <!-- Individual Days -->
-                            <div *ngFor="let day of days" 
-                                class="flex items-center justify-between px-4 text-white bg-[#0A7E8D] py-4 border-b-2 border-white">
+                            <!-- Individual Days -->
+                            <div *ngFor="let day of days"
+                                class="flex items-center justify-between px-4 text-white bg-[var(--dark-teal)] py-4 border-b-2 border-white">
                                 <label class="font-bold flex-1">{{day}}</label>
-                                <input 
-                                type="checkbox" 
-                                class="w-[20px] h-[20px] flex-1"
-                                [checked]="selectedDays.includes(day)"
-                                (change)="toggleDay(day, $event)">
+                                <input type="checkbox" class="w-[20px] h-[20px] flex-1"
+                                    [checked]="selectedDays.includes(day)" (change)="toggleDay(day, $event)">
                             </div>
                         </div>
                         <div class="w-1/2">
-                            <div class="flex items-center justify-center px-4 py-2 border-b-2 border-[#000]">
+                            <div class="flex items-center justify-center px-4 py-2 border-b-2 border-[var(--black)]">
                                 <label for="select_all" class="font-bold flex-1 text-center">Price</label>
                             </div>
                             <div *ngFor='let day of ["Single Digit","Jodi Digit","Single Panna","Double Panna","Triple Panna","Half Sangam","Full Sangam"]'
-                                class="flex items-center justify-between px-4 text-black bg-[#fff] py-1 border-b-2 border-black">
+                                class="flex items-center justify-between px-4 text-black bg-[var(--white)] py-1 border-b-2 border-black">
                                 <label for="select_all" class="font-bold flex-1">{{day}}</label>
-                                <p class="inline-block font-bold">₹</p><input type="tel" maxlength="8" class="bg-white border-2 ml-1 border-[#0A7E8D] text-center text-[#000] px-4 py-1 rounded-md">
+                                <p class="inline-block font-bold">₹</p><input type="tel" maxlength="8"
+                                    class="bg-white border-2 ml-1 border-[var(--dark-teal)] text-center text-[var(--black)] px-4 py-1 rounded-md">
                             </div>
                             <div class="flex justify-center py-4">
-                                <button class=" bg-[#0A7E8D] text-[#fff] px-6 py-2">Save Changes</button>
+                                <button class=" bg-[var(--dark-teal)] text-[var(--white)] px-6 py-2">Save
+                                    Changes</button>
                             </div>
 
                         </div>
@@ -184,7 +181,7 @@
                                 <label for="select_all" class="font-bold flex-1">Select All</label>
                             </div>
                             <div *ngFor='let day of ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]'
-                                class="flex items-center justify-between px-4 text-white bg-[#0A7E8D] py-4 border-b-2 border-white">
+                                class="flex items-center justify-between px-4 text-white bg-[var(--dark-teal)] py-4 border-b-2 border-white">
                                 <input type="checkbox" name="" id="select_all" class="w-[20px] h-[20px] flex-1">
                                 <label for="select_all" class="font-bold flex-1">{{day}}</label>
                             </div>

@@ -10,7 +10,7 @@
   <div
     class="bg-[#EDF0F5] border border-solid  flex items-center justify-between px-4 h-14 border-b border-gray-400 mt-[65px]">
     <button (click)="goBack()"
-      class="bg-[#0A7E8D] flex justify-center items-center gap-x-1 text-white px-2 py-1 rounded shadow text-sm">
+      class="bg-[var(--dark-teal)] flex justify-center items-center gap-x-1 text-white px-2 py-1 rounded shadow text-sm">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M18.3346 17.0163C16.2957 14.5274 14.4852 13.1152 12.903 12.7796C11.3207 12.4441 9.81436 12.3934 8.3838 12.6276V17.0846L1.66797 9.81172L8.3838 2.91797V7.15422C11.0291 7.17505 13.278 8.12408 15.1305 10.0013C16.9827 11.8785 18.0507 14.2169 18.3346 17.0163Z"
@@ -22,7 +22,7 @@
 
   <!-- Blue Description Section -->
   <div
-    class="bg-[#0A7E8D] mt-2 border border-solid border-black text-white px-4 py-3 text-xs text-center leading-relaxed border-b ">
+    class="bg-[var(--dark-teal)] mt-2 border border-solid border-black text-white px-4 py-3 text-xs text-center leading-relaxed border-b ">
     <p class="uppercase tracking-wide font-semibold mb-2">{{game_name}} JODI RESULT CHART RECORDS</p>
     <p>
       DPBOSS {{game_name}} jodi chart, {{game_name}} jodi chart, old {{game_name}} jodi chart, dpboss
@@ -73,7 +73,7 @@
   <div class="bg-gray-100 lg:px-10 w-[calc(100%-1rem)] xl:w-[calc(100%-40rem)] mx-auto">
 
     <!-- Title -->
-    <div class="bg-[#0A7E8D] text-white text-sm text-center font-bold py-2 rounded-t-md">
+    <div class="bg-[var(--dark-teal)] text-white text-sm text-center font-bold py-2 rounded-t-md">
       {{game_name}} MATKA JODI RECORD 2019 - 2025
     </div>
 
@@ -92,7 +92,7 @@
     <!-- Data rows -->
     <div *ngFor="let row of weekRows" class="grid grid-cols-7 gap-x-1 mb-1">
       <div *ngFor="let cell of row"
-           class="border border-black p-2 bg-[#ffffff] flex flex-col items-center min-h-[70px]">
+           class="border border-black p-2 bg-[var(--white)] flex flex-col items-center min-h-[70px]">
         
         <!-- Date -->
         <div *ngIf="cell?.date" 
@@ -114,7 +114,7 @@
 
 
     <!-- Footer -->
-    <div class="bg-[#0A7E8D] text-white text-center font-bold py-2 rounded-b-md">
+    <div class="bg-[var(--dark-teal)] text-white text-center font-bold py-2 rounded-b-md">
       {{game_name}}
     </div>
 
@@ -148,7 +148,7 @@
     -:DISCLAIMER:-
   </div>
 
-  <div class="border-y border-y-solid border-y-black shadow py-2 mt-2 bg-[#0A7E8D] text-black">
+  <div class="border-y border-y-solid border-y-black shadow py-2 mt-2 bg-[var(--dark-teal)] text-black">
     <p class="px-4 text-sm text-white text-center leading-relaxed">
       Visiting this site and browsing it is strictly recommended at your own risk. Every information available here is
       only according to informational purpose and based on astrology and number calculations. We are no associated or
@@ -177,3 +177,5 @@
     </div>
   </div>
 </div>
+
+

@@ -4,7 +4,7 @@
   align-items: center;
   padding: 0 20px;
   font-size: 20px;
-  background: #0A7E8D;
+  background: var(--dark-teal);
   width: 100%;
   color: white;
   font-weight: bold;
@@ -23,24 +23,24 @@
 
       input {
         background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);
-        border: 1px solid #FFFFFF99;
+        border: 1px solid var(--white)99;
         font-weight: normal;
         font-size: 16px;
         padding: 5px 10px;
 
         &::placeholder {
-          color: #ffffff6c;
+          color: var(--white)6c;
         }
       }
 
       .btn {
-        background: linear-gradient(90deg, #219EBC 0%, #FB8500 100%);
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
         height: 40px;
         width: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid #fff;
+        border: 1px solid var(--white);
       }
     }
 
@@ -53,20 +53,20 @@
   justify-content: space-between;
   gap: 0 20px;
   padding: 10px 60px;
-  border: 2px solid #000;
+  border: 2px solid var(--black);
   border-radius: 80px;
 
   &.type-2 {
     padding: 0;
 
     .name-2 {
-      color: #20A2A0;
+      color: var(--border-teal);
 
       div {
         padding: 20px;
 
         span {
-          background-color: #fff;
+          background-color: var(--white);
           font-weight: bold;
           padding: 20px;
           border-radius: 50px;
@@ -88,8 +88,8 @@
       /* full */
       border-top-right-radius: 80px;
       border-bottom-right-radius: 80px;
-      box-shadow: -7px 0px 19px 0px #000000A6;
-      border: 1px solid #000000
+      box-shadow: -7px 0px 19px 0px var(--black)A6;
+      border: 1px solid var(--black)
     }
   }
 
@@ -122,14 +122,14 @@
     align-items: center;
     gap: 10px;
     padding: 4px 10px;
-    box-shadow: 0px 4px 4px 0px #00000040;
+    box-shadow: 0px 4px 4px 0px var(--black)40;
     background: linear-gradient(90deg, rgba(33, 158, 188, 0.6) 0%, rgba(251, 133, 0, 0.6) 100%);
     border-radius: 5px;
-    border: 1px solid #000;
-    color: #fff;
+    border: 1px solid var(--black);
+    color: var(--white);
 
     div {
-      color: #000;
+      color: var(--black);
       height: 25px;
       width: 25px;
       display: flex;
@@ -138,7 +138,7 @@
       border-radius: 4px;
       font-weight: bold;
       font-size: 12px;
-      border: 1px solid #000;
+      border: 1px solid var(--black);
       background-color: white;
     }
   }
@@ -152,11 +152,11 @@
     span {
       width: 20px;
       height: 4px;
-      background-color: #000;
+      background-color: var(--black);
     }
 
     .box {
-      border: 1px solid #FB8500;
+      border: 1px solid var(--primary-orange);
       border-radius: 5px;
       background: linear-gradient(90deg, rgba(33, 158, 188, 0.1) 0%, rgba(251, 133, 0, 0.1) 100%);
       height: 50px;
@@ -180,7 +180,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28);
 
   .card-header {
-    background-color: #00D457;
+    background-color: var(--commission-green);
     height: 50px;
     color: white;
     font-weight: 700;
@@ -216,7 +216,7 @@
 
     .badge {
       font-size: 16px;
-      background-color: #00D457;
+      background-color: var(--commission-green);
       color: white;
       border-radius: 9999px;
       display: flex;
@@ -247,7 +247,7 @@
     font-family: 'Arial', sans-serif;
 
     .checkbox {
-      accent-color: #FB8500;
+      accent-color: var(--primary-orange);
     }
 
     th,
@@ -255,12 +255,12 @@
       padding: 10px 15px;
       text-align: left;
       font-size: 14px;
-      border-bottom: 1px solid #219EBC;
-      border-top: 1px solid #219EBC;
+      border-bottom: 1px solid var(--primary-blue);
+      border-top: 1px solid var(--primary-blue);
     }
 
     th {
-      color: #00000080;
+      color: var(--black)80;
       font-weight: normal;
     }
 
@@ -272,18 +272,18 @@
       display: inline-block;
 
       &.enabled {
-        background-color: #00D457;
+        background-color: var(--commission-green);
         color: white;
       }
 
       &.disabled {
-        background-color: #EB2222B2;
+        background-color: var(--color-danger)B2;
         color: white;
       }
     }
 
     .dashboard-btn {
-      background-color: #FB8500;
+      background-color: var(--primary-orange);
       color: white;
       padding: 5px 10px;
       border: none;
@@ -348,3 +348,5 @@ input[readonly] {
 //   width: 400px;
 //   height: auto;
 // }
+
+

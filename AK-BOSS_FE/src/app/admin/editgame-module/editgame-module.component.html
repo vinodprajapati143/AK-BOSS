@@ -1,4 +1,4 @@
-<div class="shadow-md md:p-5 py-4" style="background: linear-gradient(180deg, #FB8500 0%, #219EBC 100%);">
+<div class="shadow-md md:p-5 py-4" style="background: linear-gradient(180deg, var(--primary-orange) 0%, var(--primary-blue) 100%);">
   <div (click)="closePopup()" class="close-btn absolute right-2 top-2 p-2 rounded">
     <img src="/assets/images/dashboard/icons/cross-black.svg" alt="">
   </div>
@@ -8,7 +8,7 @@
       Edit what you want
     </h5>
   </div>
-  <div class="game md:flex hidden relative bg-[#20A2A0] type-2">
+  <div class="game md:flex hidden relative bg-[var(--border-teal)] type-2">
     <div class="name-2">
       <div class="relative">
         <span>{{game.game_name }}</span>
@@ -33,7 +33,7 @@
               20
             </div>
           </div> -->
-          <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
+          <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Open</h5>
         </div>
         <div class="game-detail">
           <input type="text" id="patte1" [(ngModel)]="game.patte1" class="box w-[100px] ">
@@ -64,7 +64,7 @@
               20
             </div>
           </div> -->
-          <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed</h5>
+          <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Closed</h5>
         </div>
       </div>
     </div>
@@ -72,7 +72,7 @@
   </div>
 
   <!-- mobile -->
-  <div class="game md:hidden flex relative bg-[#20A2A0] type-2">
+  <div class="game md:hidden flex relative bg-[var(--border-teal)] type-2">
     <div class="name-2">
       <div class="relative">
         <span>Rara</span>
@@ -97,7 +97,7 @@
                 20
               </div>
             </div>
-            <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed
+            <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Closed
             </h5>
           </div>
           <div class="flex flex-col">
@@ -114,7 +114,7 @@
                 20
               </div>
             </div>
-            <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open
+            <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Open
             </h5>
           </div>
         </div>
@@ -138,6 +138,8 @@
 
   </div>
   <div class="flex justify-center">
-    <button class="bg-white text-[#0A7E8D] md:w-[300px] w-[70%] rounded-full py-2 font-bold">Save</button>
+    <button class="bg-white text-[var(--dark-teal)] md:w-[300px] w-[70%] rounded-full py-2 font-bold">Save</button>
   </div>
 </div>
+
+

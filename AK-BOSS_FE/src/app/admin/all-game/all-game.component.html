@@ -49,7 +49,7 @@
                                     {{ formatTime(game.openCountdown).s }}
                                 </div>
                             </div>
-                            <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
+                            <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Open</h5>
                         </div>
                         <div class="game-detail">
                             <input type="text" class="box w-[100px] " [(ngModel)]="game.patte1"
@@ -82,14 +82,14 @@
                                 <div>{{ formatTime(game.closeCountdown).m }}</div> :
                                 <div>{{ formatTime(game.closeCountdown).s }}</div>
                             </div>
-                            <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed</h5>
+                            <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Closed</h5>
                         </div>
                         <button
-                            class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] h-[40px] rounded-[4px] py-2 px-4"
+                            class="bg-[#0D5F5E] text-white border-1 border-[var(--white)] h-[40px] rounded-[4px] py-2 px-4"
                             (click)="editGame(game)">
                             <img src="/assets/images/dashboard/icons/edit-white.svg" class="h-[20px]" />
                         </button>
-                        <button class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4"
+                        <button class="bg-[#0D5F5E] text-white border-1 border-[var(--white)] rounded-[4px] py-2 px-4"
                             (click)="submitGame(game)">
                             Submit
                         </button>
@@ -121,7 +121,7 @@
                                         {{ formatTime(game.openCountdown).s }}
                                     </div>
                                 </div>
-                                <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
+                                <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Open</h5>
                             </div>
                             <div class="flex flex-col gap-y-1 justify-center">
                                 <div class="time md:order-1 order-2">
@@ -129,7 +129,7 @@
                                     <div>{{ formatTime(game.closeCountdown).m }}</div> :
                                     <div>{{ formatTime(game.closeCountdown).s }}</div>
                                 </div>
-                                <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed</h5>
+                                <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Closed</h5>
                             </div>
                         </div>
                         <div class="game-detail">
@@ -157,7 +157,7 @@
 
 
                         </div>
-                        <button class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4"
+                        <button class="bg-[#0D5F5E] text-white border-1 border-[var(--white)] rounded-[4px] py-2 px-4"
                             (click)="submitGame(game)">
                             Submit
                         </button>
@@ -170,7 +170,7 @@
             </div>
             <div>
                 <!-- desktop -->
-                <div *ngFor="let game of allGames" class="game md:flex hidden relative bg-[#20A2A0] type-2">
+                <div *ngFor="let game of allGames" class="game md:flex hidden relative bg-[var(--border-teal)] type-2">
                     <div class="name-2">
                         <div class="relative">
                             <span>{{ game.game_name }}</span>
@@ -199,7 +199,7 @@
                                         {{ formatTime(game.openCountdown).s }}
                                     </div>
                                 </div>
-                                <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open</h5>
+                                <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Open</h5>
                             </div>
                             <div class="game-detail">
                                 <input type="number" id="patte1" class="box w-[100px] " [(ngModel)]="game.patte1"
@@ -235,11 +235,11 @@
                                         {{ formatTime(game.closeCountdown).s }}
                                     </div>
                                 </div>
-                                <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed</h5>
+                                <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Closed</h5>
                             </div>
 
                             <button
-                                class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4 md:block hidden"
+                                class="bg-[#0D5F5E] text-white border-1 border-[var(--white)] rounded-[4px] py-2 px-4 md:block hidden"
                                 (click)="editGame(game)">
                                 Edit
                             </button>
@@ -248,7 +248,7 @@
 
                 </div>
                 <!-- mobile -->
-                <div *ngFor="let game of allGames" class="game md:hidden flex relative bg-[#20A2A0] type-2">
+                <div *ngFor="let game of allGames" class="game md:hidden flex relative bg-[var(--border-teal)] type-2">
                     <div class="name-2">
                         <div class="relative">
                             <span>{{ game.game_name }}</span>
@@ -279,7 +279,7 @@
                                             {{ formatTime(game.closeCountdown).s }}
                                         </div>
                                     </div>
-                                    <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Closed
+                                    <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Closed
                                     </h5>
                                 </div>
                                 <div class="flex flex-col">
@@ -296,7 +296,7 @@
                                             {{ formatTime(game.openCountdown).s }}
                                         </div>
                                     </div>
-                                    <h5 class="text-center font-bold text-[#20A2A0] mt-[4px] md:order-2 order-1">Open
+                                    <h5 class="text-center font-bold text-[var(--border-teal)] mt-[4px] md:order-2 order-1">Open
                                     </h5>
                                 </div>
                             </div>
@@ -323,7 +323,7 @@
 
 
                             <button
-                                class="bg-[#0D5F5E] text-white border-1 border-[#FFFFFF] rounded-[4px] py-2 px-4 md:block hidden"
+                                class="bg-[#0D5F5E] text-white border-1 border-[var(--white)] rounded-[4px] py-2 px-4 md:block hidden"
                                 (click)="editGame(game)">
                                 Edit
                             </button>
@@ -336,3 +336,5 @@
     </div>
 </div>
 <footer></footer>
+
+

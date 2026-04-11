@@ -22,7 +22,7 @@
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  color: #0a7e8d;
+  color: var(--dark-teal);
   position: relative;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .loader:after {
-  color: #4a628a;
+  color: var(--secondary-blue);
   transform: rotateY(70deg);
   animation-delay: 0.4s;
 }
@@ -71,3 +71,6 @@
     box-shadow: 0.2em -0.2em 0 0 currentcolor;
   }
 }
+
+
+
