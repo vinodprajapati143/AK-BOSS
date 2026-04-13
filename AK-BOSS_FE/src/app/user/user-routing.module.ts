@@ -16,6 +16,7 @@ import { GameRateComponent } from './game-rate/game-rate.component';
 import { BlogsComponent } from './blogs/blogs.component';
 import { AboutUsComponent } from './about-us/about-us.component';
 import { ContactComponent } from './contact/contact.component';
+import { BlogDetalisComponent } from './blog-detalis/blog-detalis.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -33,7 +34,8 @@ const routes: Routes = [
   { path: 'game-rate', component: GameRateComponent },
   { path: 'blogs', component: BlogsComponent },
   { path: 'about-us', component: AboutUsComponent },
-  { path: 'contact', component: ContactComponent }
+  { path: 'contact', component: ContactComponent },
+  { path: 'blog-detalis', component: BlogDetalisComponent }
 
 ];
 
