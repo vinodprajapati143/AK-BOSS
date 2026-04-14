@@ -33,9 +33,10 @@ const routes: Routes = [
   { path: 'withdrawal', component: WithdrawalComponent },
   { path: 'game-rate', component: GameRateComponent },
   { path: 'blogs', component: BlogsComponent },
+  { path: 'blog-detalis/:id', component: BlogDetalisComponent },
   { path: 'about-us', component: AboutUsComponent },
   { path: 'contact', component: ContactComponent },
-  { path: 'blog-detalis', component: BlogDetalisComponent }
+  
 
 ];
 

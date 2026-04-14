@@ -57,23 +57,28 @@
         <!-- Featured Blogs -->
         <section class="section">
             <div class="blog-grid-3">
-                <div class="blog-card" *ngFor="let blog of blogs">
-                    <div class="card-img">
-                        <img [src]="blog.image" [alt]="blog.title">
-                        <span class="category-tag">Category</span>
-                    </div>
-                    <div class="card-body">
-                        <h3>{{ blog.title }}</h3>
-                        <p>{{ blog.subDescription }}</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="author">
-                            <img src="https://i.pravatar.cc/150?u=joel" alt="Avatar">
-                            <span>Admin</span>
-                        </div>
-                        <span class="read-time">{{ blog.created_at | date:'short' }}</span>
-                    </div>
-                </div>
+               <ng-container *ngFor="let blog of blogs">
+
+                   <div class="blog-card"  (click)="navigateToBlogDetails(blog.id)">
+                       <div class="card-img">
+                           <img [src]="blog.image" [alt]="blog.title">
+                           <span class="category-tag">Category</span>
+                       </div>
+                       <div class="card-body">
+                           <h3>{{ blog.title }}</h3>
+                           <p>{{ blog.subDescription }}</p>
+                       </div>
+                       <div class="card-footer">
+                           <div class="author">
+                               <img src="https://i.pravatar.cc/150?u=joel" alt="Avatar">
+                               <span>Admin</span>
+                           </div>
+                           <span class="read-time">{{ blog.created_at | date:'short' }}</span>
+                       </div>
+                   </div>
+               </ng-container>
+
+             
             </div>
         </section>
 

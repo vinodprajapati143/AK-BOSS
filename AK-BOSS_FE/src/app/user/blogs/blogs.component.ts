@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { BlogService } from '../../core/services/blog.service';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -15,6 +16,7 @@ export class BlogsComponent  implements OnInit {
   activeTab = 'All';
   private blogsservice = inject(BlogService);
   private toastr = inject(ToastrService);
+  private router = inject(Router);
   
   // blogs = [
   //   { title: 'Optimizing Workflow Processes', desc: 'Improve efficiency...' },
@@ -54,6 +56,10 @@ loadBlogs(page: number = 1) {
       this.isLoading = false;
     }
   });
+}
+
+navigateToBlogDetails(blogId: number) {
+  this.router.navigate(['/user/blog-detalis', blogId]);
 }
 
    setTab(tab: string) {

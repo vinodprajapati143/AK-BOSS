@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment.prod';
 import { map } from 'rxjs';
 
 export interface Blog {
+  created_at: any;
   image: any;
   subDescription: string;
   description: string;
