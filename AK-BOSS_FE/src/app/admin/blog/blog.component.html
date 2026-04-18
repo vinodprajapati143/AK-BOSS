@@ -74,7 +74,7 @@
                             <div class="main-container">
                                 <div class="editor-container editor-container_classic-editor editor-container_include-block-toolbar editor-container_include-fullscreen">
                                     <div class="editor-container__editor">
-                                        <ckeditor [(ngModel)]="blogContent" [editor]="Editor" [config]="config" *ngIf="Editor && config"  (ready)="onReady($event)" />
+                                        <ckeditor   [editor]="Editor" [config]="config" *ngIf="Editor && config"  (ready)="onReady($event)" />
                                     </div>
                                 </div>
                             </div>

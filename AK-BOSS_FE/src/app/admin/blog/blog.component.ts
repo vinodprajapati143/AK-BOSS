@@ -357,10 +357,39 @@ uploadAdapter(loader: any) {
     }
   };
 }
+editorInstance: any;
+isEditorReady = false;
+isDataLoaded = false;
+
+setEditorDataIfReady() {
+  if (this.isEditorReady && this.isDataLoaded) {
+    this.editorInstance.setData(this.blogContent);
+
+    // optional: cursor fix
+    const editor = this.editorInstance;
+    setTimeout(() => {
+      editor.model.change((writer: any) => {
+        const root = editor.model.document.getRoot();
+        const firstElement = root.getChild(0);
+
+        if (firstElement) {
+          writer.setSelection(writer.createPositionAt(firstElement, 0));
+        }
+      });
+    }, 100);
+  }
+}
+
 onReady(editor: any) {
+  this.editorInstance = editor;
+  this.isEditorReady = true;
+
+  // upload adapter
   editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
     return this.uploadAdapter(loader);
   };
+
+  this.setEditorDataIfReady(); // 🔥 yaha call karo
 }
 
 ngOnInit() {
@@ -374,15 +403,20 @@ ngOnInit() {
 }
 
 getBlogById(id: any) {
-this.blogService.getBlogById(id).subscribe(res => {
-  this.title = res.data.title;
-  this.subDescription = res.data.subDescription;
-  this.selectedFile = null;
-  if (res.data.image) {
-    this.imagePreview = res.data.image; // res.data.image is expected to be the image URL
-  }
-  this.blogContent = res.data.description; // CKEditor bind 🔥
-});
+  this.blogService.getBlogById(id).subscribe(res => {
+    this.title = res.data.title;
+    this.subDescription = res.data.subDescription;
+    this.selectedFile = null;
+
+    if (res.data.image) {
+      this.imagePreview = res.data.image;
+    }
+
+    this.blogContent = res.data.description;
+    this.isDataLoaded = true;
+
+    this.setEditorDataIfReady(); // 🔥 yaha bhi call karo
+  });
 }
 onSubmit() {
   // ✅ Validation
