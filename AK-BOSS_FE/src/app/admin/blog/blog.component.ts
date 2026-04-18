@@ -1,25 +1,26 @@
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { AdminSidebarComponent } from '../../shared/admin/admin-sidebar/admin-sidebar.component';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { CKEditorModule } from "@ckeditor/ckeditor5-angular";
+ 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BlogResponse, BlogService } from '../../core/services/blog.service';
 import { environment } from '../../../environments/environment.prod';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
+
+import { loadCKEditorCloud, CKEditorModule, type CKEditorCloudResult, type CKEditorCloudConfig } from '@ckeditor/ckeditor5-angular';
+
+import type { ClassicEditor, EditorConfig } from 'https://cdn.ckeditor.com/typings/ckeditor5.d.ts';
+
+const LICENSE_KEY =
+	'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE4MDYwMTkxOTksImp0aSI6IjhjNTk3ZmIwLWE0YmItNGEyMS05NzQ3LWVlMjJkMzM0ZTcyMCIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIiwiRTJQIiwiRTJXIl0sInJlbW92ZUZlYXR1cmVzIjpbIlBCIiwiUkYiLCJTQ0giLCJUQ1AiLCJUTCIsIlRDUiIsIklSIiwiU1VBIiwiQjY0QSIsIkxQIiwiSEUiLCJSRUQiLCJQRk8iLCJXQyIsIkZBUiIsIkJLTSIsIkZQSCIsIk1SRSJdLCJ2YyI6IjFjODI0ZTU1In0.2-9NhQRwtJoKxoNcHScZd25hYYzTZjRW9MFdGVCPMAHVz1Xl1HjCJ3e6eIs_rjrbyDA85SW7mstYI6UfUgDRAg';
+
+const cloudConfig = {
+	version: '48.0.0'
+} satisfies CKEditorCloudConfig;
  
-  Bold,
-  Italic,
-  Essentials,
-  Paragraph,
-  List,          // ✅ important
-  Heading,
-  Link,
-  ImageUpload,
-  BlockQuote
-} from 'ckeditor5';
+ 
+ 
 
  
 
@@ -31,22 +32,278 @@ import {
   styleUrl: './blog.component.scss'
 })
 export class BlogComponent  implements OnInit {
-public Editor: any = ClassicEditor;
+	public Editor: typeof ClassicEditor | null = null;
+	public config: EditorConfig | null = null;
+
+	public ngAfterViewInit(): void {
+		loadCKEditorCloud(cloudConfig).then(this._setupEditor.bind(this));
+	}
  
   public blogContent = '';
   @ViewChild('fileInput') fileInput!: ElementRef;
  
-  public config = {
-  toolbar: [
-    'heading', '|',
-    'bold', 'italic', 'link',
-    'bulletedList', 'numberedList',
-    '|',
-    'imageUpload',
-    'blockQuote',
-    'undo', 'redo'
-  ]
-};
+ private _setupEditor(cloud: CKEditorCloudResult<typeof cloudConfig>) {
+		const {
+			ClassicEditor,
+			Autosave,
+			Essentials,
+			Paragraph,
+			Alignment,
+			AutoImage,
+			Autoformat,
+			AutoLink,
+			ImageBlock,
+			BlockQuote,
+			Bold,
+			CloudServices,
+			Code,
+			CodeBlock,
+			Emoji,
+			FontBackgroundColor,
+			FontColor,
+			FontFamily,
+			FontSize,
+			Fullscreen,
+			Heading,
+			HorizontalLine,
+			ImageCaption,
+			ImageInsertViaUrl,
+			ImageStyle,
+			ImageToolbar,
+			ImageUpload,
+			Indent,
+			IndentBlock,
+			Italic,
+			Link,
+			LinkImage,
+			List,
+			MediaEmbed,
+			Mention,
+			Strikethrough,
+			Subscript,
+			Superscript,
+			Table,
+			TableCaption,
+			TableToolbar,
+			TextTransformation,
+			TodoList,
+			Underline,
+			BalloonToolbar,
+			BlockToolbar
+		} = cloud.CKEditor;
+
+		this.Editor = ClassicEditor;
+		this.config = {
+			root: {
+				placeholder: 'Type or paste your content here!',
+				initialData:
+					'<h2>Congratulations on setting up CKEditor 5! 🎉</h2>\n<p>\n\tYou\'ve successfully created a CKEditor 5 project. This powerful text editor\n\twill enhance your application, enabling rich text editing capabilities that\n\tare customizable and easy to use.\n</p>\n<h3>What\'s next?</h3>\n<ol>\n\t<li>\n\t\t<strong>Integrate into your app</strong>: time to bring the editing into\n\t\tyour application. Take the code you created and add to your application.\n\t</li>\n\t<li>\n\t\t<strong>Explore features:</strong> Experiment with different plugins and\n\t\ttoolbar options to discover what works best for your needs.\n\t</li>\n\t<li>\n\t\t<strong>Customize your editor:</strong> Tailor the editor\'s\n\t\tconfiguration to match your application\'s style and requirements. Or\n\t\teven write your plugin!\n\t</li>\n</ol>\n<p>\n\tKeep experimenting, and don\'t hesitate to push the boundaries of what you\n\tcan achieve with CKEditor 5. Your feedback is invaluable to us as we strive\n\tto improve and evolve. Happy editing!\n</p>\n<h3>Helpful resources</h3>\n<ul>\n\t<li>📝 <a href="https://portal.ckeditor.com/checkout?plan=free">Trial sign up</a>,</li>\n\t<li>📕 <a href="https://ckeditor.com/docs/ckeditor5/latest/installation/index.html">Documentation</a>,</li>\n\t<li>⭐️ <a href="https://github.com/ckeditor/ckeditor5">GitHub</a> (star us if you can!),</li>\n\t<li>🏠 <a href="https://ckeditor.com">CKEditor Homepage</a>,</li>\n\t<li>🧑‍💻 <a href="https://ckeditor.com/ckeditor-5/demo/">CKEditor 5 Demos</a>,</li>\n</ul>\n<h3>Need help?</h3>\n<p>\n\tSee this text, but the editor is not starting up? Check the browser\'s\n\tconsole for clues and guidance. It may be related to an incorrect license\n\tkey if you use premium features or another feature-related requirement. If\n\tyou cannot make it work, file a GitHub issue, and we will help as soon as\n\tpossible!\n</p>\n'
+			},
+			toolbar: {
+				items: [
+					'undo',
+					'redo',
+					'|',
+					'fullscreen',
+					'|',
+					'heading',
+					'|',
+					'fontSize',
+					'fontFamily',
+					'fontColor',
+					'fontBackgroundColor',
+					'|',
+					'bold',
+					'italic',
+					'underline',
+					'strikethrough',
+					'subscript',
+					'superscript',
+					'code',
+					'|',
+					'emoji',
+					'horizontalLine',
+					'link',
+					'insertImageViaUrl',
+					'mediaEmbed',
+					'insertTable',
+					'blockQuote',
+					'codeBlock',
+					'|',
+					'alignment',
+					'|',
+					'bulletedList',
+					'numberedList',
+					'todoList',
+					'outdent',
+					'indent'
+				],
+				shouldNotGroupWhenFull: false
+			},
+			plugins: [
+				Alignment,
+				Autoformat,
+				AutoImage,
+				AutoLink,
+				Autosave,
+				BalloonToolbar,
+				BlockQuote,
+				BlockToolbar,
+				Bold,
+				CloudServices,
+				Code,
+				CodeBlock,
+				Emoji,
+				Essentials,
+				FontBackgroundColor,
+				FontColor,
+				FontFamily,
+				FontSize,
+				Fullscreen,
+				Heading,
+				HorizontalLine,
+				ImageBlock,
+				ImageCaption,
+				ImageInsertViaUrl,
+				ImageStyle,
+				ImageToolbar,
+				ImageUpload,
+				Indent,
+				IndentBlock,
+				Italic,
+				Link,
+				LinkImage,
+				List,
+				MediaEmbed,
+				Mention,
+				Paragraph,
+				Strikethrough,
+				Subscript,
+				Superscript,
+				Table,
+				TableCaption,
+				TableToolbar,
+				TextTransformation,
+				TodoList,
+				Underline
+			],
+			licenseKey: LICENSE_KEY,
+			balloonToolbar: ['bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList'],
+			blockToolbar: [
+				'fontSize',
+				'fontColor',
+				'fontBackgroundColor',
+				'|',
+				'bold',
+				'italic',
+				'|',
+				'link',
+				'insertTable',
+				'|',
+				'bulletedList',
+				'numberedList',
+				'outdent',
+				'indent'
+			],
+			fontFamily: {
+				supportAllValues: true
+			},
+			fontSize: {
+				options: [10, 12, 14, 'default', 18, 20, 22],
+				supportAllValues: true
+			},
+			fullscreen: {
+				onEnterCallback: container =>
+					container.classList.add(
+						'editor-container',
+						'editor-container_classic-editor',
+						'editor-container_include-block-toolbar',
+						'editor-container_include-fullscreen',
+						'main-container'
+					)
+			},
+			heading: {
+				options: [
+					{
+						model: 'paragraph',
+						title: 'Paragraph',
+						class: 'ck-heading_paragraph'
+					},
+					{
+						model: 'heading1',
+						view: 'h1',
+						title: 'Heading 1',
+						class: 'ck-heading_heading1'
+					},
+					{
+						model: 'heading2',
+						view: 'h2',
+						title: 'Heading 2',
+						class: 'ck-heading_heading2'
+					},
+					{
+						model: 'heading3',
+						view: 'h3',
+						title: 'Heading 3',
+						class: 'ck-heading_heading3'
+					},
+					{
+						model: 'heading4',
+						view: 'h4',
+						title: 'Heading 4',
+						class: 'ck-heading_heading4'
+					},
+					{
+						model: 'heading5',
+						view: 'h5',
+						title: 'Heading 5',
+						class: 'ck-heading_heading5'
+					},
+					{
+						model: 'heading6',
+						view: 'h6',
+						title: 'Heading 6',
+						class: 'ck-heading_heading6'
+					}
+				]
+			},
+			image: {
+				toolbar: ['toggleImageCaption', '|', 'imageStyle:alignBlockLeft', 'imageStyle:block', 'imageStyle:alignBlockRight'],
+				styles: {
+					options: ['alignBlockLeft', 'block', 'alignBlockRight']
+				}
+			},
+			link: {
+				addTargetToExternalLinks: true,
+				defaultProtocol: 'https://',
+				decorators: {
+					toggleDownloadable: {
+						mode: 'manual',
+						label: 'Downloadable',
+						attributes: {
+							download: 'file'
+						}
+					}
+				}
+			},
+			mention: {
+				feeds: [
+					{
+						marker: '@',
+						feed: [
+							/* See: https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html */
+						]
+					}
+				]
+			},
+			menuBar: {
+				isVisible: true
+			},
+			table: {
+				contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+			}
+		};
+	}
 title: string = '';
 subDescription: string = '';
 selectedFile: File | null = null;

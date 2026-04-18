@@ -67,9 +67,21 @@
                                 Description
                             </label>
 
-                            <ckeditor [editor]="Editor" [(ngModel)]="blogContent" [config]="config"
+                            <!-- <ckeditor [editor]="Editor" [(ngModel)]="blogContent" [config]="config"
                                 (ready)="onReady($event)">
-                            </ckeditor>
+                            </ckeditor> -->
+
+                            <div class="main-container">
+                                <div class="editor-container editor-container_classic-editor editor-container_include-block-toolbar editor-container_include-fullscreen">
+                                    <div class="editor-container__editor">
+                                        <ckeditor [(ngModel)]="blogContent" [editor]="Editor" [config]="config" *ngIf="Editor && config"  (ready)="onReady($event)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                       
+                        </div>
 
 
 
