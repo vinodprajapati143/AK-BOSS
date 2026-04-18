@@ -5,6 +5,7 @@ import { BlogService } from '../../core/services/blog.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-blog-detalis',
@@ -18,6 +19,7 @@ export class BlogDetalisComponent {
   private route = inject(ActivatedRoute);
   private blogService=  inject(BlogService);
    private toastr= inject(ToastrService);
+   private sanitizer = inject(DomSanitizer);
   sitename: any;
   copyright: any;
   isEditMode: boolean | undefined;
@@ -28,6 +30,7 @@ export class BlogDetalisComponent {
   imagePreview: any;
   blogContent: string | undefined;
   created_at: any;
+  safeHtml!: SafeHtml;
 
   ngOnInit(): void {
       const id = this.route.snapshot.paramMap.get('id');
@@ -56,6 +59,8 @@ this.blogService.getBlogById(id).subscribe(res => {
     this.imagePreview = res.data.image; // res.data.image is expected to be the image URL
   }
   this.blogContent = res.data.description; // CKEditor bind 🔥
+  this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(this.blogContent);
+  console.log('this.blogContent: ', this.blogContent);
 });
 }
 }

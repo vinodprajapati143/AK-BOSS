@@ -58,7 +58,7 @@
 
             <!-- Article text -->
             <div class="prose max-w-none text-gray-700 text-[15px] leading-relaxed space-y-5">
-                <div [innerHTML]="blogContent"></div>
+                <div class="ck-content"  [innerHTML]="safeHtml"></div>
             </div>
         </div>
 
