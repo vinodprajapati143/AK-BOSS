@@ -51,6 +51,13 @@ getBlogs(params: any) {
   return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params });
 }
 
+getBlogsExceptCurrentid(params: any, currentId: number) {
+  return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params }).pipe(map((response: BlogListResponse) => {
+    const filteredBlogs = response.data.filter(blog => blog.id !== currentId);
+    return { ...response, data: filteredBlogs };
+  }));
+}
+
 getBlogswithStatus(params: any) {
   return this.http.get<BlogListResponse>(`${this.baseUrl}/api/blog/lists`, { params }).pipe(map((response: BlogListResponse) => {
     const filteredBlogs = response.data.filter(blog => blog.status === 1);

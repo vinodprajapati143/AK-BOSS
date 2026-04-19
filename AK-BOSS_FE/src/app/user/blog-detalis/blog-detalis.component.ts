@@ -31,6 +31,7 @@ export class BlogDetalisComponent {
   blogContent: string | undefined;
   created_at: any;
   safeHtml!: SafeHtml;
+  relatedblogs: any;
 
   ngOnInit(): void {
       const id = this.route.snapshot.paramMap.get('id');
@@ -39,6 +40,7 @@ export class BlogDetalisComponent {
     this.isEditMode = true;
     this.blogId = +id;
     this.getBlogById(id);
+    this.getBlogsExceptCurrentid({ page: 1, limit: 10 }, this.blogId);
   }
     this.settingStore.getSite().subscribe(res => {
       if (res) {
@@ -63,4 +65,21 @@ this.blogService.getBlogById(id).subscribe(res => {
   console.log('this.blogContent: ', this.blogContent);
 });
 }
+
+getBlogsExceptCurrentid(params: any, currentId: number) {
+  this.blogService.getBlogsExceptCurrentid(params, currentId).subscribe({
+    next: (response: any) => {
+      this.relatedblogs = response.data;
+    },
+
+    error: (error) => { 
+      console.error('Error fetching blogs:', error);
+      this.toastr.error(
+        error?.error?.message || 'Failed to load blogs'
+      );
+    }
+  });
+}
+
+
 }

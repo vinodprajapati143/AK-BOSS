@@ -158,74 +158,30 @@
                 <div class="space-y-5">
 
                     <!-- Post Item -->
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div class="w-16 h-[50px] flex-shrink-0 rounded-md overflow-hidden shadow-sm">
-                            <img src="assets/images/about_us/image3.png" alt="thumb"
-                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h4
-                                class="text-[13px] font-bold text-[#2d3748] leading-snug line-clamp-2 group-hover:text-[var(--primary-blue)] transition-colors duration-200">
-                                React vs React Native: What's the Difference &...</h4>
-                            <p class="text-[11px] font-medium text-gray-400 mt-1">26 Feb 2024 11:30 AM</p>
-                        </div>
-                    </div>
+               <ng-container *ngFor="let blog of relatedblogs">
 
-                    <!-- Post Item -->
+                   
                     <div class="flex items-center gap-4 group cursor-pointer">
                         <div class="w-16 h-[50px] flex-shrink-0 rounded-md overflow-hidden shadow-sm">
-                            <img src="assets/images/about_us/image4.png" alt="thumb"
+                            <img [src]="blog.image" alt="thumb"
                                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4
                                 class="text-[13px] font-bold text-[#2d3748] leading-snug line-clamp-2 group-hover:text-[var(--primary-blue)] transition-colors duration-200">
-                                React vs React Native: What's the Difference &...</h4>
-                            <p class="text-[11px] font-medium text-gray-400 mt-1">26 Feb 2024 11:30 AM</p>
+                                {{blog.title}}</h4>
+                            <p class="text-[11px] font-medium text-gray-400 mt-1">{{blog.created_at | date:'mediumDate'}}</p>
                         </div>
                     </div>
+               </ng-container>
 
-                    <!-- Post Item -->
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div class="w-16 h-[50px] flex-shrink-0 rounded-md overflow-hidden shadow-sm">
-                            <img src="assets/images/about_us/image5.png" alt="thumb"
-                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h4
-                                class="text-[13px] font-bold text-[#2d3748] leading-snug line-clamp-2 group-hover:text-[var(--primary-blue)] transition-colors duration-200">
-                                React vs React Native: What's the Difference &...</h4>
-                            <p class="text-[11px] font-medium text-gray-400 mt-1">26 Feb 2024 11:30 AM</p>
-                        </div>
-                    </div>
 
-                    <!-- Post Item -->
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div class="w-16 h-[50px] flex-shrink-0 rounded-md overflow-hidden shadow-sm">
-                            <img src="assets/images/about_us/image6.png" alt="thumb"
-                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h4
-                                class="text-[13px] font-bold text-[#2d3748] leading-snug line-clamp-2 group-hover:text-[var(--primary-blue)] transition-colors duration-200">
-                                React vs React Native: What's the Difference &...</h4>
-                            <p class="text-[11px] font-medium text-gray-400 mt-1">26 Feb 2024 11:30 AM</p>
-                        </div>
-                    </div>
+                  
 
-                    <!-- Post Item -->
-                    <div class="flex items-center gap-4 group cursor-pointer">
-                        <div class="w-16 h-[50px] flex-shrink-0 rounded-md overflow-hidden shadow-sm">
-                            <img src="assets/images/about_us/image7.png" alt="thumb"
-                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h4
-                                class="text-[13px] font-bold text-[#2d3748] leading-snug line-clamp-2 group-hover:text-[var(--primary-blue)] transition-colors duration-200">
-                                React vs React Native: What's the Difference &...</h4>
-                            <p class="text-[11px] font-medium text-gray-400 mt-1">26 Feb 2024 11:30 AM</p>
-                        </div>
-                    </div>
+                  
+
+                  
+ 
 
                 </div>
             </div>
