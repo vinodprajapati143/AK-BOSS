@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { SettingService } from '../../core/services/setting.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BlogService } from '../../core/services/blog.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
@@ -10,7 +10,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Component({
   selector: 'app-blog-detalis',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,RouterModule],
   templateUrl: './blog-detalis.component.html',
   styleUrl: './blog-detalis.component.scss'
 })
@@ -20,6 +20,8 @@ export class BlogDetalisComponent {
   private blogService=  inject(BlogService);
    private toastr= inject(ToastrService);
    private sanitizer = inject(DomSanitizer);
+   private router = inject(Router);
+
   sitename: any;
   copyright: any;
   isEditMode: boolean | undefined;
@@ -64,6 +66,11 @@ this.blogService.getBlogById(id).subscribe(res => {
   this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(this.blogContent);
   console.log('this.blogContent: ', this.blogContent);
 });
+}
+
+navigateToBlog(blogId: number) {
+  this.router.navigate(['/user/blog-detalis', blogId]);
+  this.getBlogById(blogId);
 }
 
 getBlogsExceptCurrentid(params: any, currentId: number) {

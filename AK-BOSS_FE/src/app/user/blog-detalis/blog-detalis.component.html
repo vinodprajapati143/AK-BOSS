@@ -161,7 +161,7 @@
                <ng-container *ngFor="let blog of relatedblogs">
 
                    
-                    <div class="flex items-center gap-4 group cursor-pointer">
+                    <div class="flex items-center gap-4 group cursor-pointer" (click)="navigateToBlog(blog.id)">
                         <div class="w-16 h-[50px] flex-shrink-0 rounded-md overflow-hidden shadow-sm">
                             <img [src]="blog.image" alt="thumb"
                                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
