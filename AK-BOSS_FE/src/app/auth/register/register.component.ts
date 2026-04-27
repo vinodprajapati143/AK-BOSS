@@ -137,7 +137,7 @@ export class RegisterComponent {
         }
       },
       error: (err) => {
-        const error = err.data.error; // Type assertion
+        const error = err.data.message; // Type assertion
         this.toaster.error(error);
       },
     });
