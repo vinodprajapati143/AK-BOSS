@@ -140,7 +140,6 @@ exports.register = async (req, res) => {
   try {
     const {
       username,
-      
       email,
       smsvcode,
       registerType,
@@ -189,8 +188,7 @@ exports.register = async (req, res) => {
     // Insert new user (invitecode abhi blank rakhenge, baad me generate hoga)
     const sql = `
       INSERT INTO users (
-        username,,
-      email, smsvcode, registerType, pwd,
+        username, email, smsvcode, registerType, pwd,
         domainurl, phonetype, captchaId, track, deviceId,
         language, random, signature, timestamp,
         phone, countryCode, agree, referrer_id
