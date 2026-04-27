@@ -164,6 +164,36 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: "Required fields missing or terms not agreed." });
     }
 
+    const phoneRegex = /^[0-9]{10}$/; // India ke liye 10 digit
+
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid phone number. Must be 10 digits"
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format"
+      });
+    }
+
+    // Email check
+    const [emailCheck] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
+    if (emailCheck.length > 0) {
+      return res.status(409).json({ success: false, message: "Email already exists" });
+    }
+
+    // Phone check
+    const [phoneCheck] = await db.query("SELECT id FROM users WHERE phone = ?", [cleanPhone]);
+    if (phoneCheck.length > 0) {
+      return res.status(409).json({ success: false, message: "Phone already exists" });
+    }
+
     // Check existing user
     const [existingUser] = await db.query("SELECT id FROM users WHERE username = ?", [username]);
     if (existingUser.length > 0) {
@@ -323,6 +353,8 @@ exports.sendForgotOtp = async (req, res) => {
   if (!phone || !countryCode) {
     return res.status(400).json({ success: false, message: "Phone and country code required" });
   }
+
+  
 
   try {
     // 1️⃣ User check
