@@ -34,6 +34,7 @@ export class RegisterComponent {
  
     this.registerForm = this.fb.group({
       username: [''],
+      email: [''],
       smsvcode: [''],
       registerType: ['user'],
       pwd: [''], // password field

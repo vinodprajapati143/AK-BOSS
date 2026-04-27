@@ -140,6 +140,8 @@ exports.register = async (req, res) => {
   try {
     const {
       username,
+      
+      email,
       smsvcode,
       registerType,
       pwd,
@@ -155,11 +157,11 @@ exports.register = async (req, res) => {
       timestamp,
       phone,
       countryCode,
-      agree,
+      agree
     } = req.body;
 
     // Basic validations
-    if (!username || !pwd || !phone || agree !== true) {
+    if (!username || !pwd || !phone || !email || agree !== true) {
       return res.status(400).json({ success: false, message: "Required fields missing or terms not agreed." });
     }
 
@@ -187,15 +189,16 @@ exports.register = async (req, res) => {
     // Insert new user (invitecode abhi blank rakhenge, baad me generate hoga)
     const sql = `
       INSERT INTO users (
-        username, smsvcode, registerType, pwd,
+        username,,
+      email, smsvcode, registerType, pwd,
         domainurl, phonetype, captchaId, track, deviceId,
         language, random, signature, timestamp,
         phone, countryCode, agree, referrer_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)
     `;
 
     const values = [
-      username, smsvcode, registerType, hashedPwd,
+      username, email, smsvcode, registerType, hashedPwd,
       domainurl, phonetype, captchaId, track, deviceId,
       language, random, signature, timestamp,
       phone, countryCode, agree, referrerId
