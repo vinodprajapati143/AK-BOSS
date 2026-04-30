@@ -361,6 +361,7 @@ isEditorReady = false;
 isDataLoaded = false;
 
 setEditorDataIfReady() {
+ 
   if (this.isEditorReady && this.isDataLoaded) {
     this.editorInstance.setData(this.blogContent);
 
