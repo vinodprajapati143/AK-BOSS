@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { SettingService } from '../../core/services/setting.service';
+import { BlogHeaderComponent } from "../../shared/blog-header/blog-header.component";
+import { BlogFooterComponent } from '../../shared/blog-footer/blog-footer.component';
 
 @Component({
   selector: 'app-about-us',
   standalone: true,
-  imports: [],
+  imports: [BlogHeaderComponent, BlogFooterComponent],
   templateUrl: './about-us.component.html',
   styleUrl: './about-us.component.scss'
 })

@@ -1601,3 +1601,83 @@ $gray-border: #ddd;
         }
     }
 }
+
+/* CKEditor Custom Styles */
+:host ::ng-deep {
+  .ck-editor__editable_inline {
+    min-height: 300px !important;
+    width: 100% !important;
+    white-space: normal !important;
+    /* Ensure text wraps */
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Target the container to ensure it doesn't expand horizontally */
+  .ck.ck-editor {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .ck-content ul {
+    list-style-type: disc !important;
+    padding-left: 20px;
+  }
+
+  .ck-content ul li::marker {
+    content: "• " !important;
+  }
+
+  .ck-content ol {
+    list-style-type: decimal !important;
+    padding-left: 20px;
+  }
+
+  .ck-content h1 {
+    font-size: 2.5rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .ck-content h2 {
+    font-size: 2rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .ck-content h3 {
+    font-size: 1.75rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .ck-content h4 {
+    font-size: 1.5rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .ck-content h5 {
+    font-size: 1.25rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .ck-content h6 {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+}

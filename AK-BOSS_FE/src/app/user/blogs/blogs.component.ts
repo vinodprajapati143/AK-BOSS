@@ -3,11 +3,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { BlogService } from '../../core/services/blog.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { BlogHeaderComponent } from "../../shared/blog-header/blog-header.component";
+import { BlogFooterComponent } from "../../shared/blog-footer/blog-footer.component";
 
 @Component({
   selector: 'app-blogs',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BlogHeaderComponent, BlogFooterComponent],
   templateUrl: './blogs.component.html',
   styleUrl: './blogs.component.scss'
 })

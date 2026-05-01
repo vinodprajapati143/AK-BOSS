@@ -6,11 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { BlogHeaderComponent } from "../../shared/blog-header/blog-header.component";
+import { BlogFooterComponent } from '../../shared/blog-footer/blog-footer.component';
 
 @Component({
   selector: 'app-blog-detalis',
   standalone: true,
-  imports: [CommonModule,FormsModule,RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, BlogHeaderComponent, BlogFooterComponent],
   templateUrl: './blog-detalis.component.html',
   styleUrl: './blog-detalis.component.scss'
 })

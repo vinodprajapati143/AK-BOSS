@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import Swal from 'sweetalert2';
 import { ApiService } from '../../core/services/api.service';
 import { SettingService } from '../../core/services/setting.service';
+import { BlogFooterComponent } from '../../shared/blog-footer/blog-footer.component';
+import { BlogHeaderComponent } from '../../shared/blog-header/blog-header.component';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, BlogHeaderComponent, BlogFooterComponent],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss'
 })

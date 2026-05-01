@@ -1,34 +1,8 @@
 <div class="blog-page">
   <!-- Navbar -->
-  <nav class="w-full bg-gradient-to-r from-black via-teal-900 to-teal-700 px-12 py-3">
-    <ul class="flex justify-end gap-6 md:text-[16px] text-[12px] text-white font-semibold">
-      <li>
-        <a href="/user/home" routerLinkActive="active-link">
-          HOME
-        </a>
-      </li>
+  <app-blog-header></app-blog-header>
 
-      <li>
-        <a href="/user/blogs" routerLinkActive="active-link">
-          BLOG
-        </a>
-      </li>
-
-      <li>
-        <a href="/user/about-us" routerLinkActive="active-link">
-          ABOUT US
-        </a>
-      </li>
-
-      <li>
-        <a href="/user/contact" routerLinkActive="active-link">
-          CONTACT
-        </a>
-      </li>
-    </ul>
-  </nav>
-
-  <div class="grid grid-cols-1 sm:mt-12 lg:grid-cols-12 gap-8">
+  <div class="grid grid-cols-1 sm:mt-12 lg:grid-cols-12 gap-8 mt-[30px]">
 
     <!-- Main Content (Left Column) -->
     <div class="lg:col-span-8 space-y-8 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -311,25 +285,5 @@
     </div>
   </div>
 
-  <footer class="main-footer">
-    <div class="footer-top">
-      POWERD BY {{sitename}}
-    </div>
-    <div class="footer-bottom">
-      <div class="copyright">{{copyright}}</div>
-      <div class="footer-links">
-        <a href="user/about-us">About us</a>
-        <a href="user/blogs">Blogs</a>
-        <a href="user/contact">Contact us</a>
-        <a href="user/blog-detalis">Privacy & policy</a>
-        <a href="user/blog-detalis">Term And Conditions</a>
-      </div>
-      <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-whatsapp"></i></a>
-      </div>
-    </div>
-  </footer>
+  <app-blog-footer></app-blog-footer>
 </div>
